@@ -19,6 +19,7 @@ class MSRaw:
     def read_mzml(self):
         """
         read mzml and generate peaks for each mzml file.
+        columns for peaks csv [scan_number,scan_type,masses,intensities]
         """
         pass
 
