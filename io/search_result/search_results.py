@@ -10,6 +10,8 @@ class SearchResults:
     path: str
     orig_res: pd.DataFrame
     fake_msms: pd.DataFrame
+    fake_msms_columns = ['Raw file', 'Scan number', 'Modified sequence', 'Charge', 'Fragmentation',
+                         'Mass analyzer', 'Mass', 'Score', 'Reverse']
 
     def __init__(self, path):
         self.path = path

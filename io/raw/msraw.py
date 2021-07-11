@@ -10,15 +10,20 @@ class MSRaw:
         self.output_path = output_path
 
     @abstractmethod
-    def raw2mzml(self):
+    def raw_mzml(self):
         """
         Use https://github.com/compomics/ThermoRawFileParser for conversion
         """
         pass
 
-    @abstractmethod
-    def readmzml(self):
+    def read_mzml(self):
         """
         read mzml and generate peaks for each mzml file.
+        """
+        pass
+
+    def read_peaks(self):
+        """
+        read peaks generated for each raw file.
         """
         pass
