@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def read(path):
+def read_file(path):
     """
     Read csv file and return df with contents
     :param path:
@@ -11,7 +11,7 @@ def read(path):
     return df
 
 
-def write(df, path):
+def write_file(df, path):
     """
     Write dataframe to csv file
     :param df:
