@@ -13,5 +13,5 @@ class ThermoRaw(MSRaw):
         :param output_path: File path of the mzML path
         """
         exec_path = pathlib.Path(__file__).parent.absolute() # get path of parent directory of current file
-        exec_command = f"mono {excec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe -i {input_path} -b {output_path}"
+        exec_command = f"mono {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe -i {input_path} -b {output_path}"
         os.system(exec_command)
