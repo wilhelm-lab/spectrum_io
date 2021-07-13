@@ -1,5 +1,5 @@
 *.pyc
 *.ipynb
-.ipynb_checkpoints
-.idea
+**/.ipynb_checkpoints/*
+**/.idea/*
 .python-version

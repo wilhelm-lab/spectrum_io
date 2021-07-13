@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import pandas as pd
-from io.file.csv import write_file
+from prosit_io.file.csv import write_file
 
 
 class SearchResults:
@@ -10,21 +10,14 @@ class SearchResults:
     path: str
     orig_res: pd.DataFrame
     fake_msms: pd.DataFrame
-    fake_msms_columns = ['Raw file', 'Scan number', 'Modified sequence', 'Charge', 'Fragmentation',
-                         'Mass analyzer', 'Mass', 'Score', 'Reverse']
 
     def __init__(self, path):
         self.path = path
 
-    def read_result(self):
-        pass
-
     @abstractmethod
-    def gen_fake(self):
-        # set fake_msms
-        pass
+    def read_result(self):
+        raise NotImplementedError
 
     def handle_result(self):
         self.read_result()
-        self.gen_fake()
-        write_file(self.fake_msms, self.path)
+        write_file(self.result, self.path)

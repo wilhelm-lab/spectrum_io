@@ -1,13 +1,13 @@
 import pandas as pd
 
 
-def read_file(path):
+def read_file(path: str):
     """
     Read csv file and return df with contents
     :param path:
-    :return:
+    :return
     """
-    df = pd.DataFrame()
+    df = pd.read_csv(path, sep=",")
     return df
 
 
