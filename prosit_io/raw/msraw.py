@@ -28,11 +28,11 @@ class MSRaw:
         """
         Reads mzml and generates a dataframe containing intensities and m/z values.
 
-        :source A directory containing mzml files, a list of files or a single file.
-        :ext File extension for searching a specified directory.
-        :package Package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
+        :param source: A directory containing mzml files, a list of files or a single file.
+        :param ext: File extension for searching a specified directory.
+        :param package: Package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
 
-        :return Pandas DataFrame
+        :return: Pandas DataFrame
         """
 
         if isinstance(source, str):

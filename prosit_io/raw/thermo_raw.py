@@ -9,8 +9,8 @@ class ThermoRaw(MSRaw):
         """
         Converts a ThermoRaw file to mzML
 
-        :input_path File path of the Thermo Rawfile
-        :output_path File path of the mzML path
+        :param input_path: File path of the Thermo Rawfile
+        :param output_path: File path of the mzML path
         """
         exec_path = pathlib.Path(__file__).parent.absolute() # get path of parent directory of current file
         exec_command = f"mono {excec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe -i {input_path} -b {output_path}"
