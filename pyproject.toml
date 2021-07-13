@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "io"
+name = "prosit_io"
 version = "0.1.0"
 description = "Handle IO operations for Oktoberfest"
 authors = ["WassimG <wassim.gabriel@tum.de>"]
