@@ -1,11 +1,16 @@
+import logging
+import os
 from abc import abstractmethod
+from typing import Union, List, Optional
+import pandas as pd
 
+logger = logging.getLogger(__name__)
 
 class MSRaw:
     path: str
     output_path: str
 
-    def __init__(self, path=None, output_path=None):
+    def __init__(self, path: Optional[str] = None, output_path: Optional[str] = None):
         self.path = path
         self.output_path = output_path
 
@@ -16,9 +21,8 @@ class MSRaw:
         """
         raise NotImplementedError
 
-
+    @staticmethod
     def read_mzml(
-        self,
         source: Union[str, List[str]],
         ext: str = 'mzml',
         package: str = 'pymzml',
@@ -50,6 +54,7 @@ class MSRaw:
         if package == 'pymzml':
             import pymzml
             for file_path in source:
+                logger.info(f"Processing {file_path}")
                 data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
                 file_name = os.path.basename(file_path)
                 for spec in data_iter:
