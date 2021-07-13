@@ -17,3 +17,4 @@ def write_file(df, path):
     :param df:
     :param path:
     """
+    df.to_csv(path, index=False)
