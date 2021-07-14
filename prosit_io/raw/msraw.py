@@ -56,7 +56,7 @@ class MSRaw:
             for file_path in source:
                 logger.info(f"Processing {file_path}")
                 data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
-                file_name = os.path.basename(file_path)
+                file_name = os.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
                     key = f"{file_name}_{spec.ID}"
                     data[key] = [spec.ID, file_name, spec.i, spec.mz]
@@ -65,7 +65,7 @@ class MSRaw:
             from pyteomics import mzml
             for file_path in source:
                 data_iter = mzml.read(source=file_path, *args, **kwargs)
-                file_name = os.path.basename(file_path)
+                file_name = os.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
                     id = spec['id'].split('scan=')[-1]
                     key = f"{file_name}_{id}"
