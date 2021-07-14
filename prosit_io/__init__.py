@@ -1,6 +1,6 @@
 import logging.handlers
 import time
-from . import raw
+from .raw import ThermoRaw
 from .search_result import MaxQuant
 
 CONSOLE_LOG_LEVEL = logging.INFO

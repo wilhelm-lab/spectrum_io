@@ -2,16 +2,27 @@
 from setuptools import setup
 
 packages = \
-['io', 'io.file', 'io.search_result', 'io.spectral_library']
+['prosit_io',
+ 'prosit_io.file',
+ 'prosit_io.raw',
+ 'prosit_io.search_result',
+ 'prosit_io.spectral_library']
 
 package_data = \
-{'': ['*']}
+{'': ['*'],
+ 'prosit_io.raw': ['utils/ThermoRawFileParser/*'],
+ 'prosit_io.spectral_library': ['dlib/*', 'msp/*', 'spectronaut/*']}
 
 install_requires = \
-['h5py>=3.3.0,<4.0.0', 'numpy>=1.21.0,<2.0.0', 'pandas>=1.3.0,<2.0.0']
+['fundamentals @ '
+ 'git+ssh://git@gitlab.lrz.de/compmass/prosit/tools/fundamentals.git@develop',
+ 'h5py>=3.3.0,<4.0.0',
+ 'numpy>=1.21.0,<2.0.0',
+ 'pandas>=1.3.0,<2.0.0',
+ 'pymzml>=2.5.0,<3.0.0']
 
 setup_kwargs = {
-    'name': 'io',
+    'name': 'prosit-io',
     'version': '0.1.0',
     'description': 'Handle IO operations for Oktoberfest',
     'long_description': None,
