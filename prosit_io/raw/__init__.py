@@ -1,4 +1,4 @@
 import logging
-from .msraw import MSRaw
+from .thermo_raw import ThermoRaw
 
 logger = logging.getLogger(__name__)
