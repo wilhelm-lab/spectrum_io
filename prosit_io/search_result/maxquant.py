@@ -21,7 +21,7 @@ class MaxQuant(SearchResults):
                                   'CHARGE',
                                   'FRAGMENTATION',
                                   'MASS ANALYZER',
-                                  'MASS',
+                                  'MASS', # TODO get column with experimental Precursor mass instead
                                   'SCORE',
                                   'REVERSE'],
                          sep = "\t")
@@ -33,6 +33,7 @@ class MaxQuant(SearchResults):
 
         df["REVERSE"].fillna(False,inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
+        df.rename(columns={"CHARGE":"PRECURSOR_CHARGE"}, inplace=True)
         df["MODIFIED_SEQUENCE"] = MaxQuant.transform_maxquant_mod_string(df["MODIFIED_SEQUENCE"])
         return df
 
