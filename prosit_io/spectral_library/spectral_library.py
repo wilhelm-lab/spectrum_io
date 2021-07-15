@@ -12,6 +12,11 @@ class SpectralLibrary:
     out_path: str
 
     def __init__(self, input_dataframe, grpc_dict, output_path):
+        """
+        @param input_dataframe: Dataframe of sequences, charges, and masses of all library peptides
+        @param grpc_dict: GRPC client output dictionary with spectrum, irt, and proteotypicity prediction
+        @param output_path: Path to output file including file name
+        """
         self.spectra_input = input_dataframe
         self.grpc_output = grpc_dict
         self.out_path = output_path
