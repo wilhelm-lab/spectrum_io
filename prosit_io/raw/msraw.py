@@ -3,6 +3,7 @@ import os
 from abc import abstractmethod
 from typing import Union, List, Optional
 import pandas as pd
+from fundamentals import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class MSRaw:
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
                     key = f"{file_name}_{spec.ID}"
-                    data[key] = [spec.ID, file_name, spec.i, spec.mz]
+                    data[key] = [file_name, spec.ID, spec.i, spec.mz]
 
         elif package == 'pyteomics':
             from pyteomics import mzml
@@ -69,9 +70,9 @@ class MSRaw:
                 for spec in data_iter:
                     id = spec['id'].split('scan=')[-1]
                     key = f"{file_name}_{id}"
-                    data[key] = [id, file_name, spec['intensity array'], spec['m/z array']]
+                    data[key] = [file_name, id, spec['intensity array'], spec['m/z array']]
         else:
             assert False, "Choose either 'pymzml' or 'pyteomics'"
 
-        data = pd.DataFrame.from_dict(data, orient='index', columns=['scan_id', 'raw_file', 'i', 'mz'])
+        data = pd.DataFrame.from_dict(data, orient='index', columns=MZML_DATA_COLUMNS)
         return data
