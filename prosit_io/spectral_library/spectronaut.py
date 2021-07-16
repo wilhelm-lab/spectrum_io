@@ -1,4 +1,4 @@
-from spectral_library import SpectralLibrary
+from .spectral_library import SpectralLibrary
 
 
 class Spectronaut(SpectralLibrary):

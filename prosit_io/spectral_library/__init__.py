@@ -1,2 +1,2 @@
 from .spectronaut import Spectronaut
-from .dlib import Dlib
+from .dlib import DLib
