@@ -32,6 +32,17 @@ class DLib(SpectralLibrary):
         path: str,
         min_intensity_threshold: Optional[float] = 0.05,
     ):
+        """
+        Initializer for the DLib class.
+        :param precursor_mz: The precurosr mass to charge ratios.
+        :param precursor_charges: The precurosr charges.
+        :param modified_sequences: The modified sequences in internal format.
+        :param retention_times: The retention times.
+        :param fragmentmz: The mass to charge ratio of fragments
+        :param intensities: The intensities.
+        :param path: The path to the file the dlib is written to.
+        :param min_intensity_threshold: The minimal intensity required when masking fragmentmz and intensities.
+        """
         self.path = path
         self.create_database(self.path)
 
@@ -63,10 +74,23 @@ class DLib(SpectralLibrary):
 
     @staticmethod
     def _calculate_masked_values(
+        self,
         fragmentmz: Union[List[np.ndarray]],
         intensities: Union[List[np.ndarray]],
         intensity_min_threshold: Optional[float] = 0.05
     ):
+        """
+        Internal function called during __init__ that masks, filters, byte encodes, swaps and compresses fragmentmz
+        and intensities.
+        This will produce the data for the following columns in this order:
+            - 'MassArray'
+            - 'IntensityArray',
+            - 'MassEncodedLength',
+            - 'IntensityEncodedLength'
+        :param fragmentmz: The fragmentmz provided in __init__
+        :param intensities: The intensities provided in __init__
+        :return The 4 lists as described above.
+        """
         mz_bytes_list = []
         i_bytes_list = []
         mz_lengths = []
@@ -94,6 +118,11 @@ class DLib(SpectralLibrary):
 
     @staticmethod
     def create_database(path: str):
+        """
+        Creates the database file with prefab tables entries, peptidetoprotein (p2p) and metadata, according to the
+        dlib specification.
+        :param path: Specifies the path of the created database file
+        """
         SQL_CREATE_ENTRIES = """
             CREATE TABLE entries
             (   PrecursorMz double not null,
@@ -138,6 +167,10 @@ class DLib(SpectralLibrary):
         self,
         chunksize: Optional[Union[None, int]]
     ):
+        """
+        Writes the entries ad p2p table to file.
+        :param chunksize: Optional size of chunks to insert at once.
+        """
         self._write_entries(
             index=False,
             if_exists='append',
@@ -150,11 +183,21 @@ class DLib(SpectralLibrary):
             chunksize=chunksize)
 
     def _write_entries(self, *args, **kwargs):
+        """
+        Internal function to write the entries table.
+        :param *args: Forwarded to pandas.to_sql
+        :param **args: Forwarded to pandas.to_sql
+        """
         conn = sqlite3.connect(self.path)
         self.entries.to_sql(name='entries', con=conn, *args, **kwargs)
         conn.commit()
 
     def _write_p2p(self, *args, **kwargs):
+        """
+        Internal function to write the p2p table.
+        :param *args: Forwarded to pandas.to_sql
+        :param **args: Forwarded to pandas.to_sql
+        """
         conn = sqlite3.connect(self.path)
         self.p2p.to_sql(name='peptidetoprotein', con=conn, *args, **kwargs)
         conn.commit()
