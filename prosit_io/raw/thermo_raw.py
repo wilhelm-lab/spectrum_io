@@ -6,7 +6,7 @@ import pathlib
 class ThermoRaw(MSRaw):
 
     @staticmethod
-    def raw_mzml(input_path: str, output_path: Optional[str] = None):
+    def convert_raw_mzml(input_path: str, output_path: Optional[str] = None):
         """
         Converts a ThermoRaw file to mzML
 
@@ -17,6 +17,6 @@ class ThermoRaw(MSRaw):
             output_path = f"{os.path.splitext(input_path)[0]}.mzml"
 
         exec_path = pathlib.Path(__file__).parent.absolute() # get path of parent directory of current file
-        exec_command = f"mono {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe -i {input_path} -b {output_path}"
+        exec_command = f"{exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe -i {input_path} -b {output_path}"
         os.system(exec_command)
         return output_path
