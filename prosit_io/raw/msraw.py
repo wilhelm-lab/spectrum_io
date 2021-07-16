@@ -16,7 +16,7 @@ class MSRaw:
         self.output_path = output_path
 
     @abstractmethod
-    def raw_mzml(self, input_path, output_path):
+    def convert_raw_mzml(self, input_path, output_path):
         """
         Use https://github.com/compomics/ThermoRawFileParser for conversion
         """
