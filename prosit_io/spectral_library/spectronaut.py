@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from .spectral_library import SpectralLibrary
-from fundamentals import internal_without_mods
+from fundamentals.mod_string import internal_without_mods
 
 
 class Spectronaut(SpectralLibrary):

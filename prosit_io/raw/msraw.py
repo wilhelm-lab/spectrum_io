@@ -3,7 +3,7 @@ import os
 from abc import abstractmethod
 from typing import Union, List, Optional
 import pandas as pd
-from fundamentals import MZML_DATA_COLUMNS
+from fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
 

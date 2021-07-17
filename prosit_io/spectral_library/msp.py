@@ -1,6 +1,7 @@
-import re
+import pandas as pd
 
-from spectral_library import SpectralLibrary
+from .spectral_library import SpectralLibrary
+from fundamentals.mod_string import internal_without_mods, internal_to_mod_names
 
 
 class MSP(SpectralLibrary):
@@ -12,19 +13,26 @@ class MSP(SpectralLibrary):
         """
         out = open(self.out_path, "w")
         
-        modification_regexp = re.compile(
-        for spectrum in self.spectra_output.iterrows():
+        for idx, spectrum in self.spectra_output.iterrows():
+            spectrum = spectrum.to_dict()
             out.write(f"Name: {spectrum['StrippedPeptide']}/{spectrum['PrecursorCharge']}\n")
             out.write(f"MW: {spectrum['PrecursorMz']}\n")
-            modifications = MSP.get_modifications(spectrum['ModifiedPeptide'])
             out.write(f"Comment: Parent={spectrum['PrecursorMz']} "
                       f"Collision_energy={spectrum['CollisionEnergy']} "
-                      f"Mods={len(modifications)} "
-                      f"ModString={}/{spectrum['PrecursorCharge']} "
-                      f"iRT={spectrum['iRT']} "
-                      f"proteotypicity={spectrum['proteotypicity']}\n") 
-            for fmz, fintensity, ftype, fcharge, fnumber in zip(spectrum['fragment_mz'], spectrum['intensities'], spectrum['fragment_types'], spectrum['fragment_charges'], spectrum['fragment_numbers']):
-                out.write(f'{fmz}\t{fintensity}\t"{ftype}{fnumber}"' + (f'^{fcharge}' if fcharge != 1 else '') + '/0.0ppm')
+                      f"Mods={spectrum['Modifications'][0]} "
+                      f"ModString={spectrum['Modifications'][1]}/{spectrum['PrecursorCharge']} "
+                      f"iRT={spectrum['iRT'][0]} "
+                      f"proteotypicity={spectrum['proteotypicity'][0]}\n") 
+            out.write(f"Num peaks: {len(spectrum['fragment_types'])}\n")
+            for fmz, fintensity, ftype, fcharge, fnumber in zip(
+                    spectrum['fragment_mz'], 
+                    spectrum['intensities'], 
+                    spectrum['fragment_types'], 
+                    spectrum['fragment_charges'], 
+                    spectrum['fragment_numbers']):
+                fcharge = f'^{fcharge}' if fcharge != 1 else ''
+                out.write(f'{fmz}\t{fintensity}\t'
+                          f'"{ftype}{fnumber}{fcharge}/0.0ppm"\n')
         out.close()            
 
     def prepare_spectrum(self):
@@ -45,14 +53,18 @@ class MSP(SpectralLibrary):
         collision_energies = self.spectra_input['COLLISION_ENERGY']
 
         stripped_peptide = internal_without_mods(modified_sequences, remove_underscores=True)
+        msp_mod_strings = internal_to_mod_names(modified_sequences)
         charges = self.spectra_input['PRECURSOR_CHARGE']
         precursor_masses = self.spectra_input['MASS']
         precursor_mz = (precursor_masses + charges) / charges
 
         inter_df = pd.DataFrame(data={'ModifiedPeptide': modified_sequences,
-                                      'StrippedPeptide': stripped_peptide, 'PrecursorCharge': charges,
-                                      'PrecursorMz': precursor_mz, 'PrecursorMass': precursor_masses,
-                                      'CollisionEnergy': collision_energies})
+                                      'StrippedPeptide': stripped_peptide, 
+                                      'PrecursorCharge': charges,
+                                      'PrecursorMz': precursor_mz, 
+                                      'PrecursorMass': precursor_masses,
+                                      'CollisionEnergy': collision_energies,
+                                      'Modifications': msp_mod_strings})
         inter_df['iRT'], inter_df['proteotypicity'] = irt.tolist(), proteotypicity.tolist()
         inter_df['intensities'], inter_df['fragment_mz'] = intensities.tolist(), fragment_mz.tolist()
         inter_df['fragment_types'] = fragment_types.tolist()
@@ -60,8 +72,4 @@ class MSP(SpectralLibrary):
         inter_df['fragment_charges'] = fragment_charges.tolist()
         
         self.spectra_output = inter_df
-    
-    @staticmethod
-    def get_modifications(modified_sequence):
-        re.
         
