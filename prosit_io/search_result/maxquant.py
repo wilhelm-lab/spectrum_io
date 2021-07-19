@@ -31,6 +31,8 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
+        df.rename(columns = {"MASS": "PRECURSOR_MASS_EXP", "CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+
         df['MASS_ANALYZER'] = 'FTMS'
         df['FRAGMENTATION'] = 'HCD'
         df['RETENTION_TIME'] = [x for x in range(len(df))]
