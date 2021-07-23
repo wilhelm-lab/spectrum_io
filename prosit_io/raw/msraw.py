@@ -27,6 +27,7 @@ class MSRaw:
         source: Union[str, List[str]],
         ext: str = 'mzml',
         package: str = 'pymzml',
+        scanidx: Optional[List] = None,
         *args,
         **kwargs
     ):
@@ -55,12 +56,19 @@ class MSRaw:
         if package == 'pymzml':
             import pymzml
             for file_path in source:
-                logger.info(f"Processing {file_path}")
+                logger.info(f"Reading mzML file: {file_path}")
                 data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
-                for spec in data_iter:
-                    key = f"{file_name}_{spec.ID}"
-                    data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                if scanidx is None:
+                    for spec in data_iter:
+                        key = f"{file_name}_{spec.ID}"
+                        data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                else:
+                    for idx in scanidx:
+                        spec = data_iter[idx]
+                        key = f"{file_name}_{spec.ID}"
+                        data[key] = [file_name, spec.ID, spec.i, spec.mz]
+
 
         elif package == 'pyteomics':
             from pyteomics import mzml

@@ -20,8 +20,7 @@ class MaxQuant(SearchResults):
                                                          'CHARGE',
                                                          'FRAGMENTATION',
                                                          'MASS ANALYZER',
-                                                         'MASS',
-                                                         # TODO get column with experimental Precursor mass instead
+                                                         'MASS', # Experimental Precursor mass # TODO actually get column with experimental Precursor mass instead
                                                          'SCORE',
                                                          'REVERSE',
                                                          'RETENTION TIME'],
@@ -31,12 +30,19 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
-        df.rename(columns = {"MASS": "PRECURSOR_MASS_EXP", "CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+        df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        df['MASS_ANALYZER'] = 'FTMS'
-        df['FRAGMENTATION'] = 'HCD'
+        if "MASS_ANALYZER" not in df.columns:
+            df['MASS_ANALYZER'] = 'FTMS'
+        if "FRAGMENTATION" not in df.columns:
+            df['FRAGMENTATION'] = 'HCD'
+
         df['RETENTION_TIME'] = [x for x in range(len(df))]
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
+        df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
+
+        
+
         return df
