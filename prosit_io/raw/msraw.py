@@ -26,7 +26,7 @@ class MSRaw:
     def read_mzml(
         source: Union[str, List[str]],
         ext: str = 'mzml',
-        package: str = 'pymzml',
+        package: str = 'pyteomics',
         scanidx: Optional[List] = None,
         *args,
         **kwargs
@@ -83,4 +83,5 @@ class MSRaw:
             assert False, "Choose either 'pymzml' or 'pyteomics'"
 
         data = pd.DataFrame.from_dict(data, orient='index', columns=MZML_DATA_COLUMNS)
+        data['SCAN_NUMBER'] = pd.to_numeric(data['SCAN_NUMBER'])
         return data

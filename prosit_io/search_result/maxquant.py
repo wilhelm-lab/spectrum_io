@@ -42,7 +42,7 @@ class MaxQuant(SearchResults):
         df["REVERSE"].replace("+", True, inplace=True)
         df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-
-        
-
+        #Filter sequences remove sequences with length bigger than 30
+        df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
+        df = df[df['PEPTIDE_LENGTH']<=30]
         return df
