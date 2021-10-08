@@ -49,8 +49,13 @@ class MaxQuant(SearchResults):
         df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE), axis=1)
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-        #Filter sequences remove sequences with length bigger than 30
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
-        df = df[df['PEPTIDE_LENGTH']<=30]
+        
+        # TODO: move this filter somewhere else
+        #Filter sequences remove sequences with length bigger than 30
+        df = df[(df['PEPTIDE_LENGTH']<=30) & 
+                (~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)')) & 
+                (~df['SEQUENCE'].str.contains('U')) &
+                (df['PRECURSOR_CHARGE']<=6)]
         return df
 

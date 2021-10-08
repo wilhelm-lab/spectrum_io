@@ -73,6 +73,7 @@ class MSRaw:
         elif package == 'pyteomics':
             from pyteomics import mzml
             for file_path in source:
+                logger.info(f"Reading mzML file: {file_path}")
                 data_iter = mzml.read(source=file_path, *args, **kwargs)
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
