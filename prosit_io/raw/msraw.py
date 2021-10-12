@@ -26,7 +26,7 @@ class MSRaw:
     def read_mzml(
         source: Union[str, List[str]],
         ext: str = 'mzml',
-        package: str = 'pyteomics',
+        package: str = 'pymzml',
         scanidx: Optional[List] = None,
         *args,
         **kwargs
