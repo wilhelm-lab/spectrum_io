@@ -68,7 +68,7 @@ def write_file(
     index = 0
     for data_set,dataset_name in zip(data_sets,dataset_names):
         if isinstance(data_set, pd.DataFrame):
-            write_dataset(data_set,path,dataset_name)
+            write_dataset(data_set, path, dataset_name)
         else:
             write_dataset(data_set, path, dataset_name, mode='a', column_names= column_names[index])
             index += 1
@@ -87,7 +87,7 @@ def write_dataset(
     """
     Writes or appends dataset to an hdf5 file.
     :params
-        data: The data to store. Can be a pandas DataFrame or a scipy Sparasematrix.
+        data: The data to store. Can be a pandas DataFrame or a scipy Sparsematrix.
         path: The path to store the file to.
         dataset_name: The key in the hdf5 file under which to store the data.
         mode: The method when writing the data. Use 'a' to append to an existing file or 'w' to overwrite.
@@ -96,7 +96,7 @@ def write_dataset(
             a sparse matrix. If providing False, no compression is applied; if providing True, defaults to 'zlib'
             in case of providing a pandas DataFrame and 'gzip' if providing a sparse matrix.
             standard compression depending on the data type given. Default: True.
-        column_names: Optional, addtional column column_names. Ignored if providing a pandas DataFrame. Default: None.
+        column_names: Optional, additional column column_names. Ignored if providing a pandas DataFrame. Default: None.
         index: Optional, additional index. Ignored if providing a pandas DataFrame. Default: None.
     """
     if isinstance(compression, bool):

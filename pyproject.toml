@@ -12,6 +12,7 @@ h5py = "^3.1.0"
 fundamentals = {git = "git@gitlab.lrz.de:compmass/prosit/tools/fundamentals.git", branch="hackathon_cleanup"}
 #fundamentals = {path = "/home/matthewt/git/fundamentals"}
 pymzml = "^2.5.0"
+tables = "^3.6.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
