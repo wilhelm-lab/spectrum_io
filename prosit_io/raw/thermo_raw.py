@@ -1,11 +1,14 @@
-from typing import Optional
-from .msraw import MSRaw
 import os
 import pathlib
 from sys import platform
-
+from typing import Optional
 import logging
+import subprocess
+
+from .msraw import MSRaw
+
 logger = logging.getLogger(__name__)
+
 
 class ThermoRaw(MSRaw):
 
@@ -35,9 +38,9 @@ class ThermoRaw(MSRaw):
             mono = ""
         
         exec_path = pathlib.Path(__file__).parent.absolute() # get path of parent directory of current file
-        exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe {gzip} -i {input_path} -b {output_path}.tmp"
+        exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe {gzip} --msLevel 2 -i {input_path} -b {output_path}.tmp"
         logger.info(f"Converting thermo rawfile to mzml with the command: '{exec_command}'")
-        os.system(exec_command)
+        subprocess.run(exec_command, shell=True, check=True)
         
         # only rename the file now, so that we don't have a partially converted file if something fails
         os.rename(f"{output_path}.tmp", output_path)

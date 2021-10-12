@@ -1,8 +1,13 @@
 from abc import abstractmethod
 from typing import Optional
 import os
+import logging
+
 import pandas as pd
+
 from prosit_io.file import csv
+
+logger = logging.getLogger(__name__)
 
 
 class SearchResults:

@@ -52,7 +52,7 @@ class MSP(SpectralLibrary):
         modified_sequences = self.spectra_input['MODIFIED_SEQUENCE']
         collision_energies = self.spectra_input['COLLISION_ENERGY']
 
-        stripped_peptide = internal_without_mods(modified_sequences, remove_underscores=True)
+        stripped_peptide = internal_without_mods(modified_sequences)
         msp_mod_strings = internal_to_mod_names(modified_sequences)
         charges = self.spectra_input['PRECURSOR_CHARGE']
         precursor_masses = self.spectra_input['MASS']
