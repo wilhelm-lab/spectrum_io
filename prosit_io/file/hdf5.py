@@ -26,7 +26,7 @@ def read_file(path: str, key: str) -> pd.DataFrame:
     try:
         if key.startswith("sparse"):
             with h5py.File(path, 'r') as f:
-                print(f.keys())
+                logger.info(f"Reading sparse matrix from hdf5 file. Available keys: {f.keys()}")
                 values = f[f"{key}/values"]
                 i = f[f"{key}/i"]
                 j = f[f"{key}/j"]
@@ -34,7 +34,7 @@ def read_file(path: str, key: str) -> pd.DataFrame:
                 sparse_data = coo_matrix((values, (i, j)), shape)
                 df = pd.DataFrame.sparse.from_spmatrix(sparse_data)
                 if f"{key}/column_names" in f.keys():
-                    df.columns = f[f"{key}/column_names"]
+                    df.columns = f[f"{key}/column_names"].asstr()
                 if f"{key}/index" in f.keys():
                     df.index = f[f"{key}/index"]
         else:
