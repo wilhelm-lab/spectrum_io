@@ -68,6 +68,7 @@ class MSRaw:
                         spec = data_iter[idx]
                         key = f"{file_name}_{spec.ID}"
                         data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                data_iter.close()
 
 
         elif package == 'pyteomics':
@@ -80,6 +81,7 @@ class MSRaw:
                     id = spec['id'].split('scan=')[-1]
                     key = f"{file_name}_{id}"
                     data[key] = [file_name, id, spec['intensity array'], spec['m/z array']]
+                data_iter.close()
         else:
             assert False, "Choose either 'pymzml' or 'pyteomics'"
 
