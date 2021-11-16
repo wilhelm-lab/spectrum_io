@@ -13,7 +13,7 @@ class MaxQuant(SearchResults):
         return mass
 
     @staticmethod
-    def read_result(path: str):
+    def read_result(path: str, tmt_labeled):
         """
         Function to read a msms txt and perform some basic formatting
         :prarm path: Path to msms.txt to read
@@ -46,7 +46,11 @@ class MaxQuant(SearchResults):
         #df['RETENTION_TIME'] = [x for x in range(len(df))]
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
-        df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
+        if tmt_labeled:
+            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
+                                                                                                           '^_':'_[UNIMOD:737]', 'K':'K[UNIMOD:737]'})
+        else:
+            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE), axis=1)
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))

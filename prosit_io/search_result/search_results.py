@@ -25,7 +25,7 @@ class SearchResults:
     def read_result(self):
         raise NotImplementedError
 
-    def generate_internal(self, out_path: Optional[str] = None):
+    def generate_internal(self, out_path: Optional[str] = None, tmt_labeled: Optional[bool] = False):
         if out_path is None:
             out_path = f"{os.path.splitext(self.path)[0]}.prosit"
         
@@ -33,7 +33,7 @@ class SearchResults:
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
             return out_path
         
-        df = self.read_result(self.path)          
+        df = self.read_result(self.path, tmt_labeled)
         csv.write_file(df, out_path)
           
         return out_path
