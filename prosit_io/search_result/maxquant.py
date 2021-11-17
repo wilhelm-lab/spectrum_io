@@ -26,6 +26,7 @@ class MaxQuant(SearchResults):
                                                          'CHARGE',
                                                          'FRAGMENTATION',
                                                          'MASS ANALYZER',
+                                                         'SCAN EVENT NUMBER',
                                                          'MASS', # Experimental Precursor mass # TODO actually get column with experimental Precursor mass instead
                                                          'SCORE',
                                                          'REVERSE',
