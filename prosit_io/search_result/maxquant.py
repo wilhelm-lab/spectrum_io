@@ -1,8 +1,13 @@
 import pandas as pd
 import numpy as np
+import logging
+
 from .search_results import SearchResults
 from fundamentals.mod_string import maxquant_to_internal, internal_without_mods
 import fundamentals.constants as C
+
+logger = logging.getLogger(__name__)
+
 
 class MaxQuant(SearchResults):
 
@@ -19,6 +24,7 @@ class MaxQuant(SearchResults):
         :prarm path: Path to msms.txt to read
         :return: DataFrame
         """
+        logger.info("Reading msms.txt file")
         df = pd.read_csv(path,
                          usecols=lambda x: x.upper() in ['RAW FILE',
                                                          'SCAN NUMBER',
@@ -32,7 +38,8 @@ class MaxQuant(SearchResults):
                                                          'REVERSE',
                                                          'RETENTION TIME'],
                          sep="\t")
-
+        logger.info("Finished reading msms.txt file")
+        
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")

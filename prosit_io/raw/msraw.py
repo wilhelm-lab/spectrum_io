@@ -1,11 +1,15 @@
 import logging
 import os
+import warnings
 from abc import abstractmethod
 from typing import Union, List, Optional
+
 import pandas as pd
+
 from fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
+
 
 class MSRaw:
     path: str
@@ -54,21 +58,24 @@ class MSRaw:
             source = file_list
         data = {}
         if package == 'pymzml':
-            import pymzml
-            for file_path in source:
-                logger.info(f"Reading mzML file: {file_path}")
-                data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
-                file_name = os.path.splitext(os.path.basename(file_path))[0]
-                if scanidx is None:
-                    for spec in data_iter:
-                        key = f"{file_name}_{spec.ID}"
-                        data[key] = [file_name, spec.ID, spec.i, spec.mz]
-                else:
-                    for idx in scanidx:
-                        spec = data_iter[idx]
-                        key = f"{file_name}_{spec.ID}"
-                        data[key] = [file_name, spec.ID, spec.i, spec.mz]
-                data_iter.close()
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=ImportWarning)
+                import pymzml
+                
+                for file_path in source:
+                    logger.info(f"Reading mzML file: {file_path}")
+                    data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
+                    file_name = os.path.splitext(os.path.basename(file_path))[0]
+                    if scanidx is None:
+                        for spec in data_iter:
+                            key = f"{file_name}_{spec.ID}"
+                            data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                    else:
+                        for idx in scanidx:
+                            spec = data_iter[idx]
+                            key = f"{file_name}_{spec.ID}"
+                            data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                    data_iter.close()
 
 
         elif package == 'pyteomics':
