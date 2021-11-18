@@ -27,7 +27,7 @@ class MaxQuant(SearchResults):
                                                          'FRAGMENTATION',
                                                          'MASS ANALYZER',
                                                          'SCAN EVENT NUMBER',
-                                                         'MASS', # Experimental Precursor mass # TODO actually get column with experimental Precursor mass instead
+                                                         'MASS', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                                                          'SCORE',
                                                          'REVERSE',
                                                          'RETENTION TIME'],
@@ -44,7 +44,6 @@ class MaxQuant(SearchResults):
         if "FRAGMENTATION" not in df.columns:
             df['FRAGMENTATION'] = 'HCD'
 
-        #df['RETENTION_TIME'] = [x for x in range(len(df))]
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         if tmt_labeled:
@@ -56,11 +55,5 @@ class MaxQuant(SearchResults):
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
         
-        # TODO: move this filter somewhere else
-        #Filter sequences remove sequences with length bigger than 30
-        df = df[(df['PEPTIDE_LENGTH']<=30) & 
-                (~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)')) & 
-                (~df['SEQUENCE'].str.contains('U')) &
-                (df['PRECURSOR_CHARGE']<=6)]
         return df
 

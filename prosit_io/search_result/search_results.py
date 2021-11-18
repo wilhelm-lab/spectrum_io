@@ -38,5 +38,5 @@ class SearchResults:
           
         return out_path
 
-    def read_internal(path):
+    def read_internal(path: str):
         return csv.read_file(path)
