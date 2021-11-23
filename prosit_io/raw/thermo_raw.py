@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ThermoRaw(MSRaw):
 
     @staticmethod
-    def convert_raw_mzml(input_path: str, output_path: Optional[str] = None, gzip = False):
+    def convert_raw_mzml(input_path: str, output_path: Optional[str] = None, gzip = False, msLevel = 2):
         """
         Converts a ThermoRaw file to mzML
 
@@ -38,7 +38,7 @@ class ThermoRaw(MSRaw):
             mono = ""
         
         exec_path = pathlib.Path(__file__).parent.absolute() # get path of parent directory of current file
-        exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe {gzip} --msLevel 2 -i {input_path} -b {output_path}.tmp"
+        exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe {gzip} --msLevel {msLevel} -i {input_path} -b {output_path}.tmp"
         logger.info(f"Converting thermo rawfile to mzml with the command: '{exec_command}'")
         subprocess.run(exec_command, shell=True, check=True)
         
@@ -46,3 +46,10 @@ class ThermoRaw(MSRaw):
         os.rename(f"{output_path}.tmp", output_path)
         
         return output_path
+
+if __name__ == "__main__":
+    from sys import argv
+    if len(argv) == 2:
+        converter = ThermoRaw().convert_raw_mzml(argv[1], msLevel = "1,2")
+    else:
+        print("Please specify a rawfile")
