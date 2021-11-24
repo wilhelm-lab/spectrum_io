@@ -33,6 +33,7 @@ class MaxQuant(SearchResults):
                                                          'FRAGMENTATION',
                                                          'MASS ANALYZER',
                                                          'SCAN EVENT NUMBER',
+                                                         'LABELING STATE',
                                                          'MASS', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                                                          'SCORE',
                                                          'REVERSE',
@@ -53,12 +54,23 @@ class MaxQuant(SearchResults):
 
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
+        logger.info("Converting MaxQuant peptide sequence to internal format")
         if tmt_labeled:
+            logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:737]', 'K':'K[UNIMOD:737]'})
+                                                                                                           '^_':'_[UNIMOD:737]', 
+                                                                                                           'K': 'K[UNIMOD:737]'})
+            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE), axis=1)
+        elif "LABELING_STATE" in df.columns:
+            logger.info("Adding SILAC fixed modifications")
+            df.loc[df['LABELING_STATE'] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] == 1]["MODIFIED_SEQUENCE"].to_numpy(), 
+                                                                                          fixed_mods={'C': 'C[UNIMOD:4]',
+                                                                                                      'K': 'K[UNIMOD:259]', 
+                                                                                                      'R': 'R[UNIMOD:267]'})
+            df.loc[df['LABELING_STATE'] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] != 1]["MODIFIED_SEQUENCE"].to_numpy())
+            df.drop(columns=['LABELING_STATE'], inplace=True)
         else:
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
-        df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE), axis=1)
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
         
