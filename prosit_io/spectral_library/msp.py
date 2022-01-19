@@ -11,7 +11,7 @@ class MSP(SpectralLibrary):
         Writing method; writes intermediate dataframe as msp format spectra
         :return: None
         """
-        out = open(self.out_path, "w")
+        out = open(self.out_path, "a")
         
         for idx, spectrum in self.spectra_output.iterrows():
             spectrum = spectrum.to_dict()
@@ -30,8 +30,9 @@ class MSP(SpectralLibrary):
                     spectrum['fragment_types'], 
                     spectrum['fragment_charges'], 
                     spectrum['fragment_numbers']):
-                fcharge = f'^{fcharge}' if fcharge != 1 else ''
-                out.write(f'{fmz}\t{fintensity}\t'
+                if ftype != 'N':
+                    fcharge = f'^{fcharge}' if fcharge != 1 else ''
+                    out.write(f'{fmz}\t{fintensity}\t'
                           f'"{ftype}{fnumber}{fcharge}/0.0ppm"\n')
         out.close()            
 

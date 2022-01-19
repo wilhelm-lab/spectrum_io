@@ -73,6 +73,13 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
+        df = df[(df['PEPTIDE_LENGTH'] <= 30)]
+        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)'))]
+        df = df[
+            (~df['MODIFIED_SEQUENCE'].str.contains('\(Acetyl \(Protein N-term\)\)'))]
+        df = df[(~df['SEQUENCE'].str.contains('U'))]
+        df = df[df['PRECURSOR_CHARGE'] <= 6]
+        df = df[df['PEPTIDE_LENGTH'] >= 7]
         
         return df
 

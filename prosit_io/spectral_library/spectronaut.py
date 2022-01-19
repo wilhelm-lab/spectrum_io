@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from .spectral_library import SpectralLibrary
-from fundamentals.mod_string import internal_without_mods
+from fundamentals.mod_string import internal_without_mods, internal_to_spectronaut
 
 
 class Spectronaut(SpectralLibrary):
@@ -17,7 +17,7 @@ class Spectronaut(SpectralLibrary):
         out.truncate()
         out.close()
 
-        n = 10000  # split df into chunks of size n
+        n = 7000  # split df into chunks of size n
         initial = True
         for group, segment in self.spectra_output.groupby(np.arange(len(self.spectra_output)) // n):
             segment = segment.explode(['intensities', 'fragment_mz', 'fragment_types', 'fragment_numbers', 'fragment_charges'])
@@ -40,11 +40,11 @@ class Spectronaut(SpectralLibrary):
         irt = self.grpc_output[list(self.grpc_output)[1]]
         proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
 
-        modified_sequences_spec = self.spectra_input['MODIFIED_SEQUENCE_SPEC']
+        modified_sequences_spec = internal_to_spectronaut(self.spectra_input['MODIFIED_SEQUENCE'].apply(lambda x: '_' + x + '_'))
         modified_sequences = self.spectra_input['MODIFIED_SEQUENCE']
 
         labelled_sequences = internal_without_mods(modified_sequences)
-        stripped_peptide = internal_without_mods(modified_sequences, remove_underscores=True)
+        stripped_peptide = internal_without_mods(modified_sequences)
         charges = self.spectra_input['PRECURSOR_CHARGE']
         precursor_masses = self.spectra_input['MASS']
         precursor_mz = (precursor_masses + charges) / charges

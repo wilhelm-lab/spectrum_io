@@ -30,7 +30,7 @@ class MSRaw:
     def read_mzml(
         source: Union[str, List[str]],
         ext: str = 'mzml',
-        package: str = 'pymzml',
+        package: str = 'pyteomics',
         scanidx: Optional[List] = None,
         *args,
         **kwargs
@@ -57,6 +57,7 @@ class MSRaw:
                 file_list = [source]
             source = file_list
         data = {}
+        print(package)
         if package == 'pymzml':
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category=ImportWarning)
