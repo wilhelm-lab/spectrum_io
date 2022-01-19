@@ -38,8 +38,9 @@ class Spectronaut(SpectralLibrary):
         fragment_numbers = annotation['number']
         fragment_charges = annotation['charge']
         irt = self.grpc_output[list(self.grpc_output)[1]]
+        irt = irt.flatten()
         proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-
+        proteotypicity = proteotypicity.flatten()
         modified_sequences_spec = internal_to_spectronaut(self.spectra_input['MODIFIED_SEQUENCE'].apply(lambda x: '_' + x + '_'))
         modified_sequences = self.spectra_input['MODIFIED_SEQUENCE']
 

@@ -21,8 +21,8 @@ class MSP(SpectralLibrary):
                       f"Collision_energy={spectrum['CollisionEnergy']} "
                       f"Mods={spectrum['Modifications'][0]} "
                       f"ModString={spectrum['Modifications'][1]}/{spectrum['PrecursorCharge']} "
-                      f"iRT={spectrum['iRT'][0]} "
-                      f"proteotypicity={spectrum['proteotypicity'][0]}\n") 
+                      f"iRT={spectrum['iRT']} "
+                      f"proteotypicity={spectrum['proteotypicity']}\n")
             out.write(f"Num peaks: {len(spectrum['fragment_types'])}\n")
             for fmz, fintensity, ftype, fcharge, fnumber in zip(
                     spectrum['fragment_mz'], 
@@ -48,8 +48,9 @@ class MSP(SpectralLibrary):
         fragment_numbers = annotation['number']
         fragment_charges = annotation['charge']
         irt = self.grpc_output[list(self.grpc_output)[1]]
+        irt = irt.flatten()
         proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-        
+        proteotypicity = proteotypicity.flatten()
         modified_sequences = self.spectra_input['MODIFIED_SEQUENCE']
         collision_energies = self.spectra_input['COLLISION_ENERGY']
 
