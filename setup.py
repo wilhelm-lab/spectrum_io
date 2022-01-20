@@ -19,7 +19,8 @@ install_requires = \
  'h5py>=3.3.0,<4.0.0',
  'numpy>=1.21.0,<2.0.0',
  'pandas>=1.3.0,<2.0.0',
- 'pymzml>=2.5.0,<3.0.0']
+ 'pymzml>=2.5.0,<3.0.0',
+ 'pyteomics>=4.3.3']
 
 setup_kwargs = {
     'name': 'prosit-io',
