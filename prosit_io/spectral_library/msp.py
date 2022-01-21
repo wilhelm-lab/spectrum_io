@@ -23,7 +23,7 @@ class MSP(SpectralLibrary):
                       f"ModString={spectrum['Modifications'][1]}/{spectrum['PrecursorCharge']} "
                       f"iRT={spectrum['iRT']} "
                       f"proteotypicity={spectrum['proteotypicity']}\n")
-            out.write(f"Num peaks: {len(spectrum['fragment_types'])}\n")
+            out.write(f"Num peaks: {sum(elem!='N' for elem in spectrum['fragment_types'])}\n")
             for fmz, fintensity, ftype, fcharge, fnumber in zip(
                     spectrum['fragment_mz'], 
                     spectrum['intensities'], 
