@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 import numpy as np
 from .spectral_library import SpectralLibrary
@@ -13,12 +15,9 @@ class Spectronaut(SpectralLibrary):
         peaks before storing it in self.out_path.
         @return: None
         """
-        out = open(self.out_path, "w")
-        out.truncate()
-        out.close()
 
         n = 7000  # split df into chunks of size n
-        initial = True
+        initial = not os.path.isfile(self.out_path)
         for group, segment in self.spectra_output.groupby(np.arange(len(self.spectra_output)) // n):
             segment = segment.explode(['intensities', 'fragment_mz', 'fragment_types', 'fragment_numbers', 'fragment_charges'])
             segment = segment[segment['intensities'] > 0]  # set to >= if 0 should be kept
@@ -26,8 +25,7 @@ class Spectronaut(SpectralLibrary):
             segment['FragmentLossType'] = 'noloss'
             segment = segment[['RelativeIntensity','FragmentMz','ModifiedPeptide','LabeledPeptide','StrippedPeptide','PrecursorCharge','PrecursorMz','iRT','proteotypicity','FragmentNumber','FragmentType','FragmentCharge','FragmentLossType']]
             segment.to_csv(self.out_path, mode='a', header=initial,index=False)
-            if initial:
-                initial = False
+
 
     def prepare_spectrum(self):
         """
