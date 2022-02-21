@@ -11,7 +11,7 @@ class MSP(SpectralLibrary):
         Writing method; writes intermediate dataframe as msp format spectra
         :return: None
         """
-        out = open(self.out_path, "w")
+        out = open(self.out_path, "a")
         
         for idx, spectrum in self.spectra_output.iterrows():
             spectrum = spectrum.to_dict()
@@ -21,17 +21,18 @@ class MSP(SpectralLibrary):
                       f"Collision_energy={spectrum['CollisionEnergy']} "
                       f"Mods={spectrum['Modifications'][0]} "
                       f"ModString={spectrum['Modifications'][1]}/{spectrum['PrecursorCharge']} "
-                      f"iRT={spectrum['iRT'][0]} "
-                      f"proteotypicity={spectrum['proteotypicity'][0]}\n") 
-            out.write(f"Num peaks: {len(spectrum['fragment_types'])}\n")
+                      f"iRT={spectrum['iRT']} "
+                      f"proteotypicity={spectrum['proteotypicity']}\n")
+            out.write(f"Num peaks: {sum(elem!='N' for elem in spectrum['fragment_types'])}\n")
             for fmz, fintensity, ftype, fcharge, fnumber in zip(
                     spectrum['fragment_mz'], 
                     spectrum['intensities'], 
                     spectrum['fragment_types'], 
                     spectrum['fragment_charges'], 
                     spectrum['fragment_numbers']):
-                fcharge = f'^{fcharge}' if fcharge != 1 else ''
-                out.write(f'{fmz}\t{fintensity}\t'
+                if ftype != 'N':
+                    fcharge = f'^{fcharge}' if fcharge != 1 else ''
+                    out.write(f'{fmz}\t{fintensity}\t'
                           f'"{ftype}{fnumber}{fcharge}/0.0ppm"\n')
         out.close()            
 
@@ -47,8 +48,9 @@ class MSP(SpectralLibrary):
         fragment_numbers = annotation['number']
         fragment_charges = annotation['charge']
         irt = self.grpc_output[list(self.grpc_output)[1]]
+        irt = irt.flatten()
         proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-        
+        proteotypicity = proteotypicity.flatten()
         modified_sequences = self.spectra_input['MODIFIED_SEQUENCE']
         collision_energies = self.spectra_input['COLLISION_ENERGY']
 
