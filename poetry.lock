@@ -48,7 +48,7 @@ statsmodels = "^0.12.2"
 type = "git"
 url = "git@gitlab.lrz.de:compmass/prosit/tools/fundamentals.git"
 reference = "develop"
-resolved_reference = "1b25bc5804aef2f80e7d92040220f5e81dc76a76"
+resolved_reference = "483a3ce878d932cf9dc9d4128a4d0cb8578c51ec"
 
 [[package]]
 name = "h5py"
