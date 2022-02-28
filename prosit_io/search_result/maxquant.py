@@ -68,8 +68,8 @@ class MaxQuant(SearchResults):
         if tmt_labeled == "tmt":
             logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:737]', 
-                                                                                                           'K': 'K[UNIMOD:737]'})
+                                                                                                           '^_(tm)':'_[UNIMOD:737]',
+                                                                                                           'K(tm)': 'K[UNIMOD:737]'})
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
         elif tmt_labeled == "tmtpro":
             logger.info("Adding TMTpro fixed modifications")
@@ -110,6 +110,8 @@ class MaxQuant(SearchResults):
         df = df[(~df['SEQUENCE'].str.contains('U'))]
         df = df[df['PRECURSOR_CHARGE'] <= 6]
         df = df[df['PEPTIDE_LENGTH'] >= 7]
+        df = df[df['SCORE'] > 70]
+        df = df[(df['MODIFIED_SEQUENCE'].str.startswith('[UNIMOD:737]'))]
         logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
 
         return df
