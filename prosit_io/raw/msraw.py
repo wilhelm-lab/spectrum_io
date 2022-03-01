@@ -73,7 +73,7 @@ class MSRaw:
                 for spec in data_iter:
                     id = spec['id'].split('scan=')[-1]
                     key = f"{file_name}_{id}"
-                    data[key] = [file_name, id, spec['intensity array'], spec['m/z array']]
+                    data[key] = [file_name, id, spec['intensity array'], spec['m/z array'], int(spec['precursorList']['precursor'][0]['activation']['collision energy'])]
                 data_iter.close()
         else:
             assert False, "Choose either 'pymzml' or 'pyteomics'"

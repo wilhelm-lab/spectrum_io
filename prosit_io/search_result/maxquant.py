@@ -47,7 +47,8 @@ class MaxQuant(SearchResults):
                                                          'MASS', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                                                          'SCORE',
                                                          'REVERSE',
-                                                         'RETENTION TIME'],
+                                                         'RETENTION TIME',
+                                                         'COLLISION ENERGY'],
                          sep="\t")
         logger.info("Finished reading msms.txt file")
         
@@ -56,6 +57,7 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.replace(" ", "_")
 
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+        df.rename(columns = {"COLIISION_ENERGY": "ORIGINAL_COLLISION_ENERGY"}, inplace=True)
 
         if "MASS_ANALYZER" not in df.columns:
             df['MASS_ANALYZER'] = 'FTMS'

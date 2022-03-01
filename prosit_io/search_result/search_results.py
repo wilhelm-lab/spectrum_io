@@ -29,9 +29,9 @@ class SearchResults:
         if out_path is None:
             out_path = f"{os.path.splitext(self.path)[0]}.prosit"
         
-        if os.path.isfile(out_path):
-            logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
-            return out_path
+        # if os.path.isfile(out_path):
+        #     logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
+        #     return out_path
         
         df = self.read_result(self.path, tmt_labeled)
         csv.write_file(df, out_path)
