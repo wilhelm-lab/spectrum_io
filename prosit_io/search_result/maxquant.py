@@ -3,7 +3,7 @@ import numpy as np
 import logging
 
 from .search_results import SearchResults
-from fundamentals.mod_string import maxquant_to_internal, internal_without_mods
+from fundamentals.mod_string import maxquant_to_internal, internal_without_mods, parse_modstrings
 import fundamentals.constants as C
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class MaxQuant(SearchResults):
         return mass
 
     @staticmethod
-    def read_result(path: str, tmt_labeled):
+    def read_result(path: str, tmt_labeled=''):
         """
         Function to read a msms txt and perform some basic formatting
         :prarm path: Path to msms.txt to read
@@ -48,7 +48,8 @@ class MaxQuant(SearchResults):
                                                          'SCORE',
                                                          'REVERSE',
                                                          'RETENTION TIME',
-                                                         'COLLISION ENERGY'],
+                                                         'COLLISION ENERGY',
+                                                         'LOCALIZATION PROB'],
                          sep="\t")
         logger.info("Finished reading msms.txt file")
         
@@ -100,20 +101,24 @@ class MaxQuant(SearchResults):
             df.loc[df['LABELING_STATE'] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] != 1]["MODIFIED_SEQUENCE"].to_numpy())
             df.drop(columns=['LABELING_STATE'], inplace=True)
         else:
+            df["MODIFIED_SEQUENCE_INT"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), {}, False)
+            enum_char = enumerate(
+                parse_modstrings(df["MODIFIED_SEQUENCE_INT"].to_numpy(), alphabet=C.PTMs_ALPHABET, translate=True, filter=False))
+            sequences = []
+            for _, seq in enum_char:
+                sequences.append(seq)
+            df["MODIFIED_SEQUENCE_INT"] = sequences
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
 
         logger.info(f"No of sequences before Filtering is {len(df['PEPTIDE_LENGTH'])}")
         df = df[(df['PEPTIDE_LENGTH'] <= 30)]
-        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)'))]
-        df = df[
-            (~df['MODIFIED_SEQUENCE'].str.contains('\(Acetyl \(Protein N-term\)\)'))]
+
         df = df[(~df['SEQUENCE'].str.contains('U'))]
         df = df[df['PRECURSOR_CHARGE'] <= 6]
         df = df[df['PEPTIDE_LENGTH'] >= 7]
         df = df[df['SCORE'] > 70]
-        df = df[(df['MODIFIED_SEQUENCE'].str.startswith('[UNIMOD:737]'))]
         logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
 
         return df
