@@ -67,6 +67,8 @@ class MaxQuant(SearchResults):
 
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
+        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
+
         logger.info("Converting MaxQuant peptide sequence to internal format")
         if tmt_labeled == "tmt":
             logger.info("Adding TMT fixed modifications")
