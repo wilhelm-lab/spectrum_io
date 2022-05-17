@@ -34,10 +34,11 @@ class MaxQuant(SearchResults):
         :prarm path: Path to msms.txt to read
         :return: DataFrame
         """
-        logger.info("Reading msms.txt file")
+        logger.info("Reading msms.txt file " + path)
         df = pd.read_csv(path,
                          usecols=lambda x: x.upper() in ['RAW FILE',
                                                          'SCAN NUMBER',
+                                                         'ALL MODIFIED SEQUENCES',
                                                          'MODIFIED SEQUENCE',
                                                          'CHARGE',
                                                          'FRAGMENTATION',
@@ -59,7 +60,8 @@ class MaxQuant(SearchResults):
 
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
         df.rename(columns = {"COLIISION_ENERGY": "ORIGINAL_COLLISION_ENERGY"}, inplace=True)
-
+        #df['MODIFIED_SEQUENCE'] = df['ALL_MODIFIED_SEQUENCES'].apply(lambda x: x.split(';'))
+        #df = df.explode('MODIFIED_SEQUENCE')
         if "MASS_ANALYZER" not in df.columns:
             df['MASS_ANALYZER'] = 'FTMS'
         if "FRAGMENTATION" not in df.columns:
@@ -67,7 +69,7 @@ class MaxQuant(SearchResults):
 
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
-        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
+        #df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
 
         logger.info("Converting MaxQuant peptide sequence to internal format")
         if tmt_labeled == "tmt":
@@ -104,23 +106,23 @@ class MaxQuant(SearchResults):
             df.drop(columns=['LABELING_STATE'], inplace=True)
         else:
             df["MODIFIED_SEQUENCE_INT"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), {}, False)
-            enum_char = enumerate(
-                parse_modstrings(df["MODIFIED_SEQUENCE_INT"].to_numpy(), alphabet=C.PTMs_ALPHABET, translate=True, filter=False))
-            sequences = []
-            for _, seq in enum_char:
-                sequences.append(seq)
-            df["MODIFIED_SEQUENCE_INT"] = sequences
+            #enum_char = enumerate(
+             #   parse_modstrings(df["MODIFIED_SEQUENCE_INT"].to_numpy(), alphabet=C.ALPHABET, translate=True, filter=False))
+            #sequences = []
+            #for _, seq in enum_char:
+             #   sequences.append(seq)
+            #df["MODIFIED_SEQUENCE_INT"] = sequences
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
 
         logger.info(f"No of sequences before Filtering is {len(df['PEPTIDE_LENGTH'])}")
-        df = df[(df['PEPTIDE_LENGTH'] <= 30)]
+        #df = df[(df['PEPTIDE_LENGTH'] <= 30)]
 
-        df = df[(~df['SEQUENCE'].str.contains('U'))]
-        df = df[df['PRECURSOR_CHARGE'] <= 6]
-        df = df[df['PEPTIDE_LENGTH'] >= 7]
-        df = df[df['SCORE'] > 70]
+        #df = df[(~df['SEQUENCE'].str.contains('U'))]
+        #df = df[df['PRECURSOR_CHARGE'] <= 6]
+        #df = df[df['PEPTIDE_LENGTH'] >= 7]
+        #df = df[df['SCORE'] > 70]
         logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
 
         return df

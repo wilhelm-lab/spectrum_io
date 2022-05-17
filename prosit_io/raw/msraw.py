@@ -66,7 +66,8 @@ class MSRaw:
                     MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
         elif package == 'pyteomics':
             from pyteomics import mzml
-            for file_path in source:
+            print(source)
+            for file_path in source[:1]:
                 logger.info(f"Reading mzML file: {file_path}")
                 data_iter = mzml.read(source=file_path, *args, **kwargs)
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
