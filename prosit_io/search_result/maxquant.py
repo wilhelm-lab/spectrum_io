@@ -38,18 +38,16 @@ class MaxQuant(SearchResults):
         df = pd.read_csv(path,
                          usecols=lambda x: x.upper() in ['RAW FILE',
                                                          'SCAN NUMBER',
-                                                         'ALL MODIFIED SEQUENCES',
                                                          'MODIFIED SEQUENCE',
                                                          'CHARGE',
                                                          'FRAGMENTATION',
                                                          'MASS ANALYZER',
-                                                         'SCAN EVENT NUMBER',
-                                                         'LABELING STATE',
-                                                         'MASS', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                                                         'M/Z', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                                                         'SIMPLE MASS ERROR [PPM]',
+                                                         'PRECURSOR INTENSITY',
                                                          'SCORE',
                                                          'REVERSE',
                                                          'RETENTION TIME',
-                                                         'COLLISION ENERGY',
                                                          'LOCALIZATION PROB'],
                          sep="\t")
         logger.info("Finished reading msms.txt file")
@@ -57,7 +55,7 @@ class MaxQuant(SearchResults):
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
-
+        print(df.columns)
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
         df.rename(columns = {"COLIISION_ENERGY": "ORIGINAL_COLLISION_ENERGY"}, inplace=True)
         #df['MODIFIED_SEQUENCE'] = df['ALL_MODIFIED_SEQUENCES'].apply(lambda x: x.split(';'))
@@ -66,7 +64,7 @@ class MaxQuant(SearchResults):
             df['MASS_ANALYZER'] = 'FTMS'
         if "FRAGMENTATION" not in df.columns:
             df['FRAGMENTATION'] = 'HCD'
-
+        df['PRECURSOR_MZ'] = df['M/Z'] + (df['M/Z']*df['SIMPLE_MASS_ERROR_[PPM]']/1000000)
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         #df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
