@@ -69,6 +69,7 @@ class MaxQuant(SearchResults):
         df["REVERSE"].replace("+", True, inplace=True)
         #df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
 
+
         logger.info("Converting MaxQuant peptide sequence to internal format")
         if tmt_labeled == "tmt":
             logger.info("Adding TMT fixed modifications")
@@ -121,6 +122,8 @@ class MaxQuant(SearchResults):
         #df = df[df['PRECURSOR_CHARGE'] <= 6]
         #df = df[df['PEPTIDE_LENGTH'] >= 7]
         #df = df[df['SCORE'] > 70]
+
+
         logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
 
         return df

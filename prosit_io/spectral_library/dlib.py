@@ -30,7 +30,8 @@ class DLib(SpectralLibrary):
         fragmentmz: List[np.ndarray],
         intensities: List[np.ndarray],
         path: str,
-        min_intensity_threshold: Optional[float] = 0.05,
+        create_database: bool,
+        min_intensity_threshold: Optional[float] = 0.05
     ):
         """
         Initializer for the DLib class.
@@ -44,13 +45,14 @@ class DLib(SpectralLibrary):
         :param min_intensity_threshold: The minimal intensity required when masking fragmentmz and intensities.
         """
         self.path = path
-        self.create_database(self.path)
+        if create_database:
+            self.create_database(self.path)
 
         # gather all values for the entries table and create pandas DataFrame
-        masked_values = self._calculate_masked_values(fragmentmz, intensities, min_intensity_threshold)
+        mz_bytes_list, i_bytes_list, mz_lengths, i_lengths = self._calculate_masked_values(self, fragmentmz, intensities, min_intensity_threshold)
         mass_mod_sequences = internal_to_mod_mass(modified_sequences)
         sequences = internal_without_mods(modified_sequences)
-        data_list = [*masked_values, precursor_charges, mass_mod_sequences, sequences, retention_times, precursor_mz]
+        data_list = [mz_bytes_list, i_bytes_list, mz_lengths, i_lengths, precursor_charges, mass_mod_sequences, sequences, retention_times, precursor_mz]
         self.entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
 
         # hardcoded entries that we currently not use.
@@ -98,7 +100,6 @@ class DLib(SpectralLibrary):
         for mz, i in zip(fragmentmz, intensities):
             # mask to only existing peaks
             mask = i >= intensity_min_threshold
-            print(mask)
             sort_index = np.argsort(mz[mask])
             masked_mz_ordered = mz[mask][sort_index]
             masked_i_ordered = i[mask][sort_index]

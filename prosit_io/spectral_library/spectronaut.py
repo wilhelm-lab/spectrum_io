@@ -16,11 +16,11 @@ class Spectronaut(SpectralLibrary):
         @return: None
         """
 
-        n = 7000  # split df into chunks of size n
+        n = 6000  # split df into chunks of size n
         initial = not os.path.isfile(self.out_path)
         for group, segment in self.spectra_output.groupby(np.arange(len(self.spectra_output)) // n):
             segment = segment.explode(['intensities', 'fragment_mz', 'fragment_types', 'fragment_numbers', 'fragment_charges'])
-            segment = segment[segment['intensities'] > 0]  # set to >= if 0 should be kept
+            segment = segment[segment['intensities'] > 0.05]  # set to >= if 0 should be kept
             segment.rename(columns={'intensities': 'RelativeIntensity', 'fragment_mz': 'FragmentMz', 'fragment_types': 'FragmentType', 'fragment_numbers':'FragmentNumber', 'fragment_charges':'FragmentCharge'},inplace=True)
             segment['FragmentLossType'] = 'noloss'
             segment = segment[['RelativeIntensity','FragmentMz','ModifiedPeptide','LabeledPeptide','StrippedPeptide','PrecursorCharge','PrecursorMz','iRT','proteotypicity','FragmentNumber','FragmentType','FragmentCharge','FragmentLossType']]
