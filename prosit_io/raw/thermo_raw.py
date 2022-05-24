@@ -20,13 +20,13 @@ class ThermoRaw(MSRaw):
         :param input_path: File path of the Thermo Rawfile
         :param output_path: File path of the mzML path
         """
-        if output_path is None:
-            output_path = os.path.splitext(input_path)[0] + ".mzML"
+        #if output_path is None:
+            #output_path = os.path.splitext(input_path)[0] + ".mzML"
         
         if os.path.isfile(output_path):
             logger.info(f"Found converted file at {output_path}, skipping conversion")
             return output_path
-        
+        print(output_path)
         if gzip:
             gzip = "-g"
         else:

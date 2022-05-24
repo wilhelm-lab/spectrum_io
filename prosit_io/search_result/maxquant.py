@@ -55,7 +55,6 @@ class MaxQuant(SearchResults):
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
-        print(df.columns)
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
         df.rename(columns = {"COLIISION_ENERGY": "ORIGINAL_COLLISION_ENERGY"}, inplace=True)
         #df['MODIFIED_SEQUENCE'] = df['ALL_MODIFIED_SEQUENCES'].apply(lambda x: x.split(';'))
@@ -65,6 +64,7 @@ class MaxQuant(SearchResults):
         if "FRAGMENTATION" not in df.columns:
             df['FRAGMENTATION'] = 'HCD'
         df['PRECURSOR_MZ'] = df['M/Z'] + (df['M/Z']*df['SIMPLE_MASS_ERROR_[PPM]']/1000000)
+        df.rename(columns = {"M/Z": "MZ"}, inplace=True)
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         #df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(tm)'))]
