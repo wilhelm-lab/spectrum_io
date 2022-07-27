@@ -57,7 +57,6 @@ class MSRaw:
                 file_list = [source]
             source = file_list
         data = {}
-        print(package)
         if package == 'pymzml':
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category=ImportWarning)
@@ -72,12 +71,14 @@ class MSRaw:
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
                     id = spec['id'].split('scan=')[-1]
+                    mass_analyzer = spec['scanList']['scan'][0]['filter string'].split()[0]
+                    fragmentation = spec['scanList']['scan'][0]['filter string'].split('@')[1][:3]
+                    mz_range = spec['scanList']['scan'][0]['filter string'].split('[')[1][:-1]
                     key = f"{file_name}_{id}"
-                    data[key] = [file_name, id, spec['intensity array'], spec['m/z array']]
+                    data[key] = [file_name, id, spec['intensity array'], spec['m/z array'], mass_analyzer, fragmentation, mz_range]
                 data_iter.close()
         else:
             assert False, "Choose either 'pymzml' or 'pyteomics'"
-
         data = pd.DataFrame.from_dict(data, orient='index', columns=MZML_DATA_COLUMNS)
         data['SCAN_NUMBER'] = pd.to_numeric(data['SCAN_NUMBER'])
         return data

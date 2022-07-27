@@ -39,7 +39,7 @@ class MSFragger(SearchResults):
                          usecols=lambda x: x.upper() in ['SCANID',
                                                          'PEPTIDE SEQUENCE',
                                                          'PRECURSOR CHARGE',
-                                                         'PRECURSOR NEUTRAL MASS (DA)', # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                                                         'PRECURSOR NEUTRAL MASS (DA)',
                                                          'HYPERSCORE',
                                                          'PROTEIN',
                                                          'RETENTION TIME (MINUTES)',
@@ -56,67 +56,28 @@ class MSFragger(SearchResults):
 
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        if "MASS_ANALYZER" not in df.columns:
-            df['MASS_ANALYZER'] = 'FTMS'
-        if "FRAGMENTATION" not in df.columns:
-            df['FRAGMENTATION'] = 'HCD'
-
         df["REVERSE"] = df["PROTEIN"].str.contains("Reverse") 
-
+        #df["RAW_FILE"] = df.iloc[0]["PROTEIN"]
+        df["RAW_FILE"] = "01625b_GA6-TUM_first_pool_41_01_01-DDA-1h-R2"
         logger.info("Converting MSFragger  peptide sequence to internal format")
+
         mod_masses_reverse = {round(float(v), 3): k for k, v in C.MOD_MASSES.items()}
-        seq = []
+        sequences = []
         for index, row in df.iterrows():
             modifications = row["MODIFICATIONS"].split("|")[1:]
             if len(modifications) == 0:
-                seq.append(row["MODIFIED_SEQUENCE"])
+                sequences.append(row["MODIFIED_SEQUENCE"])
             else:
                 sequence = row["MODIFIED_SEQUENCE"]
                 skip = 0
                 for mod in modifications:
                     pos, mass = mod.split("$")
                     sequence = sequence[:int(pos)+1+skip] + mod_masses_reverse[round(float(mass), 3)] + sequence[int(pos)+1+skip:]
-                    skip = len(mod_masses_reverse[round(float(mass), 3)])
-                seq.append(sequence)
+                    skip = skip + len(mod_masses_reverse[round(float(mass), 3)])
+                sequences.append(sequence)
 
-        df["MODIFIED_SEQUENCE"] = seq
+        df["MODIFIED_SEQUENCE"] = sequences
 
-        """
-        if tmt_labeled == "tmt":
-            logger.info("Adding TMT fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:737]', 
-                                                                                                           'K': 'K[UNIMOD:737]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "tmtpro":
-            logger.info("Adding TMTpro fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:2016]', 
-                                                                                                           'K': 'K[UNIMOD:2016]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "itraq4":
-            logger.info("Adding iTRAQ4 fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:214]', 
-                                                                                                           'K': 'K[UNIMOD:214]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "itraq8":
-            logger.info("Adding iTRAQ8 fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:730]', 
-                                                                                                           'K': 'K[UNIMOD:730]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif "LABELING_STATE" in df.columns:
-            logger.info("Adding SILAC fixed modifications")
-            df.loc[df['LABELING_STATE'] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] == 1]["MODIFIED_SEQUENCE"].to_numpy(), 
-                                                                                          fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                      'K': 'K[UNIMOD:259]', 
-                                                                                                      'R': 'R[UNIMOD:267]'})
-            df.loc[df['LABELING_STATE'] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] != 1]["MODIFIED_SEQUENCE"].to_numpy())
-            df.drop(columns=['LABELING_STATE'], inplace=True)
-        else:
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
-        """
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
 
