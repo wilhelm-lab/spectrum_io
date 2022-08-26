@@ -17,6 +17,7 @@ tables = "^3.6.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.4"
+pytest-cov = "^2.12.1"
 
 [build-system]
 requires = [
