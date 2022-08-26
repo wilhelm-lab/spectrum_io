@@ -12,19 +12,9 @@ logger = logging.getLogger(__name__)
 class MaxQuant(SearchResults):
 
     @staticmethod
-    def add_tmt_mod(mass, seq, tag):
-        if tag == "tmt":
-            num_of_tmt = seq.count('UNIMOD:737')
-            mass += (num_of_tmt * C.MOD_MASSES['[UNIMOD:737]'])
-        elif tag == "tmtpro":
-            num_of_tmt = seq.count('UNIMOD:2016')
-            mass += (num_of_tmt * C.MOD_MASSES['[UNIMOD:2016]'])
-        elif tag == "itraq4":
-            num_of_tmt = seq.count('UNIMOD:214')
-            mass += (num_of_tmt * C.MOD_MASSES['[UNIMOD:214]'])
-        elif tag == "itraq8":
-            num_of_tmt = seq.count('UNIMOD:730')
-            mass += (num_of_tmt * C.MOD_MASSES['[UNIMOD:730]'])
+    def add_tmt_mod(mass, seq, unimod_tag):
+        num_of_tmt = seq.count(unimod_tag)
+        mass += (num_of_tmt * C.MOD_MASSES[f'{unimod_tag}'])
         return mass
 
     @staticmethod
@@ -65,30 +55,15 @@ class MaxQuant(SearchResults):
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         logger.info("Converting MaxQuant peptide sequence to internal format")
-        if tmt_labeled == "tmt":
+        if tmt_labeled != "":
+            unimod_tag = C.TMT_MODS[tmt_labeled]
             logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:737]', 
-                                                                                                           'K': 'K[UNIMOD:737]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "tmtpro":
-            logger.info("Adding TMTpro fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:2016]', 
-                                                                                                           'K': 'K[UNIMOD:2016]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "itraq4":
-            logger.info("Adding iTRAQ4 fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:214]', 
-                                                                                                           'K': 'K[UNIMOD:214]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
-        elif tmt_labeled == "itraq8":
-            logger.info("Adding iTRAQ8 fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), fixed_mods={'C': 'C[UNIMOD:4]',
-                                                                                                           '^_':'_[UNIMOD:730]', 
-                                                                                                           'K': 'K[UNIMOD:730]'})
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, tmt_labeled), axis=1)
+                                                                                                           '^_':f'_{unimod_tag}', 
+                                                                                                           'K': f'K{unimod_tag}'})
+            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
+            if 'msa' in tmt_labeled:
+                df["MODIFIED_SEQUENCE_MSA"] = df["MODIFIED_SEQUENCE"].replace("[UNIMOD:21]", "[UNIMOD:23]")
         elif "LABELING_STATE" in df.columns:
             logger.info("Adding SILAC fixed modifications")
             df.loc[df['LABELING_STATE'] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] == 1]["MODIFIED_SEQUENCE"].to_numpy(), 
