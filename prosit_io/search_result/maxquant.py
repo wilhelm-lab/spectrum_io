@@ -46,7 +46,7 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.replace(" ", "_")
 
         df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
-        df = MaxQuant.filter_prosit_valid_sequences(df)
+        df = MaxQuant.filter_valid_prosit_sequences(df)
         
         return df
     
@@ -79,6 +79,8 @@ class MaxQuant(SearchResults):
                                                                                                       'K': 'K[UNIMOD:259]', 
                                                                                                       'R': 'R[UNIMOD:267]'})
             df.loc[df['LABELING_STATE'] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] != 1]["MODIFIED_SEQUENCE"].to_numpy())
+            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, '[UNIMOD:259]'), axis=1)
+            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, '[UNIMOD:267]'), axis=1)
             df.drop(columns=['LABELING_STATE'], inplace=True)
         else:
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
@@ -88,12 +90,12 @@ class MaxQuant(SearchResults):
         return df
     
     @staticmethod
-    def filter_prosit_valid_sequences(df: pd.DataFrame) -> pd.DataFrame:
+    def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
         logger.info(f"#sequences before filtering for valid prosit sequences: {len(df.index)}")
         df = df[(df['PEPTIDE_LENGTH'] <= 30)]
-        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)'))]
+        df = df[(~df['MODIFIED_SEQUENCE'].str.contains('(ac)', regex=False))]
         df = df[
-            (~df['MODIFIED_SEQUENCE'].str.contains('\(Acetyl \(Protein N-term\)\)'))]
+            (~df['MODIFIED_SEQUENCE'].str.contains('(Acetyl (Protein N-term))', regex=False))]
         df = df[(~df['SEQUENCE'].str.contains('U'))]
         df = df[df['PRECURSOR_CHARGE'] <= 6]
         df = df[df['PEPTIDE_LENGTH'] >= 7]
