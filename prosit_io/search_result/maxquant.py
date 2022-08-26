@@ -18,7 +18,7 @@ class MaxQuant(SearchResults):
         return mass
 
     @staticmethod
-    def read_result(path: str, tmt_labeled):
+    def read_result(path: str, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting
         :prarm path: Path to msms.txt to read
@@ -45,6 +45,13 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
+        df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
+        df = MaxQuant.filter_prosit_valid_sequences(df)
+        
+        return df
+    
+    @staticmethod
+    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:    
         df.rename(columns = {"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
         if "MASS_ANALYZER" not in df.columns:
@@ -63,7 +70,8 @@ class MaxQuant(SearchResults):
                                                                                                            'K': f'K{unimod_tag}'})
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
             if 'msa' in tmt_labeled:
-                df["MODIFIED_SEQUENCE_MSA"] = df["MODIFIED_SEQUENCE"].replace("[UNIMOD:21]", "[UNIMOD:23]")
+                logger.info("Replacing phospho by dehydration for Phospho-MSA")
+                df["MODIFIED_SEQUENCE_MSA"] = df["MODIFIED_SEQUENCE"].str.replace("[UNIMOD:21]", "[UNIMOD:23]", regex=False)
         elif "LABELING_STATE" in df.columns:
             logger.info("Adding SILAC fixed modifications")
             df.loc[df['LABELING_STATE'] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(df[df['LABELING_STATE'] == 1]["MODIFIED_SEQUENCE"].to_numpy(), 
@@ -76,8 +84,12 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df['PEPTIDE_LENGTH'] = df["SEQUENCE"].apply(lambda x: len(x))
-
-        logger.info(f"No of sequences before Filtering is {len(df['PEPTIDE_LENGTH'])}")
+        
+        return df
+    
+    @staticmethod
+    def filter_prosit_valid_sequences(df: pd.DataFrame) -> pd.DataFrame:
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(df.index)}")
         df = df[(df['PEPTIDE_LENGTH'] <= 30)]
         df = df[(~df['MODIFIED_SEQUENCE'].str.contains('\(ac\)'))]
         df = df[
@@ -85,7 +97,7 @@ class MaxQuant(SearchResults):
         df = df[(~df['SEQUENCE'].str.contains('U'))]
         df = df[df['PRECURSOR_CHARGE'] <= 6]
         df = df[df['PEPTIDE_LENGTH'] >= 7]
-        logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
         return df
 
