@@ -19,9 +19,6 @@ pytest:
   stage: test
   image: python:3.8.12
   before_script:
-    - pip install -U pip poetry pytest
-    - poetry config virtualenvs.create false
-    - poetry install
     ## Run ssh-agent (inside the build environment)
     - eval $(ssh-agent -s)
     ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
@@ -34,6 +31,9 @@ pytest:
     - chmod 700 ~/.ssh
     - ssh-keyscan -H gitlab.lrz.de >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
+    - pip install -U pip poetry pytest
+    - poetry config virtualenvs.create false
+    - poetry install
   script:
     - echo $CONTAINER_IMAGE
     - python3 -m pytest --cov=fundamentals --cov-report term --junitxml=report.xml
