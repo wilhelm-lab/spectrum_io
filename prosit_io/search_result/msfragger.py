@@ -90,8 +90,6 @@ class MSFragger(SearchResults):
         df = df[df['PRECURSOR_CHARGE'] <= 6]
         df = df[df['PEPTIDE_LENGTH'] >= 7]
         logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
-        print(df.iloc[[457]])
-        #df.str 
         return df
 
 
