@@ -21,14 +21,14 @@ class TestMspPrepareSpectrum:
         file_content = out_file.read()
         print(file_content)
         assert file_content == b"""Name: AAACCCCKR/1
-MW: 124.4
-Comment: Parent=124.4 Collision_energy=10.0 Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl ModString=AAACCCCKR//Carbamidomethyl@C3; Carbamidomethyl@C5/1 iRT=982.12 proteotypicity=123.1
+MW: 124.407276467
+Comment: Parent=124.407276467 Collision_energy=10.0 Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl ModString=AAACCCCKR//Carbamidomethyl@C3; Carbamidomethyl@C5/1 iRT=982.12 proteotypicity=123.1
 Num peaks: 2
 0.9	0.1	"b1/0.0ppm"
 0.8	0.2	"y1^2/0.0ppm"
 Name: AAACILKKR/2
-MW: 1617.05
-Comment: Parent=1617.05 Collision_energy=20.0 Mods=0 ModString=AAACILKKR///2 iRT=382.12 proteotypicity=234.2
+MW: 3233.107276467
+Comment: Parent=3233.107276467 Collision_energy=20.0 Mods=0 ModString=AAACILKKR///2 iRT=382.12 proteotypicity=234.2
 Num peaks: 2
 0.6	0.4	"b1^2/0.0ppm"
 0.5	0.5	"y3^3/0.0ppm"
