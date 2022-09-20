@@ -15,31 +15,30 @@ class TestMspPrepareSpectrum:
     
     def test_write(self, spectra_input, grpc_dict):
         out_file = tempfile.NamedTemporaryFile(delete=False)
-        print(out_file.name)
         msp_lib = msp.MSP(spectra_input, grpc_dict, out_file.name)
         msp_lib.prepare_spectrum()
         msp_lib.write()
-        assert out_file.read() == b"""Name: AAACCCCKR/1
-MW: 124.4
-Comment: Parent=124.4 Collision_energy=10.0 Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl ModString=AAACCCCKR//Carbamidomethyl@C3; Carbamidomethyl@C5/1 iRT=982.12 proteotypicity=123.1
-Num peaks: 3
+        file_content = out_file.read()
+        print(file_content)
+        assert file_content == b"""Name: AAACCCCKR/1
+MW: 124.407276467
+Comment: Parent=124.407276467 Collision_energy=10.0 Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl ModString=AAACCCCKR//Carbamidomethyl@C3; Carbamidomethyl@C5/1 iRT=982.12 proteotypicity=123.1
+Num peaks: 2
 0.9	0.1	"b1/0.0ppm"
 0.8	0.2	"y1^2/0.0ppm"
-0.7	0.3	"N2^3/0.0ppm"
 Name: AAACILKKR/2
-MW: 1617.05
-Comment: Parent=1617.05 Collision_energy=20.0 Mods=0 ModString=AAACILKKR///2 iRT=382.12 proteotypicity=234.2
-Num peaks: 3
+MW: 1617.057276467
+Comment: Parent=1617.057276467 Collision_energy=20.0 Mods=0 ModString=AAACILKKR///2 iRT=382.12 proteotypicity=234.2
+Num peaks: 2
 0.6	0.4	"b1^2/0.0ppm"
 0.5	0.5	"y3^3/0.0ppm"
-0.4	0.6	"N5/0.0ppm"
 """
         
 @pytest.fixture
 def spectra_input():
     spectra_input = pd.DataFrame()
     spectra_input['MODIFIED_SEQUENCE_SPEC'] = ['AAACCCC', 'AAACILK']
-    spectra_input['MODIFIED_SEQUENCE'] = ['AAAC(U:4)CC(U:4)CKR', 'AAACILKKR']
+    spectra_input['MODIFIED_SEQUENCE'] = ['AAAC[UNIMOD:4]CC[UNIMOD:4]CKR', 'AAACILKKR']
     spectra_input['MASS'] = [123.4, 3232.1]
     spectra_input['COLLISION_ENERGY'] = [10.0, 20.0]
     spectra_input['PRECURSOR_CHARGE'] = [1, 2]

@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from .spectral_library import SpectralLibrary
 from fundamentals.mod_string import internal_without_mods, internal_to_spectronaut
+from fundamentals.constants import PARTICLE_MASSES
 
 
 class Spectronaut(SpectralLibrary):
@@ -49,7 +50,7 @@ class Spectronaut(SpectralLibrary):
         stripped_peptide = internal_without_mods(modified_sequences)
         charges = self.spectra_input['PRECURSOR_CHARGE']
         precursor_masses = self.spectra_input['MASS']
-        precursor_mz = (precursor_masses + charges) / charges
+        precursor_mz = (precursor_masses + (charges* PARTICLE_MASSES["PROTON"])) / charges
 
         inter_df = pd.DataFrame(data={'ModifiedPeptide': modified_sequences_spec, 'LabeledPeptide': labelled_sequences,
                                       'StrippedPeptide': stripped_peptide, 'PrecursorCharge': charges,

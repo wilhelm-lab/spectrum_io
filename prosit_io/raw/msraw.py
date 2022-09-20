@@ -107,7 +107,7 @@ class MSRaw:
                 data[key] = [file_name, spec.ID, spec.i, spec.mz]
         else:
             for idx in scanidx:
-                spec = data_iter[idx]
+                spec = data_iter[idx] # this does not work if some spectra are filtered out, e.g. mzML files with only MS2 spectra, see: https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes/standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
                 data[key] = [file_name, spec.ID, spec.i, spec.mz]
         data_iter.close()
