@@ -1,0 +1,51 @@
+image: docker:latest
+
+variables:
+  REGISTRY: $CI_REGISTRY
+  PROJECT_PATH: none
+  DOCKER_DRIVER: overlay2
+  # SELECT ONE OF INTERNAL,EXTERNAL
+  CI_DEPLOY_NETWORK: INTERNAL
+  CI_DEPLOY_TAG: none
+  # SELECT ONE OF public,private
+  CI_PUBLISH: public
+  # hotfix for https://gitlab.com/gitlab-org/gitlab-ce/issues/64959
+  DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - test
+
+pytest:
+  stage: test
+  image: python:3.8.12
+  before_script:
+    ## Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+    ## Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    ## We're using tr to fix line endings which makes ed25519 keys work
+    ## without extra base64 encoding.
+    ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    ## Create the SSH directory and give it the right permissions
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H gitlab.lrz.de >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - pip install -U pip poetry pytest
+    - poetry config virtualenvs.create false
+    - poetry install
+  script:
+    - echo $CONTAINER_IMAGE
+    - python3 -m pytest --cov=fundamentals --cov-report term --junitxml=report.xml
+    - coverage xml
+  tags:
+    - docker
+  coverage: /(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
