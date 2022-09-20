@@ -1,0 +1,19 @@
+cookietemple_version: '1.4.1 # <<COOKIETEMPLE_NO_BUMP>>'
+domain: cli
+language: python
+project_slug: spectrum_io
+project_slug_no_hyphen: spectrum_io
+template_version: '2.1.1 # <<COOKIETEMPLE_NO_BUMP>>'
+template_handle: cli-python
+github_username: wilhelm-lab
+creator_github_username: picciama
+is_github_repo: true
+is_repo_private: true
+is_github_orga: true
+github_orga: wilhelm-lab
+full_name: Mario Picciani
+email: mario.picciani@tum.de
+project_name: spectrum_io
+project_short_description: IO related functionalities for oktoberfest.
+version: 0.1.0
+license: MIT
