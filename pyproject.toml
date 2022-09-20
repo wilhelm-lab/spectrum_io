@@ -1,5 +1,4 @@
 [tool.poetry]
-<<<<<<< HEAD
 name = "spectrum_io"
 version = "0.1.0"  # <<COOKIETEMPLE_FORCE_BUMP>>
 description = "IO related functionalities for oktoberfest."
@@ -99,4 +98,5 @@ requires = [
     "poetry-core>=1.0.0",
     "setuptools>=57.1.0",
     "wheel"
+]
 build-backend = "poetry.core.masonry.api"
