@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import fundamentals.constants as c
 import pandas as pd
@@ -31,8 +32,8 @@ class MaxQuant(SearchResults):
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: Path to msms.txt to read
-        :param tmt_labeled: True if tmt labeled
+        :param path: path to msms.txt to read
+        :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msms.txt file")

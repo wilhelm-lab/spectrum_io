@@ -74,9 +74,8 @@ class DLib(SpectralLibrary):
 
     @staticmethod
     def _calculate_masked_values(
-        self,
-        fragmentmz: Union[List[np.ndarray]],
-        intensities: Union[List[np.ndarray]],
+        fragmentmz: List[np.ndarray],
+        intensities: List[np.ndarray],
         intensity_min_threshold: Optional[float] = 0.05,
     ):
         """

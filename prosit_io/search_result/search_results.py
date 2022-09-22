@@ -26,16 +26,16 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self):
+    def read_result(self, path: str, tmt_labeled: str):
         """Read result."""
         raise NotImplementedError
 
-    def generate_internal(self, out_path: Optional[str] = None, tmt_labeled: Optional[bool] = False):
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[str] = None):
         """
         Generate df and save to out_path.
 
         :param out_path: path to output
-        :tmt_labeled: True if tmt labeled
+        :tmt_labeled: tmt label as str
         :retrun: path to output file
         """
         if out_path is None:

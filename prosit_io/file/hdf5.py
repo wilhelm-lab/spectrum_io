@@ -58,15 +58,15 @@ def thread_this(fn):
 
 @thread_this
 def write_file(
-    data_sets: [Union[pd.DataFrame, scipy.sparse.spmatrix]],
+    data_sets: List[Union[pd.DataFrame, scipy.sparse.spmatrix]],
     path: str,
-    dataset_names: [str],
-    column_names: [[List[str]]] = None,
+    dataset_names: List[str],
+    column_names: Optional[List[Optional[List[str]]]] = None,
 ):
     """
     Writes several datasets (spectra) to hdf5 file.
 
-    :param data: list of datasets
+    :param data_sets: list of datasets
     :param path: path to store the file to
     :param dataset_names: list of dataset names
     :param column_names: list of column_names
@@ -75,9 +75,13 @@ def write_file(
     for data_set, dataset_name in zip(data_sets, dataset_names):
         if isinstance(data_set, pd.DataFrame):
             write_dataset(data_set, path, dataset_name)
-        else:
+        elif isinstance(data_set, scipy.sparse.spmatrix):
+            if not isinstance(column_names, list):
+                raise TypeError(f"column_names is required if data_set is of type {type(data_set)}.")
             write_dataset(data_set, path, dataset_name, mode="a", column_names=column_names[index])
             index += 1
+        else:
+            raise TypeError(f"data_set type not understood: {type(data_set)}.")
 
 
 def write_dataset(
@@ -86,8 +90,8 @@ def write_dataset(
     dataset_name: str,
     mode: str = "w",
     compression: Optional[Union[str, bool]] = True,
-    column_names: Optional[Union[List[str], None]] = None,
-    index: Optional[Union[List[str], None]] = None,
+    column_names: Optional[List[str]] = None,
+    index: Optional[List[str]] = None,
 ):
     """
     Writes or appends dataset to an hdf5 file.

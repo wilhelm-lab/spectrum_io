@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -29,7 +30,7 @@ class SpectralLibrary:
         """Load predictions from hdf5 file."""
 
     @abstractmethod
-    def write(self):
+    def write(self, chunksize: Optional[Union[None, int]]):
         """Write predictions."""
         pass
 

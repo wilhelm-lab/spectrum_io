@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import fundamentals.constants as c
 import pandas as pd

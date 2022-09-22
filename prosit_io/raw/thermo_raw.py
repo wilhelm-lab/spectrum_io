@@ -15,7 +15,7 @@ class ThermoRaw(MSRaw):
 
     @staticmethod
     def convert_raw_mzml(
-        input_path: str, output_path: Optional[str] = None, gzip: bool = False, ms_level: int = 2
+        input_path: str, output_path: Optional[str] = None, gzip: bool = False, ms_level: str = "2"
     ) -> str:
         """
         Converts a ThermoRaw file to mzML.
@@ -34,9 +34,9 @@ class ThermoRaw(MSRaw):
             return output_path
 
         if gzip:
-            gzip = "-g"
+            gzip_opt = "-g"
         else:
-            gzip = ""
+            gzip_opt = ""
 
         if "linux" in platform:
             mono = "mono"
@@ -45,7 +45,7 @@ class ThermoRaw(MSRaw):
 
         exec_path = pathlib.Path(__file__).parent.absolute()  # get path of parent directory of current file
         exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe \
-                        {gzip} --msLevel {ms_level} -i {input_path} -b {output_path}.tmp"
+                        {gzip_opt} --msLevel {ms_level} -i {input_path} -b {output_path}.tmp"
         logger.info(f"Converting thermo rawfile to mzml with the command: '{exec_command}'")
         subprocess.run(exec_command, shell=True, check=True)
 
