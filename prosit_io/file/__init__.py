@@ -1,5 +1,6 @@
-from . import csv
-from . import hdf5
+"""Initialize logger."""
 import logging
+
+from . import csv, hdf5
 
 logger = logging.getLogger(__name__)

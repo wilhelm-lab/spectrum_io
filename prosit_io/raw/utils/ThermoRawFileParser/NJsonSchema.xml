@@ -319,7 +319,7 @@
         <member name="M:NJsonSchema.Converters.JsonInheritanceConverter.#ctor(System.String,System.Boolean)">
             <summary>Initializes a new instance of the <see cref="T:NJsonSchema.Converters.JsonInheritanceConverter"/> class.</summary>
             <param name="discriminator">The discriminator.</param>
-            <param name="readTypeProperty">Read the $type property to determine the type 
+            <param name="readTypeProperty">Read the $type property to determine the type
             (fallback, should not be used as it might lead to security problems).</param>
         </member>
         <member name="M:NJsonSchema.Converters.JsonInheritanceConverter.#ctor(System.Type)">
@@ -605,7 +605,7 @@
             <exception cref="T:System.InvalidOperationException">Could not find value type of dictionary type.</exception>
         </member>
         <member name="M:NJsonSchema.Generation.JsonSchemaGenerator.GenerateWithReference``1(Namotion.Reflection.ContextualType,NJsonSchema.Generation.JsonSchemaResolver,System.Action{``0,NJsonSchema.JsonSchema})">
-            <summary>Generetes a schema directly or referenced for the requested schema type; 
+            <summary>Generetes a schema directly or referenced for the requested schema type;
             does NOT change nullability.</summary>
             <typeparam name="TSchemaType">The resulted schema type which may reference the actual schema.</typeparam>
             <param name="contextualType">The type of the schema to generate.</param>
@@ -614,7 +614,7 @@
             <returns>The requested schema object.</returns>
         </member>
         <member name="M:NJsonSchema.Generation.JsonSchemaGenerator.GenerateWithReferenceAndNullability``1(Namotion.Reflection.ContextualType,NJsonSchema.Generation.JsonSchemaResolver,System.Action{``0,NJsonSchema.JsonSchema})">
-            <summary>Generetes a schema directly or referenced for the requested schema type; 
+            <summary>Generetes a schema directly or referenced for the requested schema type;
             also adds nullability if required by looking at the type's <see cref="T:NJsonSchema.Generation.JsonTypeDescription" />.</summary>
             <typeparam name="TSchemaType">The resulted schema type which may reference the actual schema.</typeparam>
             <param name="contextualType">The type of the schema to generate.</param>
@@ -722,7 +722,7 @@
             <summary>Gets or sets a value indicating whether to ignore properties with the <see cref="T:System.ObsoleteAttribute"/>.</summary>
         </member>
         <member name="P:NJsonSchema.Generation.JsonSchemaGeneratorSettings.AllowReferencesWithProperties">
-            <summary>Gets or sets a value indicating whether to use $ref references even if additional properties are 
+            <summary>Gets or sets a value indicating whether to use $ref references even if additional properties are
             defined on the object (otherwise allOf/oneOf with $ref is used, default: false).</summary>
         </member>
         <member name="P:NJsonSchema.Generation.JsonSchemaGeneratorSettings.GenerateEnumMappingDescription">
@@ -1262,7 +1262,7 @@
             <param name="propertyName">The property name.</param>
         </member>
         <member name="M:NJsonSchema.Infrastructure.XmlObjectExtension.GetXmlItemName(System.Type)">
-            <summary>type.Name is used int will return Int32, string will return String etc. 
+            <summary>type.Name is used int will return Int32, string will return String etc.
             These are not valid with how the XMLSerializer performs.</summary>
         </member>
         <member name="T:NJsonSchema.ITypeNameGenerator">
@@ -1574,7 +1574,7 @@
             <remarks>Used for code generation.</remarks>
         </member>
         <member name="P:NJsonSchema.JsonSchema.InheritedTypeSchema">
-            <summary>Gets the inherited/parent schema which may also be inlined 
+            <summary>Gets the inherited/parent schema which may also be inlined
             (the schema itself if it is a dictionary or array, otherwise <see cref="P:NJsonSchema.JsonSchema.InheritedSchema"/>).</summary>
             <remarks>Used for code generation.</remarks>
         </member>

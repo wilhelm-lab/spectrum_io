@@ -595,7 +595,7 @@
             </summary>
             <param name="type">The type of comparison to perform</param>
             <param name="key">The access policy condition key specifying where to get the
-                       first string for the comparison (ex: aws:UserAgent). 
+                       first string for the comparison (ex: aws:UserAgent).
             </param>
             <param name="value">The second string to compare against. When using
                        StringComparisonType.StringLike or
@@ -797,12 +797,12 @@
         <member name="M:Amazon.Auth.AccessControlPolicy.Internal.JsonPolicyWriter.WritePolicyToString(System.Boolean,Amazon.Auth.AccessControlPolicy.Policy)">
              Converts the specified AWS policy object to a JSON string, suitable for
              passing to an AWS service.
-            
+
              @param policy
                         The AWS policy object to convert to a JSON string.
-            
+
              @return The JSON string representation of the specified policy object.
-            
+
              @throws IllegalArgumentException
                          If the specified policy is null or invalid and cannot be
                          serialized to a JSON string.
@@ -1053,7 +1053,7 @@
         </member>
         <member name="M:Amazon.Auth.AccessControlPolicy.Principal.#ctor(System.String,System.String,System.Boolean)">
             <summary>
-            Constructs a new principal with the specified provider and id 
+            Constructs a new principal with the specified provider and id
             and optionally strips hyphens from the id
             </summary>
             <param name="provider">The provider of the principal</param>
@@ -1449,11 +1449,11 @@
             Amazon S3 customers who want to use backslash (\) in their key names.
             </summary>
             <remarks>
-            Different behavior in the various runtimes has been observed and in addition some 
-            'documented' ways of doing this between 2.x and 4.x runtimes has also been observed 
+            Different behavior in the various runtimes has been observed and in addition some
+            'documented' ways of doing this between 2.x and 4.x runtimes has also been observed
             to not be reliable.
-            
-            This patch effectively emulates what adding a schemesettings element to the 
+
+            This patch effectively emulates what adding a schemesettings element to the
             app.config file with value 'name="http" genericUriParserOptions="DontUnescapePathDotsAndSlashes"'
             does. As we're a dll, that avenue is not open to us.
             </remarks>
@@ -1556,7 +1556,7 @@
         </member>
         <member name="P:Amazon.Runtime.AmazonWebServiceRequest.Expect100Continue">
             <summary>
-            Gets or Sets a value indicating if "Expect: 100-continue" HTTP header will be 
+            Gets or Sets a value indicating if "Expect: 100-continue" HTTP header will be
             sent by the client for this request. The default value is false.
             </summary>
         </member>
@@ -1604,13 +1604,13 @@
         </member>
         <member name="T:Amazon.Runtime.AmazonWebServiceResponse">
             <summary>
-            Abstract class for Response objects, contains only metadata, 
+            Abstract class for Response objects, contains only metadata,
             and no result information.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.AmazonWebServiceResponse.ResponseMetadata">
             <summary>
-            Contains additional information about the request, such as the 
+            Contains additional information about the request, such as the
             Request Id.
             </summary>
         </member>
@@ -1683,7 +1683,7 @@
              Attempts to construct an instance of <see cref="T:Amazon.Runtime.ProfileAWSRegion"/>.
              If the AWS_PROFILE environment variable is set the instance will be constructed using that profile,
              otherwise it will use the default profile.
-            
+
              If the profile doesn't exist or there is no region information an InvalidOperationException is thrown.
              </summary>
              <param name="source">The ICredentialProfileSource to read the profile from.</param>
@@ -1714,7 +1714,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CapacityManager.TryReleaseCapacity(System.Boolean,Amazon.Runtime.Internal.RetryCapacity)">
             <summary>
-            This method calls a method to release capacity back 
+            This method calls a method to release capacity back
             based on whether it was a successful response or a successful retry response. This is invoked by a retry request response.
             </summary>
             <param name="isRetryRequest">if this request is a retry, use a different capacity cost</param>
@@ -1762,7 +1762,7 @@
         </member>
         <member name="T:Amazon.Runtime.Internal.ProcessCredentialVersion1">
             <summary>
-            Class to which the Json stdout from credential process is 
+            Class to which the Json stdout from credential process is
             de-serialized into.
             </summary>
         </member>
@@ -1836,7 +1836,7 @@
             uri encoded. If they have, use the SignRequest method to obtain a signature.
             </summary>
             <param name="request">
-            The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
+            The request to compute the signature for. Additional headers mandated by the AWS4 protocol
             ('host' and 'x-amz-date') will be added to the request before signing.
             </param>
             <param name="clientConfig">
@@ -1862,7 +1862,7 @@
             AWS account credentials given in the method parameters.
             </summary>
             <param name="request">
-            The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
+            The request to compute the signature for. Additional headers mandated by the AWS4 protocol
             ('host' and 'x-amz-date') will be added to the request before signing.
             </param>
             <param name="clientConfig">
@@ -1884,7 +1884,7 @@
             <remarks>
             Parameters passed as part of the resource path should be uri-encoded prior to
             entry to the signer. Parameters passed in the request.Parameters collection should
-            be not be encoded; encoding will be done for these parameters as part of the 
+            be not be encoded; encoding will be done for these parameters as part of the
             construction of the canonical request.
             </remarks>
         </member>
@@ -1968,7 +1968,7 @@
             <summary>
             If the caller has already set the x-amz-content-sha256 header with a pre-computed
             content hash, or it is present as ContentStreamHash on the request instance, return
-            the value to be used in request canonicalization. 
+            the value to be used in request canonicalization.
             If not set as a header or in the request, attempt to compute a hash based on
             inspection of the style of the request content.
             </summary>
@@ -2153,7 +2153,7 @@
             to the request headers as 'Authorization'.
             </summary>
             <param name="request">
-            The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
+            The request to compute the signature for. Additional headers mandated by the AWS4 protocol
             ('host' and 'x-amz-date') will be added to the request before signing.
             </param>
             <param name="clientConfig">
@@ -2178,7 +2178,7 @@
             Calculates the AWS4 signature for a presigned url.
             </summary>
             <param name="request">
-            The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
+            The request to compute the signature for. Additional headers mandated by the AWS4 protocol
             ('host' and 'x-amz-date') will be added to the request before signing. If the Expires parameter
             is present, it is renamed to 'X-Amz-Expires' before signing.
             </param>
@@ -2201,7 +2201,7 @@
             <remarks>
             Parameters passed as part of the resource path should be uri-encoded prior to
             entry to the signer. Parameters passed in the request.Parameters collection should
-            be not be encoded; encoding will be done for these parameters as part of the 
+            be not be encoded; encoding will be done for these parameters as part of the
             construction of the canonical request.
             </remarks>
         </member>
@@ -2210,7 +2210,7 @@
              Calculates the AWS4 signature for a presigned url.
              </summary>
              <param name="request">
-             The request to compute the signature for. Additional headers mandated by the AWS4 protocol 
+             The request to compute the signature for. Additional headers mandated by the AWS4 protocol
              ('host' and 'x-amz-date') will be added to the request before signing. If the Expires parameter
              is present, it is renamed to 'X-Amz-Expires' before signing.
              </param>
@@ -2239,9 +2239,9 @@
              <remarks>
              Parameters passed as part of the resource path should be uri-encoded prior to
              entry to the signer. Parameters passed in the request.Parameters collection should
-             be not be encoded; encoding will be done for these parameters as part of the 
+             be not be encoded; encoding will be done for these parameters as part of the
              construction of the canonical request.
-            
+
              The X-Amz-Content-SHA256 is cleared out of the request.
              If the request is for S3 then the UNSIGNED_PAYLOAD value is used to generate the canonical request.
              If the request isn't for S3 then the empty body SHA is used to generate the canonical request.
@@ -2249,7 +2249,7 @@
         </member>
         <member name="T:Amazon.Runtime.Internal.Auth.AWS4SigningResult">
             <summary>
-            Encapsulates the various fields and eventual signing value that makes up 
+            Encapsulates the various fields and eventual signing value that makes up
             an AWS4 signature. This can be used to retrieve the required authorization string
             or authorization query parameters for the final request as well as hold ongoing
             signature computations for subsequent calls related to the initial signing.
@@ -2427,7 +2427,7 @@
             <summary>
             Returns the subresources that should be appended to the resource path.
             This is used primarily for Amazon S3, where object keys can contain '?'
-            characters, making string-splitting of a resource path potentially 
+            characters, making string-splitting of a resource path potentially
             hazardous.
             </summary>
         </member>
@@ -2458,7 +2458,7 @@
             <summary>
             Returns the path resources that should be used within the resource path.
             This is used for services where path keys can contain '/'
-            characters, making string-splitting of a resource path potentially 
+            characters, making string-splitting of a resource path potentially
             hazardous.
             </summary>
         </member>
@@ -2472,7 +2472,7 @@
         <member name="P:Amazon.Runtime.Internal.DefaultRequest.MarshallerVersion">
             <summary>
             Gets and Sets the version number for the marshaller used to create this request. The version number
-            is used to support backward compatible changes that would otherwise be breaking changes when a 
+            is used to support backward compatible changes that would otherwise be breaking changes when a
             newer core is used with an older service assembly.
             Versions:
                 1 - Default version
@@ -2527,7 +2527,7 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.DefaultRequest.Suppress404Exceptions">
             <summary>
-            Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and 
+            Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and
             an empty response object will be returned.
             </summary>
         </member>
@@ -2541,7 +2541,7 @@
         <member name="P:Amazon.Runtime.Internal.DefaultRequest.UseChunkEncoding">
             <summary>
             Determine whether to use a chunked encoding upload for the request
-            (applies to Amazon S3 PutObject and UploadPart requests only). 
+            (applies to Amazon S3 PutObject and UploadPart requests only).
             </summary>
             <returns></returns>
         </member>
@@ -2596,13 +2596,13 @@
             This class is only intended for internal use inside the AWS client libraries.
             Callers shouldn't ever interact directly with objects of this class.
             </para>
-            </summary>    
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.DiscoveryEndpointBase.#ctor(System.String,System.Int64)">
             <summary>
             Constructs a new DiscoveryEndpoint
             </summary>
-            <param name="address">The address of the endpoint</param>        
+            <param name="address">The address of the endpoint</param>
             <param name="cachePeriodInMinutes">The cache period for the endpoint in minutes</param>
         </member>
         <member name="P:Amazon.Runtime.Internal.DiscoveryEndpointBase.Address">
@@ -2624,7 +2624,7 @@
         <member name="M:Amazon.Runtime.Internal.DiscoveryEndpointBase.ExtendExpiration(System.Int64)">
             <summary>
             Extends the endpoint expiration by the specified number of minutes from now.
-            </summary>        
+            </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.DiscoveryEndpoint">
             <summary>
@@ -2633,7 +2633,7 @@
             This class is only intended for internal use inside the AWS client libraries.
             Callers shouldn't ever interact directly with objects of this class.
             </para>
-            </summary>    
+            </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.EndpointDiscoveryDataBase">
             <summary>
@@ -2820,7 +2820,7 @@
             <summary>
             Returns the subresources that should be appended to the resource path.
             This is used primarily for Amazon S3, where object keys can contain '?'
-            characters, making string-splitting of a resource path potentially 
+            characters, making string-splitting of a resource path potentially
             hazardous.
             </summary>
         </member>
@@ -2856,7 +2856,7 @@
             <summary>
             Returns the path resources that should be used within the resource path.
             This is used for services where path keys can contain '/'
-            characters, making string-splitting of a resource path potentially 
+            characters, making string-splitting of a resource path potentially
             hazardous.
             </summary>
         </member>
@@ -2870,7 +2870,7 @@
         <member name="P:Amazon.Runtime.Internal.IRequest.MarshallerVersion">
             <summary>
             Gets and Sets the version number for the marshaller used to create this request. The version number
-            is used to support backward compatible changes that would otherwise be breaking changes when a 
+            is used to support backward compatible changes that would otherwise be breaking changes when a
             newer core is used with an older service assembly.
             </summary>
         </member>
@@ -2928,12 +2928,12 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.IRequest.HostPrefix">
             <summary>
-            Host prefix value to prepend to the endpoint for this request, if any. 
+            Host prefix value to prepend to the endpoint for this request, if any.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.IRequest.Suppress404Exceptions">
             <summary>
-            Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and 
+            Gets and sets the Suppress404Exceptions property. If true then 404s return back from AWS will not cause an exception and
             an empty response object will be returned.
             </summary>
         </member>
@@ -2947,7 +2947,7 @@
         <member name="P:Amazon.Runtime.Internal.IRequest.UseChunkEncoding">
             <summary>
             Determine whether to use a chunked encoding upload for the request
-            (applies to Amazon S3 PutObject and UploadPart requests only). 
+            (applies to Amazon S3 PutObject and UploadPart requests only).
             </summary>
             <returns></returns>
         </member>
@@ -3024,7 +3024,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipelineCustomizerRegistry.Register(Amazon.Runtime.Internal.IRuntimePipelineCustomizer)">
             <summary>
-            Registers a customizer that will be applied for all service clients created. Each customizer has a unique name associated with it. If a customizer is registered more 
+            Registers a customizer that will be applied for all service clients created. Each customizer has a unique name associated with it. If a customizer is registered more
             than once with the same unique name then the calls after the first will be ignored.
             </summary>
             <param name="customizer"></param>
@@ -3089,9 +3089,9 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.ErrorResponseUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext)">
             <summary>
-            Build an ErrorResponse from XML 
+            Build an ErrorResponse from XML
             </summary>
-            <param name="context">The XML parsing context. 
+            <param name="context">The XML parsing context.
             Usually an <c>Amazon.Runtime.Internal.UnmarshallerContext</c>.</param>
             <returns>An <c>ErrorResponse</c> object.</returns>
         </member>
@@ -3104,12 +3104,12 @@
         <member name="T:Amazon.Runtime.Internal.Transform.IResponseUnmarshaller`2">
             <summary>
             Interface for unmarshallers which unmarshall service responses.
-            The Unmarshallers are stateless, and only encode the rules for what data 
-            in the XML stream goes into what members of an object. 
+            The Unmarshallers are stateless, and only encode the rules for what data
+            in the XML stream goes into what members of an object.
             </summary>
             <typeparam name="T">The type of object the unmarshaller returns</typeparam>
             <typeparam name="R">The type of the XML unmashaller context, which contains the
-            state of parsing the XML stream. Uaually an instance of 
+            state of parsing the XML stream. Uaually an instance of
             <c>Amazon.Runtime.Internal.Transform.UnmarshallerContext</c>.</typeparam>
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.IResponseUnmarshaller`2.UnmarshallException(`1,System.Exception,System.Net.HttpStatusCode)">
@@ -3119,18 +3119,18 @@
             <param name="input">The XML parsing context.</param>
             <param name="innerException">An inner exception to be included with the returned exception</param>
             <param name="statusCode">The HttpStatusCode from the ErrorResponse</param>
-            <returns>Either an exception based on the ErrorCode from the ErrorResponse, or the 
+            <returns>Either an exception based on the ErrorCode from the ErrorResponse, or the
             general service exception for the service in question.</returns>
         </member>
         <member name="T:Amazon.Runtime.Internal.Transform.IUnmarshaller`2">
             <summary>
             Interface for unmarshallers which unmarshall objects from response data.
-            The Unmarshallers are stateless, and only encode the rules for what data 
-            in the XML stream goes into what members of an object. 
+            The Unmarshallers are stateless, and only encode the rules for what data
+            in the XML stream goes into what members of an object.
             </summary>
             <typeparam name="T">The type of object the unmarshaller returns</typeparam>
             <typeparam name="R">The type of the XML unmashaller context, which contains the
-            state during parsing of the XML stream. Usually an instance of 
+            state during parsing of the XML stream. Usually an instance of
             <c>Amazon.Runtime.Internal.Transform.UnmarshallerContext</c>.</typeparam>
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.IUnmarshaller`2.Unmarshall(`1)">
@@ -3147,9 +3147,9 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.JsonErrorResponseUnmarshaller.Unmarshall(Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext)">
             <summary>
-            Build an ErrorResponse from json 
+            Build an ErrorResponse from json
             </summary>
-            <param name="context">The json parsing context. 
+            <param name="context">The json parsing context.
             Usually an <c>Amazon.Runtime.Internal.JsonUnmarshallerContext</c>.</param>
             <returns>An <c>ErrorResponse</c> object.</returns>
         </member>
@@ -3162,7 +3162,7 @@
         <member name="T:Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext">
             <summary>
             Wraps a json string for unmarshalling.
-            
+
             Each <c>Read()</c> operation gets the next token.
             <c>TestExpression()</c> is used to match the current key-chain
             to an xpath expression. The general pattern looks like this:
@@ -3198,7 +3198,7 @@
         <member name="P:Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext.IsEndElement">
             <summary>
             Is the current token the end of an object
-            </summary>    
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.Transform.JsonUnmarshallerContext.IsStartElement">
             <summary>
@@ -3230,7 +3230,7 @@
             Peeks at the next token. This peek implementation
             reads the next token and makes the subsequent Read() return the same data.
             If Peek is called successively, it will return the same data.
-            Only the first one calls Read(), subsequent calls 
+            Only the first one calls Read(), subsequent calls
             will return the same data until a Read() call is made.
             </summary>
             <param name="token">Token to peek.</param>
@@ -3343,11 +3343,11 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.DateTimeUnmarshaller.UnmarshallInternal(System.String,System.Boolean)">
             <summary>
-             Unmarshalls given string as a DateTime. Handles cases where we want to unmarshall 
+             Unmarshalls given string as a DateTime. Handles cases where we want to unmarshall
              as just a DateTime or a nullable Datetime.
             </summary>
             <param name="text">Value to be parsed</param>
-            <param name="treatAsNullable">If true, the method will return null if text is null. 
+            <param name="treatAsNullable">If true, the method will return null if text is null.
             If false, the method will return default(DateTime), if text is null.</param>
             <returns></returns>
         </member>
@@ -3382,7 +3382,7 @@
             <param name="expression">
                 The pseudo-XPath expression to test.</param>
             <returns>
-                True if the expression matches the current position in the document, 
+                True if the expression matches the current position in the document,
                 false otherwise.</returns>
         </member>
         <member name="M:Amazon.Runtime.Internal.Transform.UnmarshallerContext.TestExpression(System.String,System.Int32)">
@@ -3463,7 +3463,7 @@
         <member name="T:Amazon.Runtime.Internal.Transform.XmlUnmarshallerContext">
             <summary>
             Wrap an <c>XmltextReader</c> for simulating an event stream.
-            
+
             Each <c>Read()</c> operation goes either to the next element or next attribute within
             the current element. <c>TestExpression()</c> is used to match the current event
             to an xpath expression. The general pattern looks like this:
@@ -3671,7 +3671,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.ChunkedUploadWrapperStream.ConstructOutputBufferChunk(System.Int32)">
             <summary>
-            Computes the derived signature for a chunk of data of given length in the input buffer, 
+            Computes the derived signature for a chunk of data of given length in the input buffer,
             placing a formatted chunk with headers, signature and data into the output buffer
             ready for streaming back to the consumer.
             </summary>
@@ -4032,7 +4032,7 @@
         <member name="M:Amazon.Runtime.Internal.Util.HostPrefixUtils.IsValidLabelValue(System.String)">
             <summary>
             Validates a label value
-            </summary>        
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.InternalConsoleLogger.Error(System.Exception,System.String,System.Object[])">
             <summary>
@@ -4204,7 +4204,7 @@
         <member name="T:Amazon.Runtime.Internal.Util.LruCache`2">
              <summary>
              a size-limited cache of key value pairs
-            
+
              Once the maximum size has been reached, the least recently
              used pairs will be evicted to make room for any new items.
              </summary>
@@ -4232,7 +4232,7 @@
              <summary>
              Add the key/value pair to the cache, or update
              the value if the key already exists.
-            
+
              If the cache is full, evicts the least recently used item.
              </summary>
              <param name="key"></param>
@@ -4242,7 +4242,7 @@
             <summary>
             Evicts a specific key out of the cache if it exists
             </summary>
-            <param name="key">the key to evict from the cache</param>        
+            <param name="key">the key to evict from the cache</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.TryGetValue(`0,`1@)">
             <summary>
@@ -4254,7 +4254,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.LruCache`2.GetOrAdd(`0,System.Func{`0,`1})">
             <summary>
-            Try to get the value associated with the key, if it doesn't exist, use the provided factory method to 
+            Try to get the value associated with the key, if it doesn't exist, use the provided factory method to
             create a new value and tries adding it to the cache.
             </summary>
             <param name="key">the key to look up</param>
@@ -4446,7 +4446,7 @@
         </member>
         <member name="T:Amazon.Runtime.Internal.Util.PartialWrapperStream">
             <summary>
-            This class is used to wrap a stream for a particular segment of a stream.  It 
+            This class is used to wrap a stream for a particular segment of a stream.  It
             makes that segment look like you are reading from beginning to end of the stream.
             </summary>
         </member>
@@ -4520,7 +4520,7 @@
             and appends the decoded value to the string under construction.
             </summary>
             <param name="builder">
-            The string under construction to which the decoded character will be 
+            The string under construction to which the decoded character will be
             appended.
             </param>
             <param name="s">The string being decoded.</param>
@@ -4974,7 +4974,7 @@
             <summary>
             A wrapper stream that encrypts the base stream as it
             is being read.
-            </summary>   
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.EncryptStream`1.#ctor(System.IO.Stream,System.Byte[],System.Byte[])">
             <summary>
@@ -5067,7 +5067,7 @@
             <summary>
             A wrapper stream that encrypts the base stream as it
             is being read.
-            </summary>   
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.EncryptUploadPartStream`1.#ctor(System.IO.Stream,System.Byte[],System.Byte[])">
             <summary>
@@ -5081,7 +5081,7 @@
             <summary>
             A wrapper stream that encrypts the base stream as it
             is being read.
-            </summary>   
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.Util.AESEncryptionUploadPartStream.#ctor(System.IO.Stream,System.Byte[],System.Byte[])">
             <summary>
@@ -5094,7 +5094,7 @@
         <member name="T:Amazon.Runtime.Internal.Util.IniFile">
              <summary>
              Provides read/write access to a file in the INI format.
-            
+
              This class is not threadsafe.
              </summary>
         </member>
@@ -5157,7 +5157,7 @@
              <summary>
              Update the section with the properties given.
              If the section doesn't exist, it will be appended to the file.
-            
+
              Notes:
              1. Any properties that do exist in the section will be updated.
              2. A null value for a property denotes that it should be deleted from the section
@@ -5251,7 +5251,7 @@
              When the file is persisted back to disk, an optimistic concurrency
              check is performed to make sure the file hasn't changed since it was
              originally read.
-            
+
              This class is not threadsafe.
              </summary>
         </member>
@@ -5271,7 +5271,7 @@
              <summary>
              Read/write access to the lines that make up the file.
              Any changes to this List are persisted back to disk when Persist() is called.
-            
+
              NOTE:
              The lines have the original line endings on them to preserve the
              original text as much as possible.
@@ -5427,9 +5427,9 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.HttpErrorResponseExceptionHandler.HandleSuppressed404(Amazon.Runtime.IExecutionContext,Amazon.Runtime.Internal.Transform.IWebResponseData)">
             <summary>
-            Checks if a HTTP 404 status code is returned which needs to be suppressed and 
+            Checks if a HTTP 404 status code is returned which needs to be suppressed and
             processes it.
-            If a suppressed 404 is present, it unmarshalls the response and returns true to 
+            If a suppressed 404 is present, it unmarshalls the response and returns true to
             indicate that a suppressed 404 was processed, else returns false.
             </summary>
             <param name="executionContext">The execution context, it contains the
@@ -5462,7 +5462,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CallbackHandler.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls the PreInvoke and PostInvoke methods before and after calling the next handler 
+            Calls the PreInvoke and PostInvoke methods before and after calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5470,7 +5470,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CallbackHandler.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls the PreInvoke and PostInvoke methods before and after calling the next handler 
+            Calls the PreInvoke and PostInvoke methods before and after calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5505,14 +5505,14 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CredentialsRetriever.PreInvoke(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Retrieves the credentials to be used for the current call before 
+            Retrieves the credentials to be used for the current call before
             invoking the next handler.
             </summary>
             <param name="executionContext"></param>
         </member>
         <member name="M:Amazon.Runtime.Internal.CredentialsRetriever.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5520,7 +5520,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CredentialsRetriever.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5535,7 +5535,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.EndpointDiscoveryHandler.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5543,7 +5543,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.EndpointDiscoveryHandler.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5557,7 +5557,7 @@
             before invoking the next handler.
             </summary>
             <param name="executionContext">The execution context, it contains the
-            request and response context.</param>                
+            request and response context.</param>
         </member>
         <member name="T:Amazon.Runtime.Internal.EndpointResolver">
             <summary>
@@ -5566,7 +5566,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.EndpointResolver.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5574,7 +5574,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.EndpointResolver.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5605,13 +5605,13 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.ErrorCallbackHandler.OnError">
             <summary>
-            Action to execute if an exception occurs during the 
+            Action to execute if an exception occurs during the
             execution of any underlying handlers.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.ErrorCallbackHandler.HandleException(Amazon.Runtime.IExecutionContext,System.Exception)">
             <summary>
-            Executes the OnError action if an exception occurs during the 
+            Executes the OnError action if an exception occurs during the
             execution of any underlying handlers.
             </summary>
             <param name="executionContext"></param>
@@ -5624,7 +5624,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Marshaller.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5632,7 +5632,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Marshaller.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5696,7 +5696,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.RedirectHandler.HandleRedirect(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Checks if an HTTP 307 (temporary redirect) has occured and changes the 
+            Checks if an HTTP 307 (temporary redirect) has occured and changes the
             request endpoint to the redirected location.
             </summary>
             <param name="executionContext">
@@ -5713,7 +5713,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Signer.InvokeSync(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -5721,7 +5721,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.Signer.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls pre invoke logic before calling the next handler 
+            Calls pre invoke logic before calling the next handler
             in the pipeline.
             </summary>
             <typeparam name="T">The response type for the current request.</typeparam>
@@ -5760,7 +5760,7 @@
             The constructor for Unmarshaller.
             </summary>
             <param name="supportsResponseLogging">
-            Boolean value which indicated if the unmarshaller 
+            Boolean value which indicated if the unmarshaller
             handler supports response logging.
             </param>
         </member>
@@ -5807,7 +5807,7 @@
         </member>
         <member name="T:Amazon.Runtime.Internal.HttpHandler`1">
             <summary>
-            The HTTP handler contains common logic for issuing an HTTP request that is 
+            The HTTP handler contains common logic for issuing an HTTP request that is
             independent of the underlying HTTP infrastructure.
             </summary>
             <typeparam name="TRequestContent"></typeparam>
@@ -5864,21 +5864,21 @@
         <member name="T:Amazon.Runtime.Internal.HttpWebRequestFactory">
             <summary>
             The request factory for System.Net.HttpWebRequest.
-            </summary>    
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.HttpWebRequestFactory.#ctor(Amazon.Runtime.Internal.IAmazonSecurityProtocolManager)">
             <summary>
-            Some AWS services like Cloud 9 require at least TLS 1.1. Version of .NET Framework 4.5 and earlier 
-            do not eanble TLS 1.1 and TLS 1.2 by default. This code adds those protocols if using an earlier 
-            version of .NET that explicitly set the protocol and didn't have TLS 1.1 and TLS 1.2. 
+            Some AWS services like Cloud 9 require at least TLS 1.1. Version of .NET Framework 4.5 and earlier
+            do not eanble TLS 1.1 and TLS 1.2 by default. This code adds those protocols if using an earlier
+            version of .NET that explicitly set the protocol and didn't have TLS 1.1 and TLS 1.2.
             </summary>
             <param name="amazonSecurityProtocolManager"></param>
         </member>
         <member name="M:Amazon.Runtime.Internal.HttpWebRequestFactory.#ctor(Amazon.Runtime.Internal.IAmazonSecurityProtocolManager,Amazon.Runtime.Internal.Util.ILogger)">
             <summary>
-            Some AWS services like Cloud 9 require at least TLS 1.1. Version of .NET Framework 4.5 and earlier 
-            do not eanble TLS 1.1 and TLS 1.2 by default. This code adds those protocols if using an earlier 
-            version of .NET that explicitly set the protocol and didn't have TLS 1.1 and TLS 1.2. 
+            Some AWS services like Cloud 9 require at least TLS 1.1. Version of .NET Framework 4.5 and earlier
+            do not eanble TLS 1.1 and TLS 1.2 by default. This code adds those protocols if using an earlier
+            version of .NET that explicitly set the protocol and didn't have TLS 1.1 and TLS 1.2.
             </summary>
             <param name="amazonSecurityProtocolManager"></param>
             <param name="logger"></param>
@@ -5905,7 +5905,7 @@
         <member name="T:Amazon.Runtime.Internal.HttpRequest">
             <summary>
             HTTP request wrapper for System.Net.HttpWebRequest.
-            </summary>    
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.Internal.HttpRequest.#ctor(System.Uri)">
             <summary>
@@ -6007,7 +6007,7 @@
             An abstract pipeline handler that has implements IPipelineHandler,
             and has the default implmentation. This is the base class for most of
             the handler implementations.
-            </summary>    
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.PipelineHandler.Logger">
             <summary>
@@ -6016,7 +6016,7 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.PipelineHandler.InnerHandler">
             <summary>
-            The inner handler which is called after the current 
+            The inner handler which is called after the current
             handler completes it's processing.
             </summary>
         </member>
@@ -6094,7 +6094,7 @@
             <summary>
             Constructor for DefaultRetryPolicy.
             </summary>
-            <param name="config">The Client config object. This is used to 
+            <param name="config">The Client config object. This is used to
             retrieve the maximum number of retries  before throwing
             back a exception(This does not count the initial request) and
             the service URL for the request.</param>
@@ -6117,7 +6117,7 @@
         <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.OnRetry(Amazon.Runtime.IExecutionContext)">
             <summary>
             Virtual method that gets called when a retry request is initiated. If retry throttling is
-            enabled, the value returned is true if the required capacity is retured, false otherwise. 
+            enabled, the value returned is true if the required capacity is retured, false otherwise.
             If retry throttling is disabled, true is returned.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -6126,7 +6126,7 @@
         <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.OnRetry(Amazon.Runtime.IExecutionContext,System.Boolean)">
             <summary>
             Virtual method that gets called when a retry request is initiated. If retry throttling is
-            enabled, the value returned is true if the required capacity is retured, false otherwise. 
+            enabled, the value returned is true if the required capacity is retured, false otherwise.
             If retry throttling is disabled, true is returned.
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -6135,8 +6135,8 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.DefaultRetryPolicy.NotifySuccess(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Virtual method that gets called on a success Response. If its a retry success response, the entire 
-            retry acquired capacity is released(default is 5). If its just a success response a lesser value capacity 
+            Virtual method that gets called on a success Response. If its a retry success response, the entire
+            retry acquired capacity is released(default is 5). If its just a success response a lesser value capacity
             is released(default is 1).
             </summary>
             <param name="executionContext">Request context containing the state of the request.</param>
@@ -6189,7 +6189,7 @@
         <member name="T:Amazon.Runtime.Internal.RetryHandler">
             <summary>
             The retry handler has the generic logic for retrying requests.
-            It uses a retry policy which specifies when 
+            It uses a retry policy which specifies when
             a retry should be performed.
             </summary>
         </member>
@@ -6200,7 +6200,7 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.RetryHandler.RetryPolicy">
             <summary>
-            The retry policy which specifies when 
+            The retry policy which specifies when
             a retry should be performed.
             </summary>
         </member>
@@ -6249,19 +6249,19 @@
             <summary>
             Constructor for RuntimePipeline.
             </summary>
-            <param name="handler">The handler with which the pipeline is initalized.</param>        
+            <param name="handler">The handler with which the pipeline is initalized.</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipeline.#ctor(System.Collections.Generic.IList{Amazon.Runtime.IPipelineHandler})">
             <summary>
             Constructor for RuntimePipeline.
-            </summary>        
-            <param name="handlers">List of handlers with which the pipeline is initalized.</param>                
+            </summary>
+            <param name="handlers">List of handlers with which the pipeline is initalized.</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipeline.#ctor(System.Collections.Generic.IList{Amazon.Runtime.IPipelineHandler},Amazon.Runtime.Internal.Util.ILogger)">
             <summary>
             Constructor for RuntimePipeline.
-            </summary>        
-            <param name="handlers">List of handlers with which the pipeline is initalized.</param>        
+            </summary>
+            <param name="handlers">List of handlers with which the pipeline is initalized.</param>
             <param name="logger">The logger used to log messages.</param>
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipeline.#ctor(Amazon.Runtime.IPipelineHandler,Amazon.Runtime.Internal.Util.ILogger)">
@@ -6293,7 +6293,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipeline.AddHandlerAfter``1(Amazon.Runtime.IPipelineHandler)">
             <summary>
-            Adds a handler after the first instance of handler of type T.        
+            Adds a handler after the first instance of handler of type T.
             </summary>
             <typeparam name="T">Type of the handler after which the given handler instance is added.</typeparam>
             <param name="handler">The handler to be added to the pipeline.</param>
@@ -6327,7 +6327,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.RuntimePipeline.GetInnermostHandler(Amazon.Runtime.IPipelineHandler)">
             <summary>
-            Gets the innermost handler by traversing the inner handler till 
+            Gets the innermost handler by traversing the inner handler till
             it reaches the last one.
             </summary>
         </member>
@@ -6355,7 +6355,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CSMCallAttemptHandler.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls the PreInvoke and PostInvoke methods before and after calling the next handler 
+            Calls the PreInvoke and PostInvoke methods before and after calling the next handler
             in the pipeline.
             </summary>
         </member>
@@ -6392,7 +6392,7 @@
         </member>
         <member name="M:Amazon.Runtime.Internal.CSMCallEventHandler.InvokeAsync``1(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Calls the PreInvoke and PostInvoke methods before and after calling the next handler 
+            Calls the PreInvoke and PostInvoke methods before and after calling the next handler
             in the pipeline.
             </summary>
         </member>
@@ -6490,7 +6490,7 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICall.Service">
             <summary>
-            Contains the service id ServiceId Sep of the service 
+            Contains the service id ServiceId Sep of the service
             against which the call is being made
             </summary>
         </member>
@@ -6502,14 +6502,14 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICall.Timestamp">
             <summary>
-            Contains the elapsed time, in milliseconds, 
-            since January 1st, 1970, for the time point 
+            Contains the elapsed time, in milliseconds,
+            since January 1st, 1970, for the time point
             at which the event occurred
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICall.Type">
             <summary>
-            Contains "ApiCall" or "ApiCallAttempt" 
+            Contains "ApiCall" or "ApiCallAttempt"
             based on what the monitoring event is describing
             </summary>
         </member>
@@ -6527,13 +6527,13 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICall.Region">
             <summary>
-            Contains the signing region used by the 
+            Contains the signing region used by the
             service client that made the request attempt.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICall.UserAgent">
             <summary>
-            Contains the full value of the SDK's default 
+            Contains the full value of the SDK's default
             user agent header for http requests.
             </summary>
         </member>
@@ -6545,40 +6545,40 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.Fqdn">
             <summary>
-            Contains the fully-qualified domain name of the endpoint that 
+            Contains the fully-qualified domain name of the endpoint that
             the request attempt was submitted to.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.SessionToken">
             <summary>
-            Contains the session token passed 
+            Contains the session token passed
             in the x-amz-security-token header.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.AccessKey">
             <summary>
-            Contains the aws_access_key value that 
+            Contains the aws_access_key value that
             was used to sign the http request.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.HttpStatusCode">
             <summary>
-            Contains the attempt's response status code, 
+            Contains the attempt's response status code,
             as returned by the http client.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.SdkExceptionMessage">
             <summary>
-            Contains the full text (exception object converted to String, 
-            for example) for any attempt-level failure that is due to 
-            something other than an Aws exception. The value of this entry 
+            Contains the full text (exception object converted to String,
+            for example) for any attempt-level failure that is due to
+            something other than an Aws exception. The value of this entry
             has a maximum length of 512.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.SdkException">
             <summary>
-            Contains the short error name (exception class name, for example) 
-            for any attempt-level failure that is due to something other 
+            Contains the short error name (exception class name, for example)
+            for any attempt-level failure that is due to something other
             than an Aws exception.The value of this entry has a maximum length of 128.
             </summary>
         </member>
@@ -6609,9 +6609,9 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallAttempt.AttemptLatency">
             <summary>
-            Contains the elapsed time, in milliseconds, 
-            between the construction of the http request and the 
-            point in time where the http response has been parsed 
+            Contains the elapsed time, in milliseconds,
+            between the construction of the http request and the
+            point in time where the http response has been parsed
             or the attempt has definitively failed.
             </summary>
         </member>
@@ -6623,14 +6623,14 @@
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallEvent.AttemptCount">
             <summary>
-            Contains the total number of attempts that were made 
+            Contains the total number of attempts that were made
             by the service client to fulfill this request before succeeding or failing
             </summary>
         </member>
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallEvent.Latency">
             <summary>
-            Contains the elapsed time, in milliseconds, 
-            between when the Api Call was begun and when a 
+            Contains the elapsed time, in milliseconds,
+            between when the Api Call was begun and when a
             final response or error is manifested to the caller
             </summary>
         </member>
@@ -6669,13 +6669,13 @@
         <!-- Badly formed XML comment ignored for member "P:Amazon.Runtime.Internal.MonitoringAPICallEvent.FinalAWSExceptionMessage" -->
         <member name="P:Amazon.Runtime.Internal.MonitoringAPICallEvent.FinalHttpStatusCode">
             <summary>
-            Contains the attempt's response status code, 
+            Contains the attempt's response status code,
             as returned by the http client.
             </summary>
         </member>
         <member name="T:Amazon.Runtime.Internal.ClientContextConfig">
             <summary>
-            Provides information for Client Context header. 
+            Provides information for Client Context header.
             Client Context header needs information like App title, version code, version name, package name etc.
             </summary>
         </member>
@@ -6741,7 +6741,7 @@
             <summary>
             This class is the base class of all the configurations settings to connect
             to a service.
-            </summary>    
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.ServiceVersion">
             <summary>
@@ -6756,7 +6756,7 @@
         <member name="P:Amazon.Runtime.ClientConfig.SignatureVersion">
              <summary>
              Gets and sets of the SignatureVersion property.
-            
+
              Note: This property exists for backward compatibility but is no longer
              used by any service other than S3.
              </summary>
@@ -6768,9 +6768,9 @@
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.RegionEndpoint">
             <summary>
-            Gets and sets the RegionEndpoint property.  The region constant that 
+            Gets and sets the RegionEndpoint property.  The region constant that
             determines the endpoint to use.
-            
+
             Setting this property to null will force the SDK to recalculate the
             RegionEndpoint value based on App/WebConfig, environment variables,
             profile, etc.
@@ -6805,8 +6805,8 @@
         <member name="P:Amazon.Runtime.ClientConfig.AuthenticationRegion">
             <summary>
             Gets and sets the AuthenticationRegion property.
-            Used in AWS4 request signing, this is an optional property; 
-            change it only if the region cannot be determined from the 
+            Used in AWS4 request signing, this is an optional property;
+            change it only if the region cannot be determined from the
             service endpoint.
             </summary>
         </member>
@@ -6840,7 +6840,7 @@
         <member name="P:Amazon.Runtime.ClientConfig.BufferSize">
             <summary>
             Gets and Sets the BufferSize property.
-            The BufferSize controls the buffer used to read in from input streams and write 
+            The BufferSize controls the buffer used to read in from input streams and write
             out to the request.
             </summary>
         </member>
@@ -6848,11 +6848,11 @@
             <summary>
             <para>
             Gets or sets the interval at which progress update events are raised
-            for upload operations. By default, the progress update events are 
-            raised at every 100KB of data transferred. 
+            for upload operations. By default, the progress update events are
+            raised at every 100KB of data transferred.
             </para>
             <para>
-            If the value of this property is set less than ClientConfig.BufferSize, 
+            If the value of this property is set less than ClientConfig.BufferSize,
             progress updates events will be raised at the interval specified by ClientConfig.BufferSize.
             </para>
             </summary>
@@ -6872,7 +6872,7 @@
         <member name="P:Amazon.Runtime.ClientConfig.LogMetrics">
             <summary>
             Flag on whether to log metrics for service calls.
-            
+
             This can be set in the application's configs, as below:
             <code>
             &lt;?xml version="1.0" encoding="utf-8" ?&gt;
@@ -6921,17 +6921,17 @@
             for the configured region.
             </summary>
             <remarks>
-            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
-            that the service actually supports a dualstack endpoint in the configured region before enabling 
+            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check
+            that the service actually supports a dualstack endpoint in the configured region before enabling
             this option for a service.
             </remarks>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.ThrottleRetries">
             <summary>
             Enable or disable the Retry Throttling feature by setting the ThrottleRetries flag to True/False resepctively.
-            Retry Throttling is a feature that intelligently throttles retry attempts when a large precentage of requests 
+            Retry Throttling is a feature that intelligently throttles retry attempts when a large precentage of requests
             are failing and retries are unsuccessful as well. In such situations the allotted retry capacity for the service URL
-            will be drained until requests start to succeed again. Once the requisite capacity is available, retries would 
+            will be drained until requests start to succeed again. Once the requisite capacity is available, retries would
             be permitted again. When retries are throttled, the service enters a fail-fast behaviour as the traditional retry attempt
             for the request would be circumvented. Hence, errors will resurface quickly. This will result in a greated number of exceptions
             but prevents requests being tied up in unsuccessful retry attempts.
@@ -6942,7 +6942,7 @@
             <summary>
             Enable or disable the Nagle algorithm on the underlying http
             client.
-            
+
             This method is not intended to be called by consumers of the AWS SDK for .NET
             </summary>
             <param name="useNagle"></param>
@@ -6964,7 +6964,7 @@
             This field will be set if a service call resulted in an exception
             and the SDK has determined that there is a difference between local
             and server times.
-            
+
             If <seealso cref="!:CorrectForClockSkew"/> is set to true, this
             value will still be set to the correction, but it will not be used by the
             SDK and clock skew errors will not be retried.
@@ -6972,10 +6972,10 @@
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.DisableHostPrefixInjection">
             <summary>
-            Gets and sets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false. 
-            Host prefix injection prefixes the service endpoint with request members from APIs which use this feature. 
+            Gets and sets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false.
+            Host prefix injection prefixes the service endpoint with request members from APIs which use this feature.
             Example: for a hostPrefix of "foo-name." and a endpoint of "service.region.amazonaws.com" the default behavior is to
-            prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting 
+            prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting
             DisableHostPrefixInjection to true will disable hostPrefix injection resulting in a final endpoint of
             "service.region.amazonaws.com" regardless of the value of hostPrefix. E.g. You may want to disable host prefix injection for testing against a local mock endpoint.
             </summary>
@@ -6997,14 +6997,14 @@
         </member>
         <member name="M:Amazon.Runtime.ClientConfig.GetTimeoutValue(System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan})">
             <summary>
-            Returns the request timeout value if its value is set, 
+            Returns the request timeout value if its value is set,
             else returns client timeout value.
-            </summary>        
+            </summary>
         </member>
         <member name="P:Amazon.Runtime.ClientConfig.ReadWriteTimeout">
             <summary>
             Overrides the default read-write timeout value.
-            On Unity platform, this value is not used as Unity HTTP client does not support timeouts, so 
+            On Unity platform, this value is not used as Unity HTTP client does not support timeouts, so
             </summary>
             <remarks>
             <para>
@@ -7033,7 +7033,7 @@
             which the configured proxy host will be bypassed.
             </summary>
             <remarks>
-             For more information on bypass lists 
+             For more information on bypass lists
              see https://msdn.microsoft.com/en-us/library/system.net.webproxy.bypasslist%28v=vs.110%29.aspx.
             </remarks>
         </member>
@@ -7067,7 +7067,7 @@
         <member name="P:Amazon.Runtime.ClientConfig.ConnectionLimit">
             <summary>
             Gets and sets the connection limit set on the ServicePoint for the WebRequest.
-            Default value is 50 connections unless ServicePointManager.DefaultConnectionLimit is set in 
+            Default value is 50 connections unless ServicePointManager.DefaultConnectionLimit is set in
             which case ServicePointManager.DefaultConnectionLimit will be used as the default.
             </summary>
         </member>
@@ -7112,7 +7112,7 @@
         <member name="M:Amazon.Runtime.CorrectClockSkew.GetClockCorrectionForEndpoint(System.String)">
             <summary>
             Return clock skew correction value for an endpoint if there is one.
-            
+
             AWSConfigs.ManualClockCorrection overrides globally any calculated service endpoint specific
             clock correction value.
             </summary>
@@ -7121,7 +7121,7 @@
         </member>
         <member name="M:Amazon.Runtime.CorrectClockSkew.GetCorrectedUtcNowForEndpoint(System.String)">
             <summary>
-            Get clock skew corrected UTC now value.  If ManualClockCorrection is set, 
+            Get clock skew corrected UTC now value.  If ManualClockCorrection is set,
             use ManualClockCorrection instead of endpoint specific clock correction value.
             </summary>
             <param name="endpoint"></param>
@@ -7182,7 +7182,7 @@
         <member name="T:Amazon.Runtime.CredentialManagement.Internal.CredentialProfileUtils">
              <summary>
              This class is used internally and should not be accessed by SDK users.
-            
+
              Provide access to internal properties of CredentialProfile to
              PowerShell tools and the Visual Studio Toolkit.
              </summary>
@@ -7205,7 +7205,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="profile">The profile to get AWSCredentials for.</param>
@@ -7216,7 +7216,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="options">The options to get AWSCredentials for.</param>
@@ -7227,7 +7227,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="profile">The profile to get AWSCredentials for.</param>
@@ -7240,7 +7240,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="options">The options to get AWSCredentials for.</param>
@@ -7350,7 +7350,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
@@ -7360,7 +7360,7 @@
              <summary>
              Gets the AWSCredentials for this profile if CanCreateAWSCredentials is true
              and AWSCredentials can be created.  Throws an exception otherwise.
-            
+
              See <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfileOptions"/> for a list of AWSCredentials returned by this method.
              </summary>
              <param name="profileSource">The profile source, for profiles that reference other profiles.</param>
@@ -7372,10 +7372,10 @@
              <summary>
              The options that are available for creating AWSCredentials with the AWSCredentialsFactory.
              The type of AWSCredentials that are created depends on which Options are set.
-            
+
              Below are the different types of credentials returned, along with the options that are used to obtain them.
              ([] denotes options that are not required)
-            
+
              BasicAWSCredentials         AccessKey SecretKey
              SessionAWSCredentials       AccessKey SecretKey Token
              AssmeRoleAWSCredentials     SourceProfile RoleArn [ExternalID] [MfaSerial]
@@ -7490,7 +7490,7 @@
         <member name="M:Amazon.Runtime.CredentialManagement.CredentialProfileStoreChain.TryGetProfile(System.String,Amazon.Runtime.CredentialManagement.CredentialProfile@)">
              <summary>
              <para>
-             Try to get a <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfile"/> 
+             Try to get a <see cref="T:Amazon.Runtime.CredentialManagement.CredentialProfile"/>
              </para>
              <para>
              If ProfilesLocation is non-null and non-empty search the shared credentials
@@ -7832,7 +7832,7 @@
              The file is read, parsed, and validated at construction time.
              Changes can be made using the RegisterProfile() and
              UnregisterProfile() methods.
-            
+
              This class is not threadsafe.
              </summary>
         </member>
@@ -8148,7 +8148,7 @@
         </member>
         <member name="P:Amazon.Runtime.RefreshingAWSCredentials.PreemptExpiryTime">
             <summary>
-            The time before actual expiration to expire the credentials.        
+            The time before actual expiration to expire the credentials.
             Property cannot be set to a negative TimeSpan.
             </summary>
         </member>
@@ -8171,7 +8171,7 @@
         <member name="M:Amazon.Runtime.RefreshingAWSCredentials.GenerateNewCredentials">
             <summary>
             When overridden in a derived class, generates new credentials and new expiration date.
-            
+
             Called on first credentials request and when expiration date is in the past.
             </summary>
             <returns></returns>
@@ -8179,7 +8179,7 @@
         <member name="M:Amazon.Runtime.RefreshingAWSCredentials.GenerateNewCredentialsAsync">
             <summary>
             When overridden in a derived class, generates new credentials and new expiration date.
-            
+
             Called on first credentials request and when expiration date is in the past.
             </summary>
             <returns></returns>
@@ -8295,7 +8295,7 @@
         </member>
         <member name="T:Amazon.Runtime.DefaultInstanceProfileAWSCredentials">
             <summary>
-            InstanceProfileAWSCredentials allows configuring Roles and every instance hits IMDS individually.  
+            InstanceProfileAWSCredentials allows configuring Roles and every instance hits IMDS individually.
             This class has a singleton timer task that caches instance profile credentials every 2 minutes.
             </summary>
         </member>
@@ -8317,19 +8317,19 @@
         <member name="T:Amazon.Runtime.EnvironmentVariablesAWSCredentials">
             <summary>
             Uses aws credentials stored in environment variables to construct the credentials object.
-            AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used for the access key id and secret key. 
-            If the variable AWS_SESSION_TOKEN exists then it will be used to create temporary session 
+            AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used for the access key id and secret key.
+            If the variable AWS_SESSION_TOKEN exists then it will be used to create temporary session
             credentials.
             </summary>
             <remarks>
             For backwards compatibility the class will also attempt to discover the secret key from
-            the AWS_SECRET_KEY variable, if a value cannot be obtained using the standard 
+            the AWS_SECRET_KEY variable, if a value cannot be obtained using the standard
             AWS_SECRET_ACCESS_KEY variable.
             </remarks>
         </member>
         <member name="M:Amazon.Runtime.EnvironmentVariablesAWSCredentials.#ctor">
             <summary>
-            Constructs an instance of EnvironmentVariablesAWSCredentials. If no credentials are found in 
+            Constructs an instance of EnvironmentVariablesAWSCredentials. If no credentials are found in
             the environment variables then an InvalidOperationException is thrown.
             </summary>
         </member>
@@ -8557,8 +8557,8 @@
         </member>
         <member name="T:Amazon.Runtime.ProcessAWSCredentials">
             <summary>
-            Process Credentials  can retrieve credentials by running a process and reading its stdout. 
-            A new config option, "credential_process" is added to the shared config file that allows customers 
+            Process Credentials  can retrieve credentials by running a process and reading its stdout.
+            A new config option, "credential_process" is added to the shared config file that allows customers
             to specify which process to run. The credentials retrieved by running this process could be either
             Basic or Session credentials.
             </summary>
@@ -8572,22 +8572,22 @@
             <summary>
             Exception class to capture all exceptions encountered when starting or
             executing the "credential_process" process. If the user has specified an executable
-            and the SDK is unable to execute it, the exception should be surfaces to the user 
-            instead of moving on to the next credential provider. 
+            and the SDK is unable to execute it, the exception should be surfaces to the user
+            instead of moving on to the next credential provider.
             </summary>
         </member>
         <member name="T:Amazon.Runtime.StoredProfileAWSCredentials">
             <summary>
             <para>
-            Credentials that are retrieved using a stored profile. 
+            Credentials that are retrieved using a stored profile.
             </para>
             <para>
-            Unless otherwise specified priority is given to loading credentials from the SDK credential store 
-            file which is shared between the SDK, PowerShell CLI and Toolkit. Credentials in profiles in this 
-            file are encrypted and can only be used by the user account on the current machine that stored the 
-            profile. Credentials can also be loaded from the plain-text ini-format credential file which is 
-            shared with other AWS SDKs. This file is expected to exist in a '.aws' folder in the user's home 
-            directory but alternate locations can be specified using either the AWSProfilesLocation setting in 
+            Unless otherwise specified priority is given to loading credentials from the SDK credential store
+            file which is shared between the SDK, PowerShell CLI and Toolkit. Credentials in profiles in this
+            file are encrypted and can only be used by the user account on the current machine that stored the
+            profile. Credentials can also be loaded from the plain-text ini-format credential file which is
+            shared with other AWS SDKs. This file is expected to exist in a '.aws' folder in the user's home
+            directory but alternate locations can be specified using either the AWSProfilesLocation setting in
             the application configuration file, or by using the AWS_SHARED_CREDENTIALS_FILE environment variable.
             </para>
             <para>
@@ -8597,9 +8597,9 @@
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.#ctor">
             <summary>
-            Constructs an instance for credentials stored in a profile. This constructor searches for credentials 
-            using the account name specified using the AWSProfileName setting, if set, in the application configuration 
-            file. If the configuration file setting is not set the SDK will attempt to locate a profile with the name 
+            Constructs an instance for credentials stored in a profile. This constructor searches for credentials
+            using the account name specified using the AWSProfileName setting, if set, in the application configuration
+            file. If the configuration file setting is not set the SDK will attempt to locate a profile with the name
             'default'.
             </summary>
         </member>
@@ -8607,7 +8607,7 @@
             <summary>
             Constructs an instance for credentials stored in a profile with the specified name. The SDK will
             check the SDK credential store file first before looking for the shared ini-format credentials
-            file unless the application configuration file contains a setting for the 'AWSProfilesLocation' 
+            file unless the application configuration file contains a setting for the 'AWSProfilesLocation'
             indicating the search should be constrained to the shared credentials file at the specified
             location.
             </summary>
@@ -8619,15 +8619,15 @@
             </summary>
             <param name="profileName">The profile name to search for credentials for</param>
             <param name="profilesLocation">
-            Optional; instructs the SDK to check for the profile in the shared credentials file at the 
+            Optional; instructs the SDK to check for the profile in the shared credentials file at the
             specified location. If not set, the SDK will inspect its own credential store file first before
             attempting to locate a shared credential file using either the default location beneath the user's
-            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment 
+            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment
             variable.
             </param>
             <remarks>
-            If credential materials cannot be read or are invalid due to missing data an InvalidDataException 
-            is thrown. If no credentials can be located with the specified profile name, an ArgumentException 
+            If credential materials cannot be read or are invalid due to missing data an InvalidDataException
+            is thrown. If no credentials can be located with the specified profile name, an ArgumentException
             is thrown.
             </remarks>
         </member>
@@ -8643,15 +8643,15 @@
         </member>
         <member name="M:Amazon.Runtime.StoredProfileAWSCredentials.IsProfileKnown(System.String,System.String)">
             <summary>
-            Tests if a profile has been registered in either the SDK store or the specified credential 
+            Tests if a profile has been registered in either the SDK store or the specified credential
             file.
             </summary>
             <param name="profileName">The name of the profile to test</param>
             <param name="profilesLocation">
-            Optional; instructs the SDK to check for the profile in the shared credentials file at the 
+            Optional; instructs the SDK to check for the profile in the shared credentials file at the
             specified location. If not set, the SDK will inspect its own credential store file first before
             attempting to locate a shared credential file using either the default location beneath the user's
-            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment 
+            home profile folder or the location specified in the AWS_SHARED_CREDENTIALS_FILE environment
             variable.
             </param>
             <returns>True if a profile with the specified name has been registered.</returns>
@@ -8679,7 +8679,7 @@
         <member name="T:Amazon.Runtime.StoredProfileCredentials">
             <summary>
             Helper routiners for AWS and Federated credential profiles. Probes the
-            profile type for the supplied profile name and returns the appropriate profile 
+            profile type for the supplied profile name and returns the appropriate profile
             instance.
             </summary>
         </member>
@@ -8706,13 +8706,13 @@
         <member name="M:Amazon.Runtime.StoredProfileCredentials.ResolveSharedCredentialFileLocation(System.String)">
             <summary>
             Probes for and returns the fully qualified name of the shared ini-format credentials
-            file. 
+            file.
             </summary>
             <param name="profileLocation">
-            Contains the file or folder name of the credential file. If not specified, the 
+            Contains the file or folder name of the credential file. If not specified, the
             routine will first check the application configuration file for a setting indicating
             the file location or filename. If the configuration file does not yield a credential
-            file location then an environment variable is examined. Finally the routine will 
+            file location then an environment variable is examined. Finally the routine will
             inspect the fallback default location beneath the user's home folder location.
             </param>
             <returns>
@@ -8801,7 +8801,7 @@
         <member name="P:Amazon.Runtime.StoredProfileFederatedCredentials.CustomCallbackState">
             <summary>
             Custom state to return to the registered callback to handle credential requests.
-            The data will be contained in the CredentialRequestCallbackArgs instance supplied 
+            The data will be contained in the CredentialRequestCallbackArgs instance supplied
             to the callback.
             </summary>
         </member>
@@ -8928,7 +8928,7 @@
             <remarks>
             Only one callback handler can be registered. The call to the handler will be made on
             whatever thread is executing at the time a demand to provide AWS credentials is made.
-            If the handler code requires that UI need to be displayed, the handler should 
+            If the handler code requires that UI need to be displayed, the handler should
             transition to the UI thread as appropriate.
             </remarks>
         </member>
@@ -8983,7 +8983,7 @@
              Attempts to construct an instance of <see cref="T:Amazon.Runtime.ProfileAWSEndpointDiscoveryEnabled"/>.
              If the AWS_PROFILE environment variable is set the instance will be constructed using that profile,
              otherwise it will use the default profile.
-            
+
              If the profile doesn't exist or there is no endpoint discovery enabled information an InvalidOperationException is thrown.
              </summary>
              <param name="source">The ICredentialProfileSource to read the profile from.</param>
@@ -9222,7 +9222,7 @@
         <member name="T:Amazon.Runtime.EventStreams.EventStreamHeader">
             <summary>
             Header Data for an EventStreamMessage
-            
+
             Each header is of format:
             [name len] (1) | [utf-8 name] (v)
             [type (1)]
@@ -9402,10 +9402,10 @@
             <summary>
             Message is a single datagram. The format is as follows:
             [ total length (4) ] | [ headers_length (4)] | [ prelude crc(4)]
-            [ headers (v)]       
+            [ headers (v)]
             [ payload (v)}
             [ trailing crc ]
-            
+
             CRCs use the CRC32 algorithm.
             </summary>
         </member>
@@ -9934,7 +9934,7 @@
         </member>
         <member name="T:Amazon.Runtime.IAmazonService">
             <summary>
-            All Amazon service interfaces like IAmazonS3 extend from this interface. This allows all the 
+            All Amazon service interfaces like IAmazonS3 extend from this interface. This allows all the
             Amazon service interfaces be identified by this base interface and helps with generic constraints.
             </summary>
         </member>
@@ -9951,7 +9951,7 @@
         </member>
         <member name="P:Amazon.Runtime.IClientConfig.RegionEndpoint">
             <summary>
-            Gets the RegionEndpoint property. The region constant to use that 
+            Gets the RegionEndpoint property. The region constant to use that
             determines the endpoint to use.  If this is not set
             then the client will fallback to the value of ServiceURL.
             </summary>
@@ -9964,7 +9964,7 @@
         <member name="P:Amazon.Runtime.IClientConfig.ServiceURL">
             <summary>
             Gets and sets of the ServiceURL property.
-            This is an optional property if you need to set a specific service URL 
+            This is an optional property if you need to set a specific service URL
             instead setting the region with the RegionEndpoint property.
             </summary>
         </member>
@@ -9989,7 +9989,7 @@
         <member name="P:Amazon.Runtime.IClientConfig.SignatureVersion">
              <summary>
              Gets the SignatureVersion property.
-            
+
              Note: This property exists for backward compatibility but is no longer
              used by any service other than S3.
              </summary>
@@ -9997,8 +9997,8 @@
         <member name="P:Amazon.Runtime.IClientConfig.AuthenticationRegion">
             <summary>
             Gets the AuthenticationRegion property.
-            Used in AWS4 request signing, this is an optional property; 
-            change it only if the region cannot be determined from the 
+            Used in AWS4 request signing, this is an optional property;
+            change it only if the region cannot be determined from the
             service endpoint.
             </summary>
         </member>
@@ -10022,7 +10022,7 @@
         <member name="P:Amazon.Runtime.IClientConfig.LogMetrics">
             <summary>
             Flag on whether to log metrics for service calls.
-            
+
             This can be set in the application's configs, as below:
             <code>
             &lt;?xml version="1.0" encoding="utf-8" ?&gt;
@@ -10057,7 +10057,7 @@
         <member name="P:Amazon.Runtime.IClientConfig.BufferSize">
             <summary>
             Gets the BufferSize property.
-            The BufferSize controls the buffer used to read in from input streams and write 
+            The BufferSize controls the buffer used to read in from input streams and write
             out to the request.
             </summary>
         </member>
@@ -10069,8 +10069,8 @@
         <member name="P:Amazon.Runtime.IClientConfig.ProgressUpdateInterval">
             <summary>
             Gets the interval at which progress update events are raised
-            for upload operations. By default, the progress update events are 
-            raised at every 100KB of data transferred. 
+            for upload operations. By default, the progress update events are
+            raised at every 100KB of data transferred.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.IClientConfig.ResignRetries">
@@ -10104,8 +10104,8 @@
             for the configured region.
             </summary>
             <remarks>
-            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check 
-            that the service actually supports a dualstack endpoint in the configured region before enabling 
+            Note: AWS services are enabling dualstack endpoints over time. It is your responsibility to check
+            that the service actually supports a dualstack endpoint in the configured region before enabling
             this option for a service.
             </remarks>
         </member>
@@ -10141,10 +10141,10 @@
         </member>
         <member name="P:Amazon.Runtime.IClientConfig.DisableHostPrefixInjection">
             <summary>
-            Gets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false. 
-            Host prefix injection prefixes the service endpoint with request members from APIs which use this feature. 
+            Gets the DisableHostPrefixInjection flag. If true, host prefix injection will be disabled for this client, the default value of this flag is false.
+            Host prefix injection prefixes the service endpoint with request members from APIs which use this feature.
             Example: for a hostPrefix of "foo-name." and a endpoint of "service.region.amazonaws.com" the default behavior is to
-            prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting 
+            prefix the endpoint with the hostPrefix resulting in a final endpoint of "foo-name.service.region.amazonaws.com". Setting
             DisableHostPrefixInjection to true will disable hostPrefix injection resulting in a final endpoint of
             "service.region.amazonaws.com" regardless of the value of hostPrefix. E.g. You may want to disable host prefix injection for testing against a local mock endpoint.
             </summary>
@@ -10161,9 +10161,9 @@
         </member>
         <member name="P:Amazon.Runtime.IClientConfig.TcpKeepAlive">
             <summary>
-            Gets the TCP keep-alive values to use for service requests. Enabling TCP keep-alive sends periodic TCP keep-alive probe packets, to prevent disconnection due to 
-            network inactivity. This is useful when you make API calls that take a long time to respond. In this case, the connection could be dropped by an intermediate 
-            node (e.g. proxy) as the connection is inactive for a long time. Timeout controls the duration of inactivity before a keep-alive probe packet is sent. 
+            Gets the TCP keep-alive values to use for service requests. Enabling TCP keep-alive sends periodic TCP keep-alive probe packets, to prevent disconnection due to
+            network inactivity. This is useful when you make API calls that take a long time to respond. In this case, the connection could be dropped by an intermediate
+            node (e.g. proxy) as the connection is inactive for a long time. Timeout controls the duration of inactivity before a keep-alive probe packet is sent.
             Interval controls the amount of time to wait before retrying a keep-alive probe packet in the event the server doesn't respond to a keep-alive probe.
             </summary>
         </member>
@@ -10194,7 +10194,7 @@
         <member name="P:Amazon.Runtime.IClientConfig.ConnectionLimit">
             <summary>
             Gets the connection limit set on the ServicePoint for the WebRequest.
-            Default value is 50 connections unless ServicePointManager.DefaultConnectionLimit is set in 
+            Default value is 50 connections unless ServicePointManager.DefaultConnectionLimit is set in
             which case ServicePointManager.DefaultConnectionLimit will be used as the default.
             </summary>
         </member>
@@ -10271,7 +10271,7 @@
         <member name="T:Amazon.Runtime.IExceptionHandler">
             <summary>
             The interface for an exception handler.
-            </summary>    
+            </summary>
         </member>
         <member name="M:Amazon.Runtime.IExceptionHandler.Handle(Amazon.Runtime.IExecutionContext,System.Exception)">
             <summary>
@@ -10415,7 +10415,7 @@
         </member>
         <member name="P:Amazon.Runtime.IPipelineHandler.InnerHandler">
             <summary>
-            The inner handler which is called after the current 
+            The inner handler which is called after the current
             handler completes it's processing.
             </summary>
         </member>
@@ -10515,7 +10515,7 @@
         </member>
         <member name="M:Amazon.Runtime.RetryPolicy.OnRetry(Amazon.Runtime.IExecutionContext)">
             <summary>
-            Virtual method that gets called before a retry request is initiated. The value 
+            Virtual method that gets called before a retry request is initiated. The value
             returned is True by default(retry throttling feature is disabled).
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -10523,7 +10523,7 @@
         </member>
         <member name="M:Amazon.Runtime.RetryPolicy.OnRetry(Amazon.Runtime.IExecutionContext,System.Boolean)">
             <summary>
-            Virtual method that gets called before a retry request is initiated. The value 
+            Virtual method that gets called before a retry request is initiated. The value
             returned is True by default(retry throttling feature is disabled).
             </summary>
             <param name="executionContext">The execution context which contains both the
@@ -10557,12 +10557,12 @@
         </member>
         <member name="T:Amazon.Runtime.IRequestMetrics">
             <summary>
-            Metrics collected by the SDK on a per-request basis. 
+            Metrics collected by the SDK on a per-request basis.
             </summary>
             <remarks>
             Each request made to an AWS service by the SDK can have metrics
-            collected and logged. This interface represents the collected 
-            metrics for a request. The metrics include properties (i.e. request id 
+            collected and logged. This interface represents the collected
+            metrics for a request. The metrics include properties (i.e. request id
             and other metadata), timings for each stage of the request, and counters.
             </remarks>
         </member>
@@ -10616,7 +10616,7 @@
         </member>
         <member name="T:Amazon.Runtime.IMetricsFormatter">
             <summary>
-            User supplied type to perform metrics formatting. 
+            User supplied type to perform metrics formatting.
             </summary>
         </member>
         <member name="M:Amazon.Runtime.IMetricsFormatter.FormatMetrics(Amazon.Runtime.IRequestMetrics)">
@@ -10624,7 +10624,7 @@
             Produce custom formatting for SDK metrics.
             </summary>
             <remarks>
-            If defined, this method will be called for every request made by the SDK. 
+            If defined, this method will be called for every request made by the SDK.
             </remarks>
             <param name="metrics">An instance of IRequestMetrics produced by the SDK</param>
             <returns>formatted string representation of the metrics</returns>
@@ -10917,8 +10917,8 @@
         <member name="T:Amazon.Runtime.SharedInterfaces.ICoreAmazonSTS">
             <summary>
             ICoreAmazonSTS is not meant to be used directly. It defines Security Token
-            service with basic .NET types and allows other services to be able to use the service as 
-            a runtime dependency. This interface is implemented by the AmazonSecurityTokenServiceClient 
+            service with basic .NET types and allows other services to be able to use the service as
+            a runtime dependency. This interface is implemented by the AmazonSecurityTokenServiceClient
             defined in the AWSSDK.SecurityToken assembly.
             </summary>
         </member>
@@ -10950,8 +10950,8 @@
             Please use AmazonSecurityTokenServiceClient to access the Amazon Security Token
             service instead.
             </para>
-            Authenticates against a federated identity endpoint supporting SAML and returns 
-            temporary AWS credentials for the supplied role. 
+            Authenticates against a federated identity endpoint supporting SAML and returns
+            temporary AWS credentials for the supplied role.
             </summary>
             <param name="endpoint">The endpoint for the federated identity provider</param>
             <param name="authenticationType">The authentication type to use (NTLM, Kerberos etc)</param>
@@ -10964,7 +10964,7 @@
             <returns>Generated credential data, including SAML-related information such as subject.</returns>
             <remarks>
             Proxy settings that are required for the HTTPS and STS calls made during the authentication/credential
-            generation process are supported and should have been configured on the STS ClientConfig instance 
+            generation process are supported and should have been configured on the STS ClientConfig instance
             associated with the STS client instance exposing this interface.
             </remarks>
         </member>
@@ -10972,7 +10972,7 @@
              <summary>
              CoreAmazonKMS is not meant to use directly. It implements ICoreAmazonKMS
              and allows other service clients to be able to use the KMS service as a runtime dependency.
-            
+
              This class waits until a method is actually called on the ICoreAmazonKMS interface
              before requiring the KMS assembly to be present and loaded.
              </summary>
@@ -11030,7 +11030,7 @@
         <member name="T:Amazon.Runtime.MonitoringListener">
             <summary>
             Class that posts the CSM event to a UDP portconfig
-            This is a singleton class and is created once 
+            This is a singleton class and is created once
             per AmazonServiceClient.
             </summary>
         </member>
@@ -11066,13 +11066,13 @@
         </member>
         <member name="P:Amazon.Runtime.TcpKeepAlive.Timeout">
             <summary>
-            The timeout before a TCP keep-alive packet will be sent. The timeout value must be greater 
+            The timeout before a TCP keep-alive packet will be sent. The timeout value must be greater
             than 0 seconds and not null if Enabled is set to true. The default value is 5 minutes.
             </summary>
         </member>
         <member name="P:Amazon.Runtime.TcpKeepAlive.Interval">
             <summary>
-            The interval before retrying a TCP keep-alive packet that did not receive an acknowledgement. The 
+            The interval before retrying a TCP keep-alive packet that did not receive an acknowledgement. The
             interval must be greater than 0 seconds and not null if Enabled is set to true. The default value is 15 seconds.
             </summary>
         </member>
@@ -11178,7 +11178,7 @@
             for which the proxy will not be used.
             </summary>
             <remarks>
-             For more information on bypass lists 
+             For more information on bypass lists
              see https://msdn.microsoft.com/en-us/library/system.net.webproxy.bypasslist%28v=vs.110%29.aspx.
             </remarks>
         </member>
@@ -11207,7 +11207,7 @@
             </summary>
         </member>
         <member name="P:Amazon.Util.LoggingConfig.LogResponsesSizeLimit">
-            <summary>        
+            <summary>
             Gets or sets the size limit in bytes for logged responses.
             If logging for response body is enabled, logged response
             body is limited to this size. The default limit is 1KB.
@@ -11230,14 +11230,14 @@
         </member>
         <member name="T:Amazon.Util.AWSPublicIpAddressRanges">
             <summary>
-            This class can be used to discover the public address ranges for AWS. The 
-            information is retrieved from the publicly accessible 
+            This class can be used to discover the public address ranges for AWS. The
+            information is retrieved from the publicly accessible
             https://ip-ranges.amazonaws.com/ip-ranges.json file.
             </summary>
             <remarks>
-            The information in this file is generated from our internal system-of-record and 
-            is authoritative. You can expect it to change several times per week and should 
-            poll accordingly. 
+            The information in this file is generated from our internal system-of-record and
+            is authoritative. You can expect it to change several times per week and should
+            poll accordingly.
             </remarks>
         </member>
         <member name="F:Amazon.Util.AWSPublicIpAddressRanges.GlobalRegionIdentifier">
@@ -11299,29 +11299,29 @@
         </member>
         <member name="P:Amazon.Util.AWSPublicIpAddressRange.Region">
             <summary>
-            The AWS region or GLOBAL for edge locations. Note that the CLOUDFRONT and ROUTE53 
+            The AWS region or GLOBAL for edge locations. Note that the CLOUDFRONT and ROUTE53
             ranges are GLOBAL.
             </summary>
         </member>
         <member name="P:Amazon.Util.AWSPublicIpAddressRange.Service">
             <summary>
-            The subset of IP address ranges. Specify AMAZON to get all IP address ranges 
-            (for example, the ranges in the EC2 subset are also in the AMAZON subset). Note 
+            The subset of IP address ranges. Specify AMAZON to get all IP address ranges
+            (for example, the ranges in the EC2 subset are also in the AMAZON subset). Note
             that some IP address ranges are only in the AMAZON subset.
             </summary>
             <remarks>
-            Valid values for the service key include "AMAZON", "EC2", "ROUTE53", 
-            "ROUTE53_HEALTHCHECKS", and "CLOUDFRONT." If you need to know all of 
-            the ranges and don't care about the service, use the "AMAZON" entries. 
-            The other entries are subsets of this one. Also, some of the services, 
-            such as S3, are represented in "AMAZON" and do not have an entry that 
-            is specific to the service. We plan to add additional values over time; 
-            code accordingly! 
+            Valid values for the service key include "AMAZON", "EC2", "ROUTE53",
+            "ROUTE53_HEALTHCHECKS", and "CLOUDFRONT." If you need to know all of
+            the ranges and don't care about the service, use the "AMAZON" entries.
+            The other entries are subsets of this one. Also, some of the services,
+            such as S3, are represented in "AMAZON" and do not have an entry that
+            is specific to the service. We plan to add additional values over time;
+            code accordingly!
             </remarks>
         </member>
         <member name="T:Amazon.Util.AWSSDKUtils">
             <summary>
-            This class defines utilities and constants that can be used by 
+            This class defines utilities and constants that can be used by
             all the client libraries of the SDK.
             </summary>
         </member>
@@ -11332,13 +11332,13 @@
         </member>
         <member name="F:Amazon.Util.AWSSDKUtils.ValidUrlCharacters">
             <summary>
-            The Set of accepted and valid Url characters per RFC3986. 
+            The Set of accepted and valid Url characters per RFC3986.
             Characters outside of this set will be encoded.
             </summary>
         </member>
         <member name="F:Amazon.Util.AWSSDKUtils.ValidUrlCharactersRFC1738">
             <summary>
-            The Set of accepted and valid Url characters per RFC1738. 
+            The Set of accepted and valid Url characters per RFC1738.
             Characters outside of this set will be encoded.
             </summary>
         </member>
@@ -11482,7 +11482,7 @@
             </summary>
             <param name="url">Endpoint to the service to be called</param>
             <returns>
-            Region parsed from the endpoint; DefaultRegion (or DefaultGovRegion) 
+            Region parsed from the endpoint; DefaultRegion (or DefaultGovRegion)
             if it cannot be determined/is not explicit
             </returns>
         </member>
@@ -11493,7 +11493,7 @@
             </summary>
             <param name="url">Endpoint to the service to be called</param>
             <returns>
-            Short-form name of the service parsed from the endpoint; empty string if it cannot 
+            Short-form name of the service parsed from the endpoint; empty string if it cannot
             be determined
             </returns>
         </member>
@@ -11610,18 +11610,18 @@
             <param name="path">Whether the string is a URL path or not</param>
             <returns>The encoded string</returns>
             <remarks>
-            Currently recognised RFC versions are 1738 (Dec '94) and 3986 (Jan '05). 
+            Currently recognised RFC versions are 1738 (Dec '94) and 3986 (Jan '05).
             If the specified RFC is not recognised, 3986 is used by default.
             </remarks>
         </member>
         <member name="M:Amazon.Util.AWSSDKUtils.ProtectEncodedSlashUrlEncode(System.String,System.Boolean)">
             <summary>
             URL encodes a string per the specified RFC with the exception of preserving the encoding of previously encoded slashes.
-            If the path property is specified, the accepted path characters {/+:} are not encoded. 
+            If the path property is specified, the accepted path characters {/+:} are not encoded.
             </summary>
             <param name="data">The string to encode</param>
             <param name="path">Whether the string is a URL path or not</param>
-            <returns>The encoded string with any previously encoded %2F preserved</returns>        
+            <returns>The encoded string with any previously encoded %2F preserved</returns>
         </member>
         <member name="M:Amazon.Util.AWSSDKUtils.BytesToHexString(System.Byte[])">
             <summary>
@@ -11682,8 +11682,8 @@
         </member>
         <member name="M:Amazon.Util.AWSSDKUtils.PreserveStackTrace(System.Exception)">
             <summary>
-            This method is used preserve the stacktrace used from clients that support async calls.  This 
-            make sure that exceptions thrown during EndXXX methods has the orignal stacktrace that happen 
+            This method is used preserve the stacktrace used from clients that support async calls.  This
+            make sure that exceptions thrown during EndXXX methods has the orignal stacktrace that happen
             in the background thread.
             </summary>
             <param name="exception"></param>
@@ -11695,7 +11695,7 @@
         </member>
         <member name="T:Amazon.Util.Internal.EnvironmentVariableRetriever">
             <summary>
-            Wrapper class which invokes the static method 
+            Wrapper class which invokes the static method
             public static string GetEnvironmentVariable(string variable)
             underneath. This class is added as a property on the singleton class
             EnvironmentVariableSource. This change was done for testability.
@@ -11704,8 +11704,8 @@
         <member name="T:Amazon.Util.Internal.EnvironmentVariableSource">
             <summary>
             Singleton class that holds the property of type IEnvironmentVariableRetreiver.
-            This property can hold an instance of type EnvironmentVariableRetreiver which has a wrapper 
-            method for 
+            This property can hold an instance of type EnvironmentVariableRetreiver which has a wrapper
+            method for
             public static string GetEnvironmentVariable(string variable)
             or can be mocked for testing purposes.
             </summary>
@@ -11722,7 +11722,7 @@
              Settings store files are located under the current user's AppData\Local\AWSToolkit folder.
              Select keys in these files are encrypted on a per user, per machine basis using the Windows Data Protection API;
              the encrypted values cannot be used by any other user or on any other machine.
-            
+
              This class is not threadsafe.
              </summary>
         </member>
@@ -11797,7 +11797,7 @@
              Settings store files are located under the current user's AppData\Local\AWSToolkit folder.
              Select keys in these files are encrypted on a per user, per machine basis using the Windows Data Protection API;
              the encrypted values cannot be used by any other user or on any other machine.
-            
+
              This class is not threadsafe.
              </summary>
         </member>
@@ -11936,9 +11936,9 @@
             Amazon EC2 instances can access instance-specific metadata, as well as data supplied when launching the instances, using a specific URI.
             </para>
             <para>
-            You can use this data to build more generic AMIs that can be modified by configuration files supplied at launch time. 
-            For example, if you run web servers for various small businesses, they can all use the same AMI and retrieve their content from the 
-            Amazon S3 bucket you specify at launch. To add a new customer at any time, simply create a bucket for the customer, add their content, 
+            You can use this data to build more generic AMIs that can be modified by configuration files supplied at launch time.
+            For example, if you run web servers for various small businesses, they can all use the same AMI and retrieve their content from the
+            Amazon S3 bucket you specify at launch. To add a new customer at any time, simply create a bucket for the customer, add their content,
             and launch your AMI.
             </para>
             <para>
@@ -11972,7 +11972,7 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.AncestorAmiIds">
             <summary>
-            The AMI IDs of any instances that were rebundled to create this AMI. 
+            The AMI IDs of any instances that were rebundled to create this AMI.
             Will only exist if the AMI manifest file contained an ancestor-amis key.
             </summary>
         </member>
@@ -11985,7 +11985,7 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceAction">
             <summary>
-            Notifies the instance that it should reboot in preparation for bundling. 
+            Notifies the instance that it should reboot in preparation for bundling.
             Valid values: none | shutdown | bundle-pending.
             </summary>
         </member>
@@ -11996,7 +11996,7 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceType">
             <summary>
-            The type of instance. 
+            The type of instance.
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.KernelId">
@@ -12006,19 +12006,19 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.LocalHostname">
             <summary>
-            The local hostname of the instance. In cases where multiple network interfaces are present, 
+            The local hostname of the instance. In cases where multiple network interfaces are present,
             this refers to the eth0 device (the device for which device-number is 0).
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.MacAddress">
             <summary>
-            The instance's MAC address. In cases where multiple network interfaces are present, 
+            The instance's MAC address. In cases where multiple network interfaces are present,
             this refers to the eth0 device (the device for which device-number is 0).
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.PrivateIpAddress">
             <summary>
-             The private IP address of the instance. In cases where multiple network interfaces are present, 
+             The private IP address of the instance. In cases where multiple network interfaces are present,
              this refers to the eth0 device (the device for which device-number is 0).
             </summary>
         </member>
@@ -12029,7 +12029,7 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.ProductCodes">
             <summary>
-            Product codes associated with the instance, if any. 
+            Product codes associated with the instance, if any.
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.PublicKey">
@@ -12055,18 +12055,18 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.SecurityGroups">
             <summary>
-            The names of the security groups applied to the instance. 
+            The names of the security groups applied to the instance.
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.IAMInstanceProfileInfo">
             <summary>
-            Returns information about the last time the instance profile was updated, 
+            Returns information about the last time the instance profile was updated,
             including the instance's LastUpdated date, InstanceProfileArn, and InstanceProfileId.
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.IAMSecurityCredentials">
             <summary>
-            Returns the temporary security credentials (AccessKeyId, SecretAccessKey, SessionToken, and Expiration) 
+            Returns the temporary security credentials (AccessKeyId, SecretAccessKey, SessionToken, and Expiration)
             associated with the IAM roles on the instance.
             </summary>
         </member>
@@ -12087,13 +12087,13 @@
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.InstanceMonitoring">
             <summary>
-            Value showing whether the customer has enabled detailed 
+            Value showing whether the customer has enabled detailed
             one-minute monitoring in CloudWatch.
             </summary>
         </member>
         <member name="P:Amazon.Util.EC2InstanceMetadata.IdentityDocument">
             <summary>
-            JSON containing instance attributes, such as instance-id, private IP 
+            JSON containing instance attributes, such as instance-id, private IP
             address, etc
             </summary>
         </member>
@@ -12139,7 +12139,7 @@
         </member>
         <member name="T:Amazon.Util.IAMInstanceProfileMetadata">
             <summary>
-            Returns information about the last time the instance profile was updated, 
+            Returns information about the last time the instance profile was updated,
             including the instance's LastUpdated date, InstanceProfileArn, and InstanceProfileId.
             </summary>
         </member>
@@ -12226,15 +12226,15 @@
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.MacAddress">
             <summary>
-            The interface's Media Access Control (mac) address. 
+            The interface's Media Access Control (mac) address.
             </summary>
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.OwnerId">
             <summary>
-            The ID of the owner of the network interface. 
+            The ID of the owner of the network interface.
             </summary>
             <remarks>
-            In multiple-interface environments, an interface can be attached by a third party, such as Elastic Load Balancing. 
+            In multiple-interface environments, an interface can be attached by a third party, such as Elastic Load Balancing.
             Traffic on an interface is always billed to the interface owner.
             </remarks>
         </member>
@@ -12255,15 +12255,15 @@
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.PublicHostname">
             <summary>
-            The interface's public hostname. 
+            The interface's public hostname.
             </summary>
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.PublicIPv4s">
             <summary>
-            The elastic IP addresses associated with the interface. 
+            The elastic IP addresses associated with the interface.
             </summary>
             <remarks>
-            There may be multiple IP addresses on an instance. 
+            There may be multiple IP addresses on an instance.
             </remarks>
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.SecurityGroups">
@@ -12281,12 +12281,12 @@
             The ID of the Amazon EC2-VPC subnet in which the interface resides.
             </summary>
             <remarks>
-            Returned only for Amazon EC2 instances launched into a VPC. 
+            Returned only for Amazon EC2 instances launched into a VPC.
             </remarks>
         </member>
         <member name="P:Amazon.Util.NetworkInterfaceMetadata.SubnetIPv4CidrBlock">
             <summary>
-            The CIDR block of the Amazon EC2-VPC subnet in which the interface resides.  
+            The CIDR block of the Amazon EC2-VPC subnet in which the interface resides.
             </summary>
             <remarks>
             Returned only for Amazon EC2 instances launched into a VPC.
@@ -12309,9 +12309,9 @@
         </member>
         <member name="T:Amazon.Util.ProfileManager">
             <summary>
-            This class allows profiles supporting AWS credentials and SAML-based authentication to be registered with 
-            the SDK so that they can later be reference by a profile name. The credential profiles will be available 
-            for use in the AWS Toolkit for Visual Studio and the AWS Tools for Windows PowerShell. 
+            This class allows profiles supporting AWS credentials and SAML-based authentication to be registered with
+            the SDK so that they can later be reference by a profile name. The credential profiles will be available
+            for use in the AWS Toolkit for Visual Studio and the AWS Tools for Windows PowerShell.
             <para>
             The credentials are stored under the current users AppData folder encrypted using Windows Data Protection API.
             </para>
@@ -12346,8 +12346,8 @@
             authenticate the user.
             </para>
             <para>
-            If user identity information is not supplied then the identity of the logged-in user will 
-            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint 
+            If user identity information is not supplied then the identity of the logged-in user will
+            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint
             profile. If identity is provided, no password information is stored in the role profile and
             the user must supply the password for the identity prior to authentication with the endpoint.
             </para>
@@ -12357,13 +12357,13 @@
             The name assigned to the endpoint settings, previously saved with RegisterSAMLEndpoint.
             </param>
             <param name="roleArn">
-            The arn of the role that the user wants to assume when using this profile. This 
+            The arn of the role that the user wants to assume when using this profile. This
             must be one of the set returned by the saml endpoint when the user authenticates.
             </param>
             <param name="userIdentity">
             Optional. By default the identity of the logged-in user will be used when authentication
-            is performed - the user will not be prompted to supply a password. By supplying a custom 
-            identity for this parameter, the user will be prompted to supply the password for the 
+            is performed - the user will not be prompted to supply a password. By supplying a custom
+            identity for this parameter, the user will be prompted to supply the password for the
             identity prior to authentication.
             </param>
         </member>
@@ -12376,8 +12376,8 @@
             authenticate the user.
             </para>
             <para>
-            If user identity information is not supplied then the identity of the logged-in user will 
-            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint 
+            If user identity information is not supplied then the identity of the logged-in user will
+            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint
             profile. If identity is provided, no password information is stored in the role profile and
             the user must supply the password for the identity prior to authentication with the endpoint.
             </para>
@@ -12387,13 +12387,13 @@
             The name assigned to the endpoint settings, previously saved with RegisterSAMLEndpoint.
             </param>
             <param name="roleArn">
-            The arn of the role that the user wants to assume when using this profile. This 
+            The arn of the role that the user wants to assume when using this profile. This
             must be one of the set returned by the saml endpoint when the user authenticates.
             </param>
             <param name="userIdentity">
             Optional. By default the identity of the logged-in user will be used when authentication
-            is performed - the user will not be prompted to supply a password. By supplying a custom 
-            identity for this parameter, the user will be prompted to supply the password for the 
+            is performed - the user will not be prompted to supply a password. By supplying a custom
+            identity for this parameter, the user will be prompted to supply the password for the
             identity prior to authentication.
             </param>
             <param name="stsRegion">
@@ -12473,7 +12473,7 @@
         </member>
         <member name="M:Amazon.Util.ProfileManager.GetAWSCredentials(System.String)">
             <summary>
-            Gets the AWS credentials from a profile in the SDK account store. 
+            Gets the AWS credentials from a profile in the SDK account store.
             </summary>
             <param name="profileName">The profile to get the credentials for.</param>
             <returns>The AWS credentials for the profile.</returns>
@@ -12499,7 +12499,7 @@
         </member>
         <member name="M:Amazon.Util.ProfileManager.TryGetProfile``1(System.String,``0@)">
             <summary>
-            Tries to load the specified profile data corresponding to profile type T from a named 
+            Tries to load the specified profile data corresponding to profile type T from a named
             profile in the SDK account store.
             </summary>
             <param name="profileName">The name of the profile holding the settings.</param>
@@ -12713,8 +12713,8 @@
             adds details of the role to be assumed when the profile is selected.
             </para>
             <para>
-            Optionally the profile can store a username and domain to be used during 
-            authentication (default behavior, if this is not specified, is to use the user's 
+            Optionally the profile can store a username and domain to be used during
+            authentication (default behavior, if this is not specified, is to use the user's
             default network credentials).
             </para>
             </summary>
@@ -12727,17 +12727,17 @@
         <member name="P:Amazon.Util.SAMLRoleProfile.UserIdentity">
             <summary>
             If non-default network credentials are to used contains
-            the user identity (in domain\user format, domain optional) that 
+            the user identity (in domain\user format, domain optional) that
             should be used to supply credentials when the profile is used in
-            authentication. The user must be prompted to supply the 
+            authentication. The user must be prompted to supply the
             corresponding password prior to authentication.
             </summary>
         </member>
         <member name="P:Amazon.Util.SAMLRoleProfile.UseDefaultUserIdentity">
             <summary>
-            If a specific user identity was specified in the profile, 
-            returns true to indicate a password needs to be obtained from 
-            the user before obtaining network credentials to be used on 
+            If a specific user identity was specified in the profile,
+            returns true to indicate a password needs to be obtained from
+            the user before obtaining network credentials to be used on
             authentication. The default is to use the credentials
             associated with the currently logged-in user or process to
             perform authentication, which does not require the user to be
@@ -12747,13 +12747,13 @@
         <member name="P:Amazon.Util.SAMLRoleProfile.Region">
             <summary>
             <para>
-            For regions with a region-specific endpoint for STS (eg cn-north-1) this 
+            For regions with a region-specific endpoint for STS (eg cn-north-1) this
             field can be set to ensure calls to obtain temporary credentials
             after successful authentication are forwarded to the correct regional
             endpoint.
             </para>
             <para>
-            This field does not need to be set when running in a region for 
+            This field does not need to be set when running in a region for
             which the sts.amazonaws.com endpoint is valid.
             </para>
             </summary>
@@ -12778,9 +12778,9 @@
         </member>
         <member name="M:Amazon.Util.SAMLRoleProfile.PersistSession(Amazon.Runtime.SAMLImmutableCredentials)">
             <summary>
-            Persists the current credentials to a 'session' key in the RoleSessions.json file. 
-            This enables external applications and tools using the same profile to obtain credentials 
-            without needing to separately re-authenticate the user prior to expiry of the current 
+            Persists the current credentials to a 'session' key in the RoleSessions.json file.
+            This enables external applications and tools using the same profile to obtain credentials
+            without needing to separately re-authenticate the user prior to expiry of the current
             credentials. After persisting the session data it can be retrieved using GetCurrentSession().
             </summary>
             <remarks>
@@ -12865,23 +12865,23 @@
             authenticate the user.
             </para>
             <para>
-            If user identity information is not supplied then the identity of the logged-in user will 
-            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint 
+            If user identity information is not supplied then the identity of the logged-in user will
+            be used when authenticaton is performed against the endpoint referenced in the SAML endpoint
             profile. If identity is provided, no password information is stored in the role profile and
             the user must supply the password for the identity prior to authentication with the endpoint.
             </para>
             </summary>
             <param name="profileName">Name to be assigned to the profile</param>
             <param name="endpointSettingsName">
-            The name of the settings in the SAML endpoints file containing details of the 
+            The name of the settings in the SAML endpoints file containing details of the
             endpoint to authenticate with.
             </param>
             <param name="roleArn">
-            The arn of the role that the user wants to assume when using this profile. This 
+            The arn of the role that the user wants to assume when using this profile. This
             must be one of the set returned by the saml endpoint when the user authenticates.
             </param>
             <param name="userIdentity">
-            Optional, can be used to prompt the user for a password for the account when authentication 
+            Optional, can be used to prompt the user for a password for the account when authentication
             is performed from a system that is not domain-joined.
             </param>
             <param name="session">
@@ -12914,7 +12914,7 @@
         </member>
         <member name="M:Amazon.Util.SAMLRoleProfile.#ctor(System.String,Amazon.Util.SAMLEndpointSettings,System.String,System.String,Amazon.Runtime.SAMLImmutableCredentials,System.String)">
             <summary>
-            Constructs a profile data instance that will use the specified network identity 
+            Constructs a profile data instance that will use the specified network identity
             during authentication with configured endpoint.
             </summary>
             <param name="profileName">The user-defined name of the profile that sourced this data.</param>
@@ -12935,8 +12935,8 @@
             <summary>
             AwsHttpClient is a wrapper around HttpClient class of the System.Net.Http library.
             The wrapper has been added so as to remove System.Net.Http dependencies from the Services
-            and migrate it to a Core level dependecy only. This avoids version clashes when a service 
-            and the Core depends on different versions of the System.Net.Http library. This is a Service 
+            and migrate it to a Core level dependecy only. This avoids version clashes when a service
+            and the Core depends on different versions of the System.Net.Http library. This is a Service
             level utility method
             </summary>
         </member>
@@ -13002,10 +13002,10 @@
         <member name="T:Amazon.Util.AWSStreamContent">
             <summary>
             AWSStreamContent is a wrapper for StreamContent class in
-            the System.Net.Http library.The wrapper has been added so as to 
+            the System.Net.Http library.The wrapper has been added so as to
             remove System.Net.Http dependencies from the Services
-            and migrate it to a Core level dependecy only. This avoids version clashes when a service 
-            and the Core depends on different versions of the System.Net.Http library. This is a Service 
+            and migrate it to a Core level dependecy only. This avoids version clashes when a service
+            and the Core depends on different versions of the System.Net.Http library. This is a Service
             level utility method
             </summary>
         </member>
@@ -13046,7 +13046,7 @@
         <member name="T:Amazon.AWSConfigs">
             <summary>
             Configuration options that apply to the entire SDK.
-            
+
             These settings can be configured through app.config or web.config.
             Below is a full sample configuration that illustrates all the possible options.
             <code>
@@ -13057,15 +13057,15 @@
               &lt;logging logTo="Log4Net, SystemDiagnostics" logResponses="Always" logMetrics="true" /&gt;
               &lt;s3 useSignatureVersion4="true" /&gt;
               &lt;proxy host="localhost" port="8888" username="1" password="1" /&gt;
-              
+
               &lt;dynamoDB&gt;
                 &lt;dynamoDBContext tableNamePrefix="Prod-"&gt;
-            
+
                   &lt;tableAliases&gt;
                     &lt;alias fromTable="FakeTable" toTable="People" /&gt;
                     &lt;alias fromTable="Persons" toTable="People" /&gt;
                   &lt;/tableAliases&gt;
-            
+
                   &lt;mappings&gt;
                     &lt;map type="Sample.Tests.Author, SampleDLL" targetTable="People" /&gt;
                     &lt;map type="Sample.Tests.Editor, SampleDLL" targetTable="People"&gt;
@@ -13076,7 +13076,7 @@
                       &lt;property name="Password" ignore="true" /&gt;
                     &lt;/map&gt;
                   &lt;/mappings&gt;
-            
+
                 &lt;/dynamoDBContext&gt;
               &lt;/dynamoDB&gt;
             &lt;/aws&gt;
@@ -13088,7 +13088,7 @@
         </member>
         <member name="P:Amazon.AWSConfigs.ManualClockCorrection">
             <summary>
-            Manual offset to apply to client clock.  This is a global setting that overrides 
+            Manual offset to apply to client clock.  This is a global setting that overrides
             ClockOffset value calculated for all service endpoints.
             </summary>
         </member>
@@ -13110,7 +13110,7 @@
             This field will be set if a service call resulted in an exception
             and the SDK has determined that there is a difference between local
             and server times.
-            
+
             If <seealso cref="P:Amazon.AWSConfigs.CorrectForClockSkew"/> is set to true, this
             value will be set to the correction, but it will not be used by the
             SDK and clock skew errors will not be retried.
@@ -13126,7 +13126,7 @@
             <summary>
             Configures the default AWS region for clients which have not explicitly specified a region.
             Changes to this setting will only take effect for newly constructed instances of AWS clients.
-            
+
             This setting can be configured through the App.config. For example:
             <code>
             &lt;configSections&gt;
@@ -13169,7 +13169,7 @@
             <summary>
             Location of the credentials file shared with other AWS SDKs.
             By default, the credentials file is stored in the .aws directory in the current user's home directory.
-            
+
             Changes to this setting will only take effect in newly-constructed clients.
             <para>
             To reference the profile from an application's App.config or Web.config use the AWSProfileName setting.
@@ -13194,7 +13194,7 @@
             <summary>
             Configures how the SDK should log events, if at all.
             Changes to this setting will only take effect in newly-constructed clients.
-            
+
             The setting can be configured through App.config, for example:
             <code>
             &lt;appSettings&gt;
@@ -13206,7 +13206,7 @@
         <member name="F:Amazon.AWSConfigs.ResponseLoggingKey">
             <summary>
             Key for the ResponseLogging property.
-            
+
             <seealso cref="P:Amazon.AWSConfigs.ResponseLogging"/>
             </summary>
         </member>
@@ -13214,7 +13214,7 @@
             <summary>
             Configures when the SDK should log service responses.
             Changes to this setting will take effect immediately.
-            
+
             The setting can be configured through App.config, for example:
             <code>
             &lt;appSettings&gt;
@@ -13234,7 +13234,7 @@
             Configures if the SDK should log performance metrics.
             This setting configures the default LogMetrics property for all clients/configs.
             Changes to this setting will only take effect in newly-constructed clients.
-            
+
             The setting can be configured through App.config, for example:
             <code>
             &lt;appSettings&gt;
@@ -13281,7 +13281,7 @@
             <summary>
             Configuration for the Logging section of AWS configuration.
             Changes to some settings may not take effect until a new client is constructed.
-            
+
             Example section:
             <code>
             &lt;configSections&gt;
@@ -13297,7 +13297,7 @@
             <summary>
             Configuration for the Proxy section of AWS configuration.
             Changes to some settings may not take effect until a new client is constructed.
-            
+
             Example section:
             <code>
             &lt;configSections&gt;
@@ -13313,7 +13313,7 @@
             <summary>
             Configuration for the region endpoint section of AWS configuration.
             Changes may not take effect until a new client is constructed.
-            
+
             Example section:
             <code>
             &lt;configSections&gt;
@@ -13337,7 +13337,7 @@
         </member>
         <member name="P:Amazon.AWSConfigs.ApplicationName">
             <summary>
-            The unique application name for the current application. This values is currently used 
+            The unique application name for the current application. This values is currently used
             by high level APIs (Mobile Analytics Manager and Cognito Sync Manager) to create a unique file
             path to store local database files.
             Changes to this setting will only take effect in newly-constructed objects using this property.
@@ -13351,7 +13351,7 @@
         </member>
         <member name="M:Amazon.AWSConfigs.AddTraceListener(System.String,System.Diagnostics.TraceListener)">
             <summary>
-            Add a listener for SDK logging. 
+            Add a listener for SDK logging.
             </summary>
             <remarks>If the listener does not have a name, you will not be able to remove it later.</remarks>
             <param name="source">The source to log for, e.g. "Amazon", or "Amazon.DynamoDB".</param>
@@ -13370,7 +13370,7 @@
             </summary>
             <remarks>
             The XML returned has an example of every tag in the SDK configuration
-            section, and sample input for each attribute. This can be included in 
+            section, and sample input for each attribute. This can be included in
             an App.config or Web.config and edited to suit. Where a section contains
             a collection, multiple of the same tag will be output.
             </remarks>
@@ -13444,7 +13444,7 @@
         </member>
         <member name="T:Amazon.Internal.RegionEndpointProviderV2.RegionEndpoint">
             <summary>
-            This class contains the endpoints available to the AWS clients.  The static constants representing the 
+            This class contains the endpoints available to the AWS clients.  The static constants representing the
             regions can be used while constructing the AWS client instead of looking up the exact endpoint URL.
             </summary>
         </member>
@@ -13492,7 +13492,7 @@
         </member>
         <member name="T:Amazon.RegionEndpoint">
             <summary>
-            This class contains region information used to lazily compute the service endpoints. The static constants representing the 
+            This class contains region information used to lazily compute the service endpoints. The static constants representing the
             regions can be used while constructing the AWS client instead of looking up the exact endpoint URL.
             </summary>
         </member>
@@ -13637,7 +13637,7 @@
             RegionEndpointServiceName member of the ClientConfig-derived class for the service.
             </param>
             <param>
-            For forwards compatibility, if the service being requested for isn't known in the region, this method 
+            For forwards compatibility, if the service being requested for isn't known in the region, this method
             will generate an endpoint using the AWS endpoint heuristics. In this case, it is not guaranteed the
             endpoint will point to a valid service endpoint.
             </param>
@@ -13656,7 +13656,7 @@
             supports a dualstack endpoint for the region.
             </param>
             <param>
-            For forwards compatibility, if the service being requested for isn't known in the region, this method 
+            For forwards compatibility, if the service being requested for isn't known in the region, this method
             will generate an endpoint using the AWS endpoint heuristics. In this case, it is not guaranteed the
             endpoint will point to a valid service endpoint.
             </param>
@@ -13718,7 +13718,7 @@
         </member>
         <member name="M:ThirdParty.Ionic.Zlib.CRC32.ComputeCrc32(System.Int32,System.Byte)">
             <summary>
-            Get the CRC32 for the given (word,byte) combo. 
+            Get the CRC32 for the given (word,byte) combo.
             This is a computation defined by PKzip.
             </summary>
             <param name="W">The word to start with.</param>
@@ -13736,16 +13736,16 @@
         </member>
         <member name="T:ThirdParty.Ionic.Zlib.CrcCalculatorStream">
              <summary>
-             A Stream that calculates a CRC32 (a checksum) on all bytes read, 
+             A Stream that calculates a CRC32 (a checksum) on all bytes read,
              or on all bytes written.
              </summary>
-            
+
              <remarks>
              <para>
-             This class can be used to verify the CRC of a ZipEntry when reading from a stream, 
-             or to calculate a CRC when writing to a stream.  The stream should be used to either 
+             This class can be used to verify the CRC of a ZipEntry when reading from a stream,
+             or to calculate a CRC when writing to a stream.  The stream should be used to either
              read, or write, but not both.  If you intermix reads and writes, the results are
-             not defined. 
+             not defined.
              </para>
              <para>This class is intended primarily for use internally by the DotNetZip library.</para>
              </remarks>
@@ -13754,7 +13754,7 @@
              <summary>
              Gets the total number of bytes run through the CRC32 calculator.
              </summary>
-            
+
              <remarks>
              This is either the total number of bytes read, or the total number
              of bytes written, depending on the direction of this stream.
@@ -13789,7 +13789,7 @@
         </member>
         <member name="M:ThirdParty.Ionic.Zlib.CrcCalculatorStream.Write(System.Byte[],System.Int32,System.Int32)">
             <summary>
-            Write to the stream. 
+            Write to the stream.
             </summary>
             <param name="buffer">the buffer from which to write</param>
             <param name="offset">the offset at which to start writing</param>
@@ -13797,17 +13797,17 @@
         </member>
         <member name="P:ThirdParty.Ionic.Zlib.CrcCalculatorStream.CanRead">
             <summary>
-            Indicates whether the stream supports reading. 
+            Indicates whether the stream supports reading.
             </summary>
         </member>
         <member name="P:ThirdParty.Ionic.Zlib.CrcCalculatorStream.CanSeek">
             <summary>
-            Indicates whether the stream supports seeking. 
+            Indicates whether the stream supports seeking.
             </summary>
         </member>
         <member name="P:ThirdParty.Ionic.Zlib.CrcCalculatorStream.CanWrite">
             <summary>
-            Indicates whether the stream supports writing. 
+            Indicates whether the stream supports writing.
             </summary>
         </member>
         <member name="M:ThirdParty.Ionic.Zlib.CrcCalculatorStream.Flush">
@@ -13847,14 +13847,14 @@
         </member>
         <member name="M:ThirdParty.BouncyCastle.Asn1.Asn1InputStream.#ctor(System.IO.Stream,System.Int32)">
              Create an ASN1InputStream where no DER object will be longer than limit.
-            
+
              @param input stream containing ASN.1 encoded data.
              @param limit maximum size of a DER encoded object.
         </member>
         <member name="M:ThirdParty.BouncyCastle.Asn1.Asn1InputStream.#ctor(System.Byte[])">
              Create an ASN1InputStream based on the input byte array. The length of DER objects in
              the stream is automatically limited to the length of the input array.
-            
+
              @param input array containing ASN.1 encoded data.
         </member>
         <member name="M:ThirdParty.BouncyCastle.Asn1.Asn1InputStream.BuildObject(System.Int32,System.Int32,System.Int32)">
@@ -13874,7 +13874,7 @@
         </member>
         <member name="P:ThirdParty.BouncyCastle.Asn1.Asn1Sequence.Item(System.Int32)">
              return the object at the sequence position indicated by index.
-            
+
              @param index the sequence number (starting at zero) of the object
              @return the object at the sequence position indicated by index.
         </member>

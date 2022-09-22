@@ -6,6 +6,7 @@
 
 For some reason poetry does install updated versions of git repository dependencies even though they are written to the poetry.lock file (https://github.com/python-poetry/poetry/issues/2921).
 To circumvent this, uninstall the package first before running `poetry install`:
+
 ```
 poetry update fundamentals
 pip uninstall fundamentals

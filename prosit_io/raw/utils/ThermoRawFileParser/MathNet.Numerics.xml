@@ -6618,7 +6618,7 @@
              to specify a Gamma distribution which is a point distribution we set the shape parameter to be the
              location of the point distribution and the inverse scale as positive infinity. The distribution
              with shape and inverse scale both zero is undefined.
-            
+
              Random number generation for the Gamma distribution is based on the algorithm in:
              "A Simple Method for Generating Gamma Variables" - Marsaglia &amp; Tsang
              ACM Transactions on Mathematical Software, Vol. 26, No. 3, September 2000, Pages 363–372.
@@ -40570,7 +40570,7 @@
             </summary>
             <param name="objective">The objective function, including model, observations, and parameter bounds.</param>
             <param name="initialGuess">The initial guess values.</param>
-            <param name="initialMu">The initial damping parameter of mu.</param>        
+            <param name="initialMu">The initial damping parameter of mu.</param>
             <param name="gradientTolerance">The stopping threshold for infinity norm of the gradient vector.</param>
             <param name="stepTolerance">The stopping threshold for L2 norm of the change of parameters.</param>
             <param name="functionTolerance">The stopping threshold for L2 norm of the residuals.</param>
@@ -40604,9 +40604,9 @@
              i)  Armijo Rule:         f(x_k + alpha_k p_k) &lt;= f(x_k) + c1 alpha_k p_k^T g(x_k)
              ii) Curvature Condition: p_k^T g(x_k + alpha_k p_k) &gt;= c2 p_k^T g(x_k)
              where g(x) is the gradient of f(x), 0 &lt; c1 &lt; c2 &lt; 1.
-            
+
              Implementation is based on http://www.math.washington.edu/~burke/crs/408/lectures/L9-weak-Wolfe.pdf
-            
+
              references:
              http://en.wikipedia.org/wiki/Wolfe_conditions
              http://www.math.washington.edu/~burke/crs/408/lectures/L9-weak-Wolfe.pdf
@@ -40895,7 +40895,7 @@
              to provide a gradient as well. Gradient calculation is
              done using the finite difference method, specifically
              forward differences.
-            
+
              For each gradient computed, the algorithm requires an
              additional number of function evaluations equal to the
              functions's number of input parameters.
@@ -50564,7 +50564,7 @@
              A 32-bit combined multiple recursive generator with 2 components of order 3.
              </summary>
              <remarks>Based off of P. L'Ecuyer, "Combined Multiple Recursive Random Number Generators," Operations Research, 44, 5 (1996), 816--822. </remarks>
-            
+
         </member>
         <member name="M:MathNet.Numerics.Random.Mrg32k3a.#ctor">
             <summary>
@@ -51522,13 +51522,13 @@
              This is xoshiro256** 1.0, our all-purpose, rock-solid generator. It has
              excellent(sub-ns) speed, a state space(256 bits) that is large enough
              for any parallel application, and it passes all tests we are aware of.
-            
+
              For generating just floating-point numbers, xoshiro256+ is even faster.
-            
+
              The state must be seeded so that it is not everywhere zero.If you have
              a 64-bit seed, we suggest to seed a splitmix64 generator and use its
              output to fill s.
-            
+
              For further details see:
              David Blackman &amp; Sebastiano Vigna (2018), "Scrambled Linear Pseudorandom Number Generators".
              https://arxiv.org/abs/1805.01407
@@ -53079,14 +53079,14 @@
              </summary>
              <summary> Chebyshev coefficients for exp(-x) I0(x)
              in the interval [0, 8].
-            
+
              lim(x->0){ exp(-x) I0(x) } = 1.
              </summary>
         </member>
         <member name="F:MathNet.Numerics.SpecialFunctions.BesselI0B">
              <summary> Chebyshev coefficients for exp(-x) sqrt(x) I0(x)
              in the inverted interval [8, infinity].
-            
+
              lim(x->inf){ exp(-x) sqrt(x) I0(x) } = 1/sqrt(2pi).
              </summary>
         </member>
@@ -53098,14 +53098,14 @@
              </summary>
              <summary> Chebyshev coefficients for exp(-x) I1(x) / x
              in the interval [0, 8].
-            
+
              lim(x->0){ exp(-x) I1(x) / x } = 1/2.
              </summary>
         </member>
         <member name="F:MathNet.Numerics.SpecialFunctions.BesselI1B">
              <summary> Chebyshev coefficients for exp(-x) sqrt(x) I1(x)
              in the inverted interval [8, infinity].
-            
+
              lim(x->inf){ exp(-x) sqrt(x) I1(x) } = 1/sqrt(2pi).
              </summary>
         </member>
@@ -53118,14 +53118,14 @@
              <summary> Chebyshev coefficients for K0(x) + log(x/2) I0(x)
              in the interval [0, 2].  The odd order coefficients are all
              zero; only the even order coefficients are listed.
-            
+
              lim(x->0){ K0(x) + log(x/2) I0(x) } = -EUL.
              </summary>
         </member>
         <member name="F:MathNet.Numerics.SpecialFunctions.BesselK0B">
              <summary> Chebyshev coefficients for exp(x) sqrt(x) K0(x)
              in the inverted interval [2, infinity].
-            
+
              lim(x->inf){ exp(x) sqrt(x) K0(x) } = sqrt(pi/2).
              </summary>
         </member>
@@ -53137,14 +53137,14 @@
              </summary>
              <summary> Chebyshev coefficients for x(K1(x) - log(x/2) I1(x))
              in the interval [0, 2].
-            
+
              lim(x->0){ x(K1(x) - log(x/2) I1(x)) } = 1.
              </summary>
         </member>
         <member name="F:MathNet.Numerics.SpecialFunctions.BesselK1B">
              <summary> Chebyshev coefficients for exp(x) sqrt(x) K1(x)
              in the interval [2, infinity].
-            
+
              lim(x->inf){ exp(x) sqrt(x) K1(x) } = sqrt(pi/2).
              </summary>
         </member>
@@ -55046,7 +55046,7 @@
              and accepting/rejecting based on the density of P. Metropolis-Hastings sampling doesn't require that the
              proposal distribution Q is symmetric in comparison to <seealso cref="T:MathNet.Numerics.Statistics.Mcmc.MetropolisSampler`1"/>. It does need to
              be able to evaluate the proposal sampler's log density though. All densities are required to be in log space.
-            
+
              The Metropolis-Hastings sampler is a stateful sampler. It keeps track of where it currently is in the domain
              of the distribution P.
              </summary>
@@ -55115,7 +55115,7 @@
              Metropolis sampling produces samples from distribution P by sampling from a proposal distribution Q
              and accepting/rejecting based on the density of P. Metropolis sampling requires that the proposal
              distribution Q is symmetric. All densities are required to be in log space.
-            
+
              The Metropolis sampler is a stateful sampler. It keeps track of where it currently is in the domain
              of the distribution P.
              </summary>
@@ -55327,7 +55327,7 @@
              <summary>
              Slice sampling produces samples from distribution P by uniformly sampling from under the pdf of P using
              a technique described in "Slice Sampling", R. Neal, 2003. All densities are required to be in log space.
-            
+
              The slice sampler is a stateful sampler. It keeps track of where it currently is in the domain
              of the distribution P.
              </summary>

@@ -23,7 +23,7 @@
       <param name="length"></param>
     </member>
     <member name="M:System.Span`1.Clear">
-      
+
     </member>
     <member name="M:System.Span`1.CopyTo(System.Span{`0})">
       <param name="destination"></param>
@@ -99,7 +99,7 @@
       <returns></returns>
     </member>
     <member name="T:System.SpanExtensions">
-      
+
     </member>
     <member name="M:System.SpanExtensions.AsBytes``1(System.ReadOnlySpan{``0})">
       <param name="source"></param>

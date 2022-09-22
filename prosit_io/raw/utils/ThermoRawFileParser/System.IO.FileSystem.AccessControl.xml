@@ -243,14 +243,14 @@
       <exception cref="T:System.IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length.</exception>
       <exception cref="T:System.Security.AccessControl.PrivilegeNotHeldException">The current system account does not have administrative privileges.</exception>
       <exception cref="T:System.SystemException">The directory could not be found.</exception>
-      <exception cref="T:System.UnauthorizedAccessException">The <paramref name="name" /> parameter specified a directory that is read-only.  
-  
- -or-  
-  
- This operation is not supported on the current platform.  
-  
- -or-  
-  
+      <exception cref="T:System.UnauthorizedAccessException">The <paramref name="name" /> parameter specified a directory that is read-only.
+
+ -or-
+
+ This operation is not supported on the current platform.
+
+ -or-
+
  The caller does not have the required permission.</exception>
     </member>
     <member name="T:System.Security.AccessControl.FileSecurity">
@@ -275,18 +275,18 @@
       <exception cref="T:System.IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length.</exception>
       <exception cref="T:System.Security.AccessControl.PrivilegeNotHeldException">The current system account does not have administrative privileges.</exception>
       <exception cref="T:System.SystemException">The file could not be found.</exception>
-      <exception cref="T:System.UnauthorizedAccessException">The <paramref name="fileName" /> parameter specified a file that is read-only.  
-  
- -or-  
-  
- This operation is not supported on the current platform.  
-  
- -or-  
-  
- The <paramref name="fileName" /> parameter specified a directory.  
-  
- -or-  
-  
+      <exception cref="T:System.UnauthorizedAccessException">The <paramref name="fileName" /> parameter specified a file that is read-only.
+
+ -or-
+
+ This operation is not supported on the current platform.
+
+ -or-
+
+ The <paramref name="fileName" /> parameter specified a directory.
+
+ -or-
+
  The caller does not have the required permission.</exception>
     </member>
     <member name="T:System.Security.AccessControl.FileSystemAccessRule">
@@ -310,14 +310,14 @@
       <param name="type">One of the <see cref="T:System.Security.AccessControl.AccessControlType" /> values that specifies whether to allow or deny the operation.</param>
       <exception cref="T:System.ArgumentException">The <paramref name="identity" /> parameter is not an <see cref="T:System.Security.Principal.IdentityReference" /> object.</exception>
       <exception cref="T:System.ArgumentNullException">The <paramref name="identity" /> parameter is <see langword="null" />.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="type" /> parameter.  
-  
- -or-  
-  
- An incorrect enumeration was passed to the <paramref name="inheritanceFlags" /> parameter.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="type" /> parameter.
+
+ -or-
+
+ An incorrect enumeration was passed to the <paramref name="inheritanceFlags" /> parameter.
+
+ -or-
+
  An incorrect enumeration was passed to the <paramref name="propagationFlags" /> parameter.</exception>
     </member>
     <member name="M:System.Security.AccessControl.FileSystemAccessRule.#ctor(System.String,System.Security.AccessControl.FileSystemRights,System.Security.AccessControl.AccessControlType)">
@@ -336,14 +336,14 @@
       <param name="propagationFlags">One of the <see cref="T:System.Security.AccessControl.PropagationFlags" /> values that specifies how Access Control Entries (ACEs) are propagated to child objects.</param>
       <param name="type">One of the <see cref="T:System.Security.AccessControl.AccessControlType" /> values that specifies whether to allow or deny the operation.</param>
       <exception cref="T:System.ArgumentNullException">The <paramref name="identity" /> parameter is <see langword="null" />.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="type" /> parameter.  
-  
- -or-  
-  
- An incorrect enumeration was passed to the <paramref name="inheritanceFlags" /> parameter.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="type" /> parameter.
+
+ -or-
+
+ An incorrect enumeration was passed to the <paramref name="inheritanceFlags" /> parameter.
+
+ -or-
+
  An incorrect enumeration was passed to the <paramref name="propagationFlags" /> parameter.</exception>
     </member>
     <member name="P:System.Security.AccessControl.FileSystemAccessRule.FileSystemRights">
@@ -360,10 +360,10 @@
       <param name="flags">One of the <see cref="T:System.Security.AccessControl.AuditFlags" /> values that specifies when to perform auditing.</param>
       <exception cref="T:System.ArgumentException">The <paramref name="identity" /> parameter is not an <see cref="T:System.Security.Principal.IdentityReference" /> object.</exception>
       <exception cref="T:System.ArgumentNullException">The <paramref name="identity" /> parameter is <see langword="null" />.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.
+
+ -or-
+
  The <see cref="F:System.Security.AccessControl.AuditFlags.None" /> value was passed to the <paramref name="flags" /> parameter.</exception>
     </member>
     <member name="M:System.Security.AccessControl.FileSystemAuditRule.#ctor(System.Security.Principal.IdentityReference,System.Security.AccessControl.FileSystemRights,System.Security.AccessControl.InheritanceFlags,System.Security.AccessControl.PropagationFlags,System.Security.AccessControl.AuditFlags)">
@@ -375,10 +375,10 @@
       <param name="flags">One of the <see cref="T:System.Security.AccessControl.AuditFlags" /> values that specifies when to perform auditing.</param>
       <exception cref="T:System.ArgumentException">The <paramref name="identity" /> parameter is not an <see cref="T:System.Security.Principal.IdentityReference" /> object.</exception>
       <exception cref="T:System.ArgumentNullException">The <paramref name="identity" /> parameter is <see langword="null" />.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.
+
+ -or-
+
  The <see cref="F:System.Security.AccessControl.AuditFlags.None" /> value was passed to the <paramref name="flags" /> parameter.</exception>
     </member>
     <member name="M:System.Security.AccessControl.FileSystemAuditRule.#ctor(System.String,System.Security.AccessControl.FileSystemRights,System.Security.AccessControl.AuditFlags)">
@@ -386,10 +386,10 @@
       <param name="identity">The name of a user account.</param>
       <param name="fileSystemRights">One of the <see cref="T:System.Security.AccessControl.FileSystemRights" /> values that specifies the type of operation associated with the audit rule.</param>
       <param name="flags">One of the <see cref="T:System.Security.AccessControl.AuditFlags" /> values that specifies when to perform auditing.</param>
-      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentOutOfRangeException">An incorrect enumeration was passed to the <paramref name="flags" /> parameter.
+
+ -or-
+
  The <see cref="F:System.Security.AccessControl.AuditFlags.None" /> value was passed to the <paramref name="flags" /> parameter.</exception>
     </member>
     <member name="M:System.Security.AccessControl.FileSystemAuditRule.#ctor(System.String,System.Security.AccessControl.FileSystemRights,System.Security.AccessControl.InheritanceFlags,System.Security.AccessControl.PropagationFlags,System.Security.AccessControl.AuditFlags)">
@@ -489,10 +489,10 @@
       <param name="propagationFlags">One of the <see cref="T:System.Security.AccessControl.PropagationFlags" /> values that specifies how to propagate Access Control Entries (ACEs) to child objects.</param>
       <param name="type">One of the <see cref="T:System.Security.AccessControl.AccessControlType" /> values that specifies whether access is allowed or denied.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="accessMask" />, <paramref name="inheritanceFlags" />, <paramref name="propagationFlags" />, or <paramref name="type" /> parameters specify an invalid value.</exception>
-      <exception cref="T:System.ArgumentNullException">The <paramref name="identityReference" /> parameter is <see langword="null" />.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentNullException">The <paramref name="identityReference" /> parameter is <see langword="null" />.
+
+ -or-
+
  The <paramref name="accessMask" /> parameter is zero.</exception>
       <exception cref="T:System.ArgumentException">The <paramref name="identityReference" /> parameter is neither of type <see cref="T:System.Security.Principal.SecurityIdentifier" />, nor of a type such as <see cref="T:System.Security.Principal.NTAccount" /> that can be converted to type <see cref="T:System.Security.Principal.SecurityIdentifier" />.</exception>
       <returns>A new <see cref="T:System.Security.AccessControl.FileSystemAccessRule" /> object that represents a new access control rule for the specified user, with the specified access rights, access control, and flags.</returns>
@@ -517,10 +517,10 @@
       <param name="propagationFlags">One of the <see cref="T:System.Security.AccessControl.PropagationFlags" /> values that specifies how to propagate Access Control Entries (ACEs) to child objects.</param>
       <param name="flags">One of the <see cref="T:System.Security.AccessControl.AuditFlags" /> values that specifies the type of auditing to perform.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">The <paramref name="accessMask" />, <paramref name="inheritanceFlags" />, <paramref name="propagationFlags" />, or <paramref name="flags" /> properties specify an invalid value.</exception>
-      <exception cref="T:System.ArgumentNullException">The <paramref name="identityReference" /> property is <see langword="null" />.  
-  
- -or-  
-  
+      <exception cref="T:System.ArgumentNullException">The <paramref name="identityReference" /> property is <see langword="null" />.
+
+ -or-
+
  The <paramref name="accessMask" /> property is zero.</exception>
       <exception cref="T:System.ArgumentException">The <paramref name="identityReference" /> property is neither of type <see cref="T:System.Security.Principal.SecurityIdentifier" />, nor of a type such as <see cref="T:System.Security.Principal.NTAccount" /> that can be converted to type <see cref="T:System.Security.Principal.SecurityIdentifier" />.</exception>
       <returns>A new <see cref="T:System.Security.AccessControl.FileSystemAuditRule" /> object representing the specified audit rule for the specified user.</returns>

@@ -228,7 +228,7 @@
         <paramref name="box" /> is <see langword="null" />, and <typeparamref name="T" /> is a non-nullable value type.</exception>
       <exception cref="T:System.InvalidCastException">
         <paramref name="box" /> is not a boxed value type.
-         
+
 -or-
 
 <paramref name="box" /> is not a boxed <typeparamref name="T" />.</exception>

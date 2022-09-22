@@ -111,7 +111,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedAutoSamplerInformation.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedAutoSamplerInformation"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedAutoSamplerInformation"/> class.
             Construct auto sampler information, with no initial data.
             This path occurs for older raw files, which do not have this block.
             The shape is defined as "Invalid" in this case.
@@ -260,7 +260,7 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedFilteredScanIterator.Filter">
             <summary>
-            Gets the filter used for iterating over spectra, in string form. 
+            Gets the filter used for iterating over spectra, in string form.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedFilteredScanIterator.MayHaveNext">
@@ -295,7 +295,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.DataModel.WrappedFilteredScanIterator.SetFilter(ThermoFisher.CommonCore.RawFileReader.Facade.Interfaces.IFilterScanEvent)">
             <summary>
-            Set the filter used for iterating over spectra. 
+            Set the filter used for iterating over spectra.
             This can be used with the NextSpectrumNumber method to iterate over scans with a certain filter
             </summary>
             <param name="filter">
@@ -1187,7 +1187,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.DeviceStorage.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.DeviceStorage"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.DeviceStorage"/> class.
             Constructor with filename as parameter
             </summary>
             <param name="fileName">
@@ -1279,13 +1279,13 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.DeviceStorage.Dispose(System.Boolean)">
             <summary>
-            Cleans up the resources 
+            Cleans up the resources
             </summary>
             <param name="isDisposable">bool, flag whether .Net resources needs to be released or not</param>
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.DeviceStorage.Dispose">
             <summary>
-            Releases all resources 
+            Releases all resources
             </summary>
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.ExtensionMethods.TypeConverters">
@@ -2445,7 +2445,7 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Facade.Constants.RawFileWriterConstants">
             <summary>
-            The raw file writer constants.  
+            The raw file writer constants.
             Imported legacy error and severity values from platform to maintain values.
             </summary>
         </member>
@@ -4299,7 +4299,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Facade.Interfaces.IInstrumentMethodBuilder.UpdateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.IFileHeader)">
             <summary>
-            Update the instrument method file header with the file header values passed in.  
+            Update the instrument method file header with the file header values passed in.
             Only updates object values in memory, does not write to disk.
             </summary>
             <param name="fileHeader">The file header.</param>
@@ -4317,7 +4317,7 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Facade.Interfaces.IInstrumentMethodBuilder.SaveAs(System.String)">
             <summary>
             Save this instrument methods to a file.<para/>
-            It should overwrite the instrument methods file if the file exists; otherwise, a 
+            It should overwrite the instrument methods file if the file exists; otherwise, a
             new file should be created.
             </summary>
             <param name="fileName">File name of the instrument method.</param>
@@ -5815,7 +5815,7 @@
             The retention time.
             </param>
             <returns>
-            The status entry containing the <see cref="T:System.Collections.Generic.List`1"/> of label value pairs for the retention time. 
+            The status entry containing the <see cref="T:System.Collections.Generic.List`1"/> of label value pairs for the retention time.
             If there are no entries in the log, it will an empty list.
             </returns>
         </member>
@@ -5940,7 +5940,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Facade.ProcessingMethodFileLoader.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.ProcessingMethodFileLoader"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.ProcessingMethodFileLoader"/> class.
             Default constructor initializes a new instance of ProcessingMethodFileLoader class.
             Must be called prior to data access
             </summary>
@@ -6235,7 +6235,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Facade.RawFileLoader.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.RawFileLoader"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.RawFileLoader"/> class.
             Default constructor initializes a new instance of RawFile class.
             Must be called prior to data access
             </summary>
@@ -6553,7 +6553,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Facade.SequenceFileLoader.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.SequenceFileLoader"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.Facade.SequenceFileLoader"/> class.
             Must be called prior to data access
             </summary>
             <param name="fileName">
@@ -6677,7 +6677,7 @@
             Defines the BufferInfo type for backward compatibility with FileIO.<para/>
             Ex. HomePage real time plot checks the Number Element field in scan index buffer info,<para/>
             to determine whether the scans data is available for display and <para/>
-            raw file stitching is also using it. 
+            raw file stitching is also using it.
             </summary>
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.Device.GenericItems.GenericDataItemStruct">
@@ -6690,8 +6690,8 @@
             String length for <see cref="F:ThermoFisher.CommonCore.RawFileReader.Facade.Constants.DataTypes.CharString"/>
             <see cref="F:ThermoFisher.CommonCore.RawFileReader.Facade.Constants.DataTypes.WideCharString"/>
             or precision for FLOAT and DOUBLE.
-            For FLOAT and DOUBLE, set LOWORD(n) = precision, 
-            and HIWORD(n) = 0 for normal format and = 1 for 
+            For FLOAT and DOUBLE, set LOWORD(n) = precision,
+            and HIWORD(n) = 0 for normal format and = 1 for
             scientific notation (e.g. 1.056e-7)
             </summary>
         </member>
@@ -7751,7 +7751,7 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.OldLCQ.SpStatusStruct">
             <summary>
-            Syringe Pump status 
+            Syringe Pump status
             </summary>
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.OldLCQ.TpStatusStruct">
@@ -8120,11 +8120,11 @@
             <param name="other">The other.</param>
             <returns>
             A 32-bit signed integer that indicates the relative order of the objects being compared.
-             The return value has the following meanings: 
-             Value              Meaning 
+             The return value has the following meanings:
+             Value              Meaning
              Less than zero     This object is less than the <paramref name="other"/> parameter.
-             Zero               This object is equal to <paramref name="other"/>. 
-             Greater than zero  This object is greater than <paramref name="other"/>. 
+             Zero               This object is equal to <paramref name="other"/>.
+             Greater than zero  This object is greater than <paramref name="other"/>.
             </returns>
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.ScanEventInfo.ScanEventInfoStruct.GetHash1">
@@ -8165,11 +8165,11 @@
             <param name="other">The other.</param>
             <returns>
             A 32-bit signed integer that indicates the relative order of the objects being compared.
-             The return value has the following meanings: 
-             Value              Meaning 
+             The return value has the following meanings:
+             Value              Meaning
              Less than zero     This object is less than the <paramref name="other"/> parameter.
-             Zero               This object is equal to <paramref name="other"/>. 
-             Greater than zero  This object is greater than <paramref name="other"/>. 
+             Zero               This object is equal to <paramref name="other"/>.
+             Greater than zero  This object is greater than <paramref name="other"/>.
             </returns>
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.ScanEventInfo.ScanEventInfoStruct.ComparePart1Hash1Hash2(ThermoFisher.CommonCore.RawFileReader.FileIoStructs.ScanEventInfo.ScanEventInfoStruct)">
@@ -8181,11 +8181,11 @@
             <param name="other">The other.</param>
             <returns>
             A 32-bit signed integer that indicates the relative order of the objects being compared.
-             The return value has the following meanings: 
-             Value              Meaning 
+             The return value has the following meanings:
+             Value              Meaning
              Less than zero     This object is less than the <paramref name="other"/> parameter.
-             Zero               This object is equal to <paramref name="other"/>. 
-             Greater than zero  This object is greater than <paramref name="other"/>. 
+             Zero               This object is equal to <paramref name="other"/>.
+             Greater than zero  This object is greater than <paramref name="other"/>.
             </returns>
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.FileIoStructs.ScanEventInfo.ScanEventInfoStruct2">
@@ -8784,7 +8784,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.InstrumentMethodFileLoader.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.InstrumentMethodFileLoader"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.InstrumentMethodFileLoader"/> class.
             Constructor: Load data from file
             </summary>
             <param name="fileName">
@@ -9285,22 +9285,22 @@
             Windows 2000 and Windows XP: Indicates that a storage should be consolidated
              after it is committed, resulting in a smaller file on disk.
              This flag is valid only on the outermost storage object that
-             has been opened in transacted mode. It is not valid for streams. 
+             has been opened in transacted mode. It is not valid for streams.
             The STGC_CONSOLIDATE flag can be combined with any other STGC flags.
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgCommit.DangerouslyCommitMerelyToDiskCache">
             <summary>
             Commits the changes to a write-behind disk cache, but does not save
-             the cache to the disk. In a write-behind disk cache, 
+             the cache to the disk. In a write-behind disk cache,
             the operation that writes to disk actually writes to a disk cache,
              thus increasing performance. The cache is eventually written to the disk,
              but usually not until after the write operation has already returned.
-             The performance increase comes at the expense of an increased risk 
-            of losing data if a problem occurs before the cache is saved and the 
+             The performance increase comes at the expense of an increased risk
+            of losing data if a problem occurs before the cache is saved and the
             data in the cache is lost.
-            If you do not specify this value, then committing changes to root-level 
-            storage objects is robust even if a disk cache is used. 
+            If you do not specify this value, then committing changes to root-level
+            storage objects is robust even if a disk cache is used.
             The two-phase commit process ensures that data is stored on the disk
              and not just to the disk cache.
             </summary>
@@ -9314,8 +9314,8 @@
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgCommit.OnlyIfCurrent">
             <summary>
             Prevents multiple users of a storage object from overwriting each other's changes.
-             The commit operation occurs only if there have been no changes to the saved 
-            storage object because the user most recently opened it. 
+             The commit operation occurs only if there have been no changes to the saved
+            storage object because the user most recently opened it.
             Thus, the saved version of the storage object is the same version that
              the user has been editing. If other users have changed the storage object,
              the commit operation fails and returns the STG_E_NOTCURRENT value.
@@ -9349,8 +9349,8 @@
             <summary>
             Requests that the statistics not include the <c>pwcsName</c> member of the STATSTG structure.
              If the name is omitted, there is no need for the
-             ILockBytes::Stat, IStorage::Stat, and IStream::Stat methods 
-            to allocate and free memory for the string value of the name, 
+             ILockBytes::Stat, IStorage::Stat, and IStream::Stat methods
+            to allocate and free memory for the string value of the name,
             therefore the method reduces time and resources used in an allocation and free operation.
             </summary>
         </member>
@@ -9436,13 +9436,13 @@
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgMode.DeleteOnRelease">
             <summary>
             Indicates that the underlying file is to be automatically destroyed
-            when the root storage object is released. 
+            when the root storage object is released.
             This feature is most useful for creating temporary files.
             This flag can only be used when creating a root object,
              such as with <c>StgCreateStorageEx</c>.
-             It is not valid when opening a root object, 
+             It is not valid when opening a root object,
             such as with <c>StgOpenStorageEx</c>, or when creating or opening a sub-element,
-             such as with IStorage::CreateStream. 
+             such as with IStorage::CreateStream.
             It is also not valid to use this flag and the STGM_CONVERT flag simultaneously.
             </summary>
         </member>
@@ -9490,14 +9490,14 @@
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgMode.Priority">
             <summary>
-            Opens the storage object with exclusive access to the most 
+            Opens the storage object with exclusive access to the most
             recently committed version. Thus, other users cannot commit
             changes to the object while you have it open in priority mode.
             You gain performance benefits for copy operations,
             but you prevent others from committing changes.
             Limit the time that objects are open in priority mode.
             You must specify STGM_DIRECT and STGM_READ with priority mode,
-            and you cannot specify STGM_DELETEONRELEASE. STGM_DELETEONRELEASE 
+            and you cannot specify STGM_DELETEONRELEASE. STGM_DELETEONRELEASE
             is only valid when creating a root object, such as with <c>StgCreateStorageEx</c>.
             It is not valid when opening an existing root object, such as with <c>StgOpenStorageEx</c>.
             It is also not valid when creating or opening a sub-element,
@@ -9540,7 +9540,7 @@
             <summary>
             Prevents others from subsequently opening the object for STGM_WRITE or STGM_READWRITE access.
              In transacted mode, sharing of STGM_SHARE_DENY_WRITE or STGM_SHARE_EXCLUSIVE can significantly
-             improve performance because they do not require snapshots.  
+             improve performance because they do not require snapshots.
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgMode.ShareExclusive">
@@ -9549,7 +9549,7 @@
              Be aware that this value is not a simple bitwise OR operation
              of the STGM_SHARE_DENY_READ and STGM_SHARE_DENY_WRITE values.
              In transacted mode, sharing of STGM_SHARE_DENY_WRITE or STGM_SHARE_EXCLUSIVE
-             can significantly improve performance because they do not require snapshots. 
+             can significantly improve performance because they do not require snapshots.
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgMode.Simple">
@@ -9564,20 +9564,20 @@
              and written only if an explicit commit operation is called.
              To ignore the changes, call the Revert method in the IStream,
              IStorage, or IPropertyStorage interface.
-             The COM compound file implementation of IStorage does not 
+             The COM compound file implementation of IStorage does not
             support transacted streams, which means that streams can be
              opened only in direct mode, and you cannot revert changes
-             to them, however transacted storages are supported. 
-            The compound file, stand-alone, and NTFS file system implementations 
-            of IPropertySetStorage similarly do not support transacted, 
+             to them, however transacted storages are supported.
+            The compound file, stand-alone, and NTFS file system implementations
+            of IPropertySetStorage similarly do not support transacted,
             simple property sets because these property sets are stored in streams.
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StgMode.Write">
             <summary>
-            Enables you to save changes to the object, 
-            but does not permit access to its data. 
-            The provided implementations of the 
+            Enables you to save changes to the object,
+            but does not permit access to its data.
+            The provided implementations of the
             IPropertyStorage and IPropertySetStorage interfaces do not support this write-only mode.
             </summary>
         </member>
@@ -9700,7 +9700,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.ProcessingMethodFileAccess.Components">
             <summary>
             Gets the list of compounds.
-            This includes all integration, calibration and other settings 
+            This includes all integration, calibration and other settings
             which are specific to each component.
             </summary>
         </member>
@@ -9729,7 +9729,7 @@
             Create an IProcessingMethodFileAccess interface to
             read data from a processing method (PMD) file.
             The entire contents of the file are loaded into memory objects.
-            The file is not kept open on disk, and so this interfaces has no 
+            The file is not kept open on disk, and so this interfaces has no
             "Save", "Close" or "Dispose" methods.
             </summary>
             <param name="fileName">File to open</param>
@@ -9769,7 +9769,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccess.#ctor(ThermoFisher.CommonCore.RawFileReader.Facade.RawFileLoader)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.RawFileAccess"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.RawFileAccess"/> class.
             </summary>
             <param name="loader">
             Loader of the file.
@@ -9777,7 +9777,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccess.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.RawFileAccess"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.RawFileAccess"/> class.
             </summary>
             <param name="fileName">
             Name of the file.
@@ -10503,7 +10503,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccessBase.GetTrailerExtraValues(System.Int32,System.Boolean)">
             <summary>
-            returns the Trailer Extra values for the specified scan number. 
+            returns the Trailer Extra values for the specified scan number.
             </summary>
             <param name="scanNumber">scan who's data is needed</param>
             <param name="ifFormatted">If true, then the values will be formatted as per the header settings.
@@ -10512,7 +10512,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccessBase.GetTrailerExtraValue(System.Int32,System.Int32)">
             <summary>
-            returns the Trailer Extra value for a specific field in the specified scan number. 
+            returns the Trailer Extra value for a specific field in the specified scan number.
             The object type depends on the field type.
             </summary>
             <param name="scanNumber">scan who's data is needed</param>
@@ -10521,7 +10521,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccessBase.GetTrailerExtraValues(System.Int32)">
             <summary>
-            returns the Trailer Extra values for all fields in the specified scan number. 
+            returns the Trailer Extra values for all fields in the specified scan number.
             The object types depend on the field types.
             </summary>
             <param name="scanNumber">scan who's data is needed</param>
@@ -10704,12 +10704,12 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.RawFileAccessBase.SelectInstrument(ThermoFisher.CommonCore.Data.Business.Device,System.Int32)">
             <summary>
             Sets the current instrument in the raw file.
-            This method must be called before subsequent calls to access data specific 
-            to an instrument (e.g. MS or UV data) may be made. All requests for data specific 
-            to an instrument will be forwarded to the current instrument until the current 
-            instrument is changed. The instrument number is used to indicate which instrument 
-            to use if there are more than one registered instruments of the same type (e.g. multiple UV detectors). 
-            Instrument numbers for each type are numbered starting at 1. 
+            This method must be called before subsequent calls to access data specific
+            to an instrument (e.g. MS or UV data) may be made. All requests for data specific
+            to an instrument will be forwarded to the current instrument until the current
+            instrument is changed. The instrument number is used to indicate which instrument
+            to use if there are more than one registered instruments of the same type (e.g. multiple UV detectors).
+            Instrument numbers for each type are numbered starting at 1.
             </summary>
             <param name="instrumentType">Type of instrument</param>
             <param name="instrumentIndex">Stream number</param>
@@ -10773,7 +10773,7 @@
             <summary>
             This method is similar to GetSegmentedScanFromScanNumber in the IRawData interface.
             The method returns only the mass and intensity values from
-            the scan data for a scan. 
+            the scan data for a scan.
             Values for flags etc. are not returned, saving data space and improving efficiency.
             This method never returns "reference and exception peak" data.
             The method is designed for improved performance in custom XIC generators.
@@ -11194,7 +11194,7 @@
             Read a simple structure.
             This must be a fixed size struct, with no embedded fixed arrays,
             ref types or any other marshaled items.
-            Example: struct containing 2 doubles. 
+            Example: struct containing 2 doubles.
             </summary>
             <param name="offset">
             The offset.
@@ -11403,10 +11403,10 @@
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.Readers.MemoryMappedFileAccessMode.Global">
             <summary>
-            Prefixing the file mapping object names with "Global\" allows processes to communicate with each other 
+            Prefixing the file mapping object names with "Global\" allows processes to communicate with each other
             even if they are in different terminal server sessions. (use mainly in Acquisition)
             This requires that the first process must have the SeCreateGlobalPrivilege privilege.
-            without prefixing the file mapping object names with "Global\", the sharing named memory is visible to 
+            without prefixing the file mapping object names with "Global\", the sharing named memory is visible to
             local process
             </summary>
         </member>
@@ -11467,7 +11467,7 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Readers.MemoryMappedFileType">
             <summary>
-            Memory mapped file type 
+            Memory mapped file type
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.Readers.MemoryMappedFileType.Persisted">
@@ -12315,7 +12315,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.ScanHeaderForChro.#ctor(System.Int32,ThermoFisher.CommonCore.RawFileReader.Facade.Interfaces.IScanIndex)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.ScanHeaderForChro"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.ScanHeaderForChro"/> class.
             </summary>
             <param name="scan">
             Scan number
@@ -12756,8 +12756,8 @@
             The other instance.
             </param>
             <returns>
-            -1 indicates the RT of the current instance is less than another object, 
-            0 indicates same, 
+            -1 indicates the RT of the current instance is less than another object,
+            0 indicates same,
             1 indicates the RT of the current instance is greater than another object.</returns>
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.FileHeader">
@@ -12787,7 +12787,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.FileHeader.CreateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.FileType,System.String)">
             <summary>
-            Creates an initial header file object for file writing (i.e. raw file, sequence file, method file, etc.) 
+            Creates an initial header file object for file writing (i.e. raw file, sequence file, method file, etc.)
             with the specified file type and description.
             This method will also initialize the internal fields, such as set the creation/modified date to current date time,
             and set the who created/modified to be the person who is currently logged on to the Windows OS.
@@ -12881,7 +12881,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.FileHeader.UpdateFileHeaderCheckSum(System.IO.BinaryWriter,ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors)">
             <summary>
-            Calculates and updates the checksum for the file header.  Will calculate using the header written to the stream of the binary writer.  
+            Calculates and updates the checksum for the file header.  Will calculate using the header written to the stream of the binary writer.
             Requires the header to be previously written to the binary writer stream.
             </summary>
             <param name="writer">Binary writer with the written file header</param>
@@ -13106,8 +13106,8 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.GenericMaps.DataDescriptor">
             <summary>
-            The descriptor for a generic data item. It contains information 
-            (e.g. label, type, size, item offset, etc) for loading the 
+            The descriptor for a generic data item. It contains information
+            (e.g. label, type, size, item offset, etc) for loading the
             data from the raw file.
             </summary>
         </member>
@@ -13607,8 +13607,8 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.IonRatioTest.TargetRatio">
             <summary>
-            Gets the Expected ratio 
-            The ratio of the qualifier ion response to the component ion response. 
+            Gets the Expected ratio
+            The ratio of the qualifier ion response to the component ion response.
             Range: 0 - 200%
             </summary>
         </member>
@@ -15361,7 +15361,7 @@
             Decodes the old LCQ file.
             This object is being converted or read from disk and therefore the data needs
             needs to read from either the mapped file or some other mechanism. This function
-            is only intended for use with old LCQ data files.        
+            is only intended for use with old LCQ data files.
             </summary>
             <param name="viewer">The viewer.</param>
             <param name="dataOffset">The data offset.</param>
@@ -16089,7 +16089,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak.#ctor(ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.LabelPeak)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct.
             </summary>
             <param name="labelPeak">
             The label peak.
@@ -16097,7 +16097,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak.#ctor(System.Double,System.Double)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct.
             With a given mass and intensity.
             </summary>
             <param name="mass">
@@ -16109,7 +16109,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak.#ctor(System.Double)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct.
             With a given mass and 0 intensity.
             </summary>
             <param name="mass">
@@ -16118,7 +16118,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak.#ctor(System.Double,System.Single,System.Double)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct.
             With a given mass intensity and frequency.
             </summary>
             <param name="mass">
@@ -16133,7 +16133,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak.#ctor(System.Double,System.Double,System.Boolean)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.DataPeak"/> struct.
             With a given mass and frequency.
             The "bool" parameter is a performance trick needed in C#.
             Since there is already a version with "double, double" adding a third (unused parameter)
@@ -17575,7 +17575,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.LTFT.ProfileSubsegment.#ctor(System.UInt32,System.Single)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.LTFT.ProfileSubsegment"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.LTFT.ProfileSubsegment"/> class.
             Create a sub-segment from data read from raw file
             </summary>
             <param name="profilePoints">
@@ -17592,7 +17592,7 @@
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Packets.PacketConstants.MaxZeroPackets">
             <summary>
-            The number of zero intensity packets to restore depends 
+            The number of zero intensity packets to restore depends
             on the smoothing limits in Xcalibur (currently 15).
             </summary>
         </member>
@@ -18957,7 +18957,7 @@
             This controls how Genesis integrates the tail of a peak.
             This factor is the maximum ratio of the trailing edge to the leading side of a constrained peak.
             This applies only when the <see cref="P:ThermoFisher.CommonCore.Data.Interfaces.IGenesisRawSettingsAccess.ConstrainPeak"/> is true.
-            The valid range is 0.5 through 9.0. 
+            The valid range is 0.5 through 9.0.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#ValleyDetection">
@@ -18969,26 +18969,26 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#PeakSignalToNoiseRatioCutoff">
             <summary>
             Gets the Peak Signal ToNoise Ratio Cutoff.
-            The peak edge is set to values below this defined S/N. 
+            The peak edge is set to values below this defined S/N.
             This test assumes an edge of a peak is found when the baseline adjusted height of the edge is less than
-            the ratio of the baseline adjusted apex height and the peak S/N cutoff ratio. 
+            the ratio of the baseline adjusted apex height and the peak S/N cutoff ratio.
             If the S/N at the apex is 500 and the peak S/N cutoff value is 200,
             Genesis defines the right and left edges of the peak when the S/N reaches a value less than 200.
-            Range: 50.0 to 10000.0. 
+            Range: 50.0 to 10000.0.
             Technical equation:<c>if height &lt; (1/PeakSignalToNoiseRatioCutoff)*height(apex) => valley here</c>
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#ValleyThreshold">
             <summary>
             Gets the multiplier of the valley bottom
-            that the peak trace can rise above a baseline (before or after the peak). 
+            that the peak trace can rise above a baseline (before or after the peak).
             If the trace exceeds ValleyThreshold,
-            Genesis applies valley detection peak integration criteria. 
+            Genesis applies valley detection peak integration criteria.
             This method drops a vertical line from the apex of the valley between unresolved
             peaks to the baseline.
             The intersection of the vertical line and the baseline defines the end of the first
-            peak and the beginning of the second peak. 
-            This test is applied to both the left and right edges of the peak. 
+            peak and the beginning of the second peak.
+            This test is applied to both the left and right edges of the peak.
             The ValleyThreshold criteria is useful for integrating peaks with long tails.
             Useful range: 1.001 to 1.5
             Note: Appears on product UI converted from factor to percentage as "Rise percentage".
@@ -19035,8 +19035,8 @@
             Gets a factor which controls the width of the RMS noise band above and below the peak detection baseline
             and is applied to the raw RMS noise values to raise the effective RMS noise during peak detection.
             The left and right peak boundaries are assigned above the noise and, therefore,
-            closer to the peak apex value in minutes. 
-            This action effectively raises the peak integration baseline above the RMS noise level. 
+            closer to the peak apex value in minutes.
+            This action effectively raises the peak integration baseline above the RMS noise level.
             Range: 0.1 to 10.0.
             Default: 2.0.
             </summary>
@@ -19044,7 +19044,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#BackgroundUpdateRate">
             <summary>
             Gets the number of minutes between background scan recalculations.
-            Baseline is refitted each time this interval elapses. 
+            Baseline is refitted each time this interval elapses.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#BaseSignalToNoiseRatio">
@@ -19118,7 +19118,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#IPeakChromatogramSettingsAccess#Instrument">
             <summary>
             Gets the device type.
-            This defines which data stream within the raw file is used. 
+            This defines which data stream within the raw file is used.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QualitativePeakDetection.ThermoFisher#CommonCore#Data#IPeakChromatogramSettingsAccess#TraceOperator">
@@ -19440,7 +19440,7 @@
             <summary>
             Gets a noise level multiplier.
             This determines the peak edge after the location of the possible peak,
-            allowing the peak to narrow or broaden without affecting the baseline. 
+            allowing the peak to narrow or broaden without affecting the baseline.
             Range: 1 - 500
             Default multiplier: 5
             </summary>
@@ -19448,7 +19448,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IIcisSettingsAccess#PeakNoiseFactor">
             <summary>
             Gets a noise level multiplier (a minimum S/N ratio).
-            This determines the potential peak signal threshold. 
+            This determines the potential peak signal threshold.
             Range: 1 - 1000
             Default multiplier: 10
             </summary>
@@ -19473,14 +19473,14 @@
             This controls how Genesis integrates the tail of a peak.
             This factor is the maximum ratio of the trailing edge to the leading side of a constrained peak.
             This applies only when the ConstrainPeak is true.
-            The valid range is 0.5 through 9.0. 
+            The valid range is 0.5 through 9.0.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IIcisSettingsAccess#MinimumPeakWidth">
             <summary>
-            Gets the minimum number of scans required in a peak. 
-            Range: 0 to 100. 
-            Default: 3. 
+            Gets the minimum number of scans required in a peak.
+            Range: 0 to 100.
+            Default: 3.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IIcisSettingsAccess#MultipletResolution">
@@ -19489,12 +19489,12 @@
              This is a criterion to determine if two peaks are resolved.
              Enter a larger number in a noisy environment when the signal is bouncing around.
              Range: 1 to 500.
-             Default: 10 scans. 
+             Default: 10 scans.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IIcisSettingsAccess#AreaScanWindow">
             <summary>
-            Gets the number of scans on each side of the peak apex to be allowed. 
+            Gets the number of scans on each side of the peak apex to be allowed.
             Range: 0 to 100.
             Default: 0 scans.
             0 specifies that all scans from peak-start to peak-end are to be included in the area integration.
@@ -19503,7 +19503,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IIcisSettingsAccess#AreaTailExtension">
             <summary>
             Gets the number of scans past the peak endpoint to use in averaging the intensity.
-            Range: 0 to 100. 
+            Range: 0 to 100.
             Default: 5 scans.
             </summary>
         </member>
@@ -19568,7 +19568,7 @@
             This controls how Genesis integrates the tail of a peak.
             This factor is the maximum ratio of the trailing edge to the leading side of a constrained peak.
             This applies only when the <see cref="P:ThermoFisher.CommonCore.Data.Interfaces.IGenesisRawSettingsAccess.ConstrainPeak"/> is true.
-            The valid range is 0.5 through 9.0. 
+            The valid range is 0.5 through 9.0.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#ValleyDetection">
@@ -19580,26 +19580,26 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#PeakSignalToNoiseRatioCutoff">
             <summary>
             Gets the Peak Signal ToNoise Ratio Cutoff.
-            The peak edge is set to values below this defined S/N. 
+            The peak edge is set to values below this defined S/N.
             This test assumes an edge of a peak is found when the baseline adjusted height of the edge is less than
-            the ratio of the baseline adjusted apex height and the peak S/N cutoff ratio. 
+            the ratio of the baseline adjusted apex height and the peak S/N cutoff ratio.
             If the S/N at the apex is 500 and the peak S/N cutoff value is 200,
             Genesis defines the right and left edges of the peak when the S/N reaches a value less than 200.
-            Range: 50.0 to 10000.0. 
+            Range: 50.0 to 10000.0.
             Technical equation:<c>if height &lt; (1/PeakSignalToNoiseRatioCutoff)*height(apex) => valley here</c>
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#ValleyThreshold">
             <summary>
             Gets the multiplier of the valley bottom
-            that the peak trace can rise above a baseline (before or after the peak). 
+            that the peak trace can rise above a baseline (before or after the peak).
             If the trace exceeds ValleyThreshold,
-            Genesis applies valley detection peak integration criteria. 
+            Genesis applies valley detection peak integration criteria.
             This method drops a vertical line from the apex of the valley between unresolved
             peaks to the baseline.
             The intersection of the vertical line and the baseline defines the end of the first
-            peak and the beginning of the second peak. 
-            This test is applied to both the left and right edges of the peak. 
+            peak and the beginning of the second peak.
+            This test is applied to both the left and right edges of the peak.
             The ValleyThreshold criteria is useful for integrating peaks with long tails.
             Useful range: 1.001 to 1.5
             Note: Appears on product UI converted from factor to percentage as "Rise percentage".
@@ -19646,8 +19646,8 @@
             Gets a factor which controls the width of the RMS noise band above and below the peak detection baseline
             and is applied to the raw RMS noise values to raise the effective RMS noise during peak detection.
             The left and right peak boundaries are assigned above the noise and, therefore,
-            closer to the peak apex value in minutes. 
-            This action effectively raises the peak integration baseline above the RMS noise level. 
+            closer to the peak apex value in minutes.
+            This action effectively raises the peak integration baseline above the RMS noise level.
             Range: 0.1 to 10.0.
             Default: 2.0.
             </summary>
@@ -19655,7 +19655,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#BackgroundUpdateRate">
             <summary>
             Gets the number of minutes between background scan recalculations.
-            Baseline is refitted each time this interval elapses. 
+            Baseline is refitted each time this interval elapses.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IGenesisRawSettingsAccess#BaseSignalToNoiseRatio">
@@ -19792,7 +19792,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IPeakChromatogramSettingsAccess#Instrument">
             <summary>
             Gets the device type.
-            This defines which data stream within the raw file is used. 
+            This defines which data stream within the raw file is used.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IPeakChromatogramSettingsAccess#TraceOperator">
@@ -19953,7 +19953,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#SymmetryPeakHeight">
             <summary>
             Gets the Peak Height at which symmetry is measured.
-            The default value is 50%. You can enter any value within the range 0% to 100%. 
+            The default value is 50%. You can enter any value within the range 0% to 100%.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#SymmetryThreshold">
@@ -19982,25 +19982,25 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#PeakWidthPeakHeight">
             <summary>
             Gets the Peak Height at which the suitability calculator tests the width of target peaks.
-            You can enter any value within the range 0% to 100%. The default value is 50%. 
+            You can enter any value within the range 0% to 100%. The default value is 50%.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#MinPeakWidth">
             <summary>
             Gets the minimum peak width, at the specified peak height, for the peak width suitability test.
-            The default value is 1.8. You can set any value in the range 0 to 30 seconds. 
+            The default value is 1.8. You can set any value in the range 0 to 30 seconds.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#MaxPeakWidth">
             <summary>
             Gets the maximum peak width, at the specified peak height, for the peak width suitability test.
-            The default value is 3.6. You can set any value in the range 0 to 30 seconds. 
+            The default value is 3.6. You can set any value in the range 0 to 30 seconds.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#TailingPeakHeight">
             <summary>
             Gets the Peak Height at which the algorithm measures the tailing of target peaks.
-            The default SOP value is 10%. You can enter any value within the range 0% to 100%. 
+            The default SOP value is 10%. You can enter any value within the range 0% to 100%.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#TailingFailureThreshold">
@@ -20020,7 +20020,7 @@
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#ColumnOverloadPeakHeight">
             <summary>
             Gets the Peak Height at which the algorithm measures column overloading.
-            The default SOP value is 50%. You can enter any value within the range 0% to 100%. 
+            The default SOP value is 50%. You can enter any value within the range 0% to 100%.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#ColumnOverloadFailureThreshold">
@@ -20049,11 +20049,11 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#ISystemSuitabilitySettingsAccess#SignalToNoiseRatio">
             <summary>
-            Gets the threshold for system suitability testing 
+            Gets the threshold for system suitability testing
             of the signal-to-noise ratio. The default value is 20 and the
-            permitted range is 1 to 500. The algorithm calculates the signal-to-noise ratio 
+            permitted range is 1 to 500. The algorithm calculates the signal-to-noise ratio
             within the quantitation window using only baseline signal.
-            Any extraneous, minor, detected peaks are excluded from the calculation. 
+            Any extraneous, minor, detected peaks are excluded from the calculation.
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#IPeakPuritySettingsAccess#DesiredPeakCoverage">
@@ -20126,7 +20126,7 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.FitThreshold">
             <summary>
-            Gets "Fit Threshold" defined as 
+            Gets "Fit Threshold" defined as
             Min fit threshold (0-1.0) for detection by spectral fit.
             This value is believed to be not currently used in Xcalibur code (may be for an older fit algorithm)?
             Returned for completeness only.
@@ -20218,7 +20218,7 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IXcaliburIonRatioTestSettingsAccess#Standard">
             <summary>
-            Gets the "standard" used 
+            Gets the "standard" used
             </summary>
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.StructWrappers.QuanComponent.ThermoFisher#CommonCore#Data#Interfaces#IXcaliburIonRatioTestSettingsAccess#Method">
@@ -24463,7 +24463,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Scan.TrailerScanEvents.#ctor(System.Guid)">
             <summary>
-            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Scan.TrailerScanEvents"/> class. 
+            Initializes a new instance of the <see cref="T:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Scan.TrailerScanEvents"/> class.
             </summary>
             <param name="loaderId">
             The loader Id.
@@ -24731,7 +24731,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Scan.UvScanIndices.ReadUvScanIndexStruct(System.Byte[])">
             <summary>
-            Reads the UV scan index structure old from a byte array and 
+            Reads the UV scan index structure old from a byte array and
             convert it back to struct.
             </summary>
             <param name="bytes">UV Scan index struct in byte array.</param>
@@ -24739,7 +24739,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.StructWrappers.Scan.UvScanIndices.ReadUvScanIndexStructOld(System.Byte[])">
             <summary>
-            Reads the UV scan index structure old from a byte array and 
+            Reads the UV scan index structure old from a byte array and
             convert it back to struct.
             </summary>
             <param name="bytes">UV Scan index struct in byte array.</param>
@@ -27442,18 +27442,18 @@
             The mutex class enforces thread identity, so a mutex can be released only by the thread that acquired it.
             Mutex are of two types: local mutex, which are unnamed, and named system mutex.
             <para/>
-            A local mutex exists only within your process. It can be used by any thread in your process that has a reference 
-            to the mutex object that represents the mutex. 
+            A local mutex exists only within your process. It can be used by any thread in your process that has a reference
+            to the mutex object that represents the mutex.
             <para/>
             Each unnamed mutex object represents a separate local mutex.
             <para/>
-            On a server that is running Terminal Services, a named system mutex can have two levels of visibility. If its name 
-            begins with the prefix "Global\", the mutex is visible in all terminal server sessions. If its name begins with the 
-            prefix "Local\", the mutex is visible only in the terminal server session where it was created. In that case, a separate 
-            mutex with the same name can exist in each of the other terminal server sessions on the server. If you do not specify a prefix 
-            when you create a named mutex, it takes the prefix "Local\". Within a terminal server session, two mutex whose names differ 
-            only by their prefixes are separate mutex, and both are visible to all processes in the terminal server session. That is, 
-            the prefix names "Global\" and "Local\" describe the scope of the mutex name relative to terminal server sessions, 
+            On a server that is running Terminal Services, a named system mutex can have two levels of visibility. If its name
+            begins with the prefix "Global\", the mutex is visible in all terminal server sessions. If its name begins with the
+            prefix "Local\", the mutex is visible only in the terminal server session where it was created. In that case, a separate
+            mutex with the same name can exist in each of the other terminal server sessions on the server. If you do not specify a prefix
+            when you create a named mutex, it takes the prefix "Local\". Within a terminal server session, two mutex whose names differ
+            only by their prefixes are separate mutex, and both are visible to all processes in the terminal server session. That is,
+            the prefix names "Global\" and "Local\" describe the scope of the mutex name relative to terminal server sessions,
             not relative to processes.
             </summary>
             <returns>A new instance of Mutex object.</returns>
@@ -27548,10 +27548,10 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Utilities.CorrectNameForEnvironment(System.String)">
             <summary>
-            Corrects the raw file name for environment. 
-            If the application is running on Unix environment, don't adjust the file name. 
-            File and directory names are case sensitive in Unix.  Convert it to lowercase when on 
-            Windows OS. 
+            Corrects the raw file name for environment.
+            If the application is running on Unix environment, don't adjust the file name.
+            File and directory names are case sensitive in Unix.  Convert it to lowercase when on
+            Windows OS.
             </summary>
             <param name="name">Name of the raw file.</param>
             <returns>In Windows OS, convert the raw file name to lowercase; otherwise, no changes need.</returns>
@@ -27777,7 +27777,7 @@
             <summary>
             Writes the instrument comments.<para/>
             These are device run header fields - comment1 and comment2.  They are part of the Chromatogram view title (Sample Name and Comment).<para/>
-            These fields can be set only once. 
+            These fields can be set only once.
             </summary>
             <param name="comment1">The comment1 for "Sample Name" in Chromatogram view title (max 39 chars).</param>
             <param name="comment2">The comment2 for "Comment" in Chromatogram view title (max 63 chars).</param>
@@ -27877,7 +27877,7 @@
             Defines the BufferInfo type for backward compatibility with FileIO.<para/>
             Ex. HomePage real time plot checks the Number Element field in scan index buffer info,<para/>
             to determine whether the scans data is available for display and <para/>
-            raw file stitching is also using it. 
+            raw file stitching is also using it.
             </summary>
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.BufferInfo.#ctor(System.Guid,System.String,System.String,System.Boolean,System.Int32,System.String)">
@@ -27887,7 +27887,7 @@
             <param name="deviceId">The device identifier.</param>
             <param name="fileName">Name of the file.</param>
             <param name="objectName">Name of the object.</param>
-            <param name="creatable">True open an existing shared memory map otherwise create. False only open an existing shared memory map file.</param>        
+            <param name="creatable">True open an existing shared memory map otherwise create. False only open an existing shared memory map file.</param>
             <param name="elementSize">Size of the element.</param>
             <param name="mask">The mask.</param>
         </member>
@@ -28188,7 +28188,7 @@
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.Writers.RunHeaderFieldOffset.Comment1">
             <summary>
-            The comment1       
+            The comment1
             </summary>
         </member>
         <member name="F:ThermoFisher.CommonCore.RawFileReader.Writers.RunHeaderFieldOffset.IsInAcquisition">
@@ -28525,9 +28525,9 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Writers.DeviceMethod">
             <summary>
-            Provides functions to create/update a device method. 
-            The device methods are for each configured instrument and store in instrument method file. 
-            Each device method contains two or more streams.  
+            Provides functions to create/update a device method.
+            The device methods are for each configured instrument and store in instrument method file.
+            Each device method contains two or more streams.
                 One calls "Data", stores a private representation of the method, in a binary or XML format.
                 Second calls "Text, stores an Unicode text description of the method.
                 Other streams may also be created, that are private to the device, i.e. TNG-Calcium has "Header" stream.
@@ -28546,7 +28546,7 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.Writers.DeviceMethod.StreamBytes">
             <summary>
-            Gets all streams for this instrument, 
+            Gets all streams for this instrument,
             Typically an instrument has a stream called "Data" containing the method in binary or XML,
             and "Text" contains the plain text form of the method.
             Other streams (private to the instrument) may also be created.
@@ -28565,7 +28565,7 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.DeviceMethod.GetStreamBytes">
             <summary>
             Gets all stream data names for this device storage.
-            Typically an instrument has a stream called "Data" containing the method in binary or XML 
+            Typically an instrument has a stream called "Data" containing the method in binary or XML
             and "Text" contains the plain text form of the method.
             Other streams (private to the instrument) may also be created.
             ---
@@ -28633,7 +28633,7 @@
             <summary>
             Creates an "other" device writer.
             These devices may also be called "status devices"
-            or "diagnostic devices" as they have logs only, and 
+            or "diagnostic devices" as they have logs only, and
             cannot record scan data.
             </summary>
             <param name="fileName">Name of the file.</param>
@@ -28756,7 +28756,7 @@
             <summary>
             Saves the generic data item.
             </summary>
-            <param name="writer">The writer.</param>        
+            <param name="writer">The writer.</param>
             <param name="data">The data.</param>
             <param name="errors">The errors.</param>
             <returns>True if generic data item is written to disk successfully, False otherwise</returns>
@@ -28827,7 +28827,7 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Writers.InstrumentMethodWriter">
             <summary>
-            Provides methods to create/open existing instrument method file for editing, 
+            Provides methods to create/open existing instrument method file for editing,
             such as creating device method and saving method data.
              ----
             Existing layout of an instrument method file.
@@ -28856,9 +28856,9 @@
             </summary>
             <param name="instrumentMethodsBuilder">
             The instrument methods builder.<para/>
-            The factory creates an IInstrumentMethodBuilder object and passes it to 
-            the writer constructor using dependency injection pattern, and the writer uses it to 
-            open/create/add/update a file, without any knowledge of actual implementation of this 
+            The factory creates an IInstrumentMethodBuilder object and passes it to
+            the writer constructor using dependency injection pattern, and the writer uses it to
+            open/create/add/update a file, without any knowledge of actual implementation of this
             builder is, i.e. it can be a compound document builder or XML builder.
             </param>
         </member>
@@ -28891,7 +28891,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.InstrumentMethodWriter.UpdateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.IFileHeader)">
             <summary>
-            Update the instrument method file header with the file header values passed in.  
+            Update the instrument method file header with the file header values passed in.
             Only updates object values in memory, does not write to disk.
             </summary>
             <param name="fileHeader">The file header.</param>
@@ -28910,7 +28910,7 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.InstrumentMethodWriter.Save">
             <summary>
             Saves the instrument methods to the file.
-            If this is an "Unnamed" instrument method writer, caller should use "SaveAs" method with the output 
+            If this is an "Unnamed" instrument method writer, caller should use "SaveAs" method with the output
             file name; otherwise ArgumentNullException will be thrown.
             </summary>
             <returns>
@@ -28921,7 +28921,7 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.InstrumentMethodWriter.SaveAs(System.String)">
             <summary>
             Save this instrument methods to a file.<para/>
-            It should overwrite the instrument methods file if the file exists; otherwise, a 
+            It should overwrite the instrument methods file if the file exists; otherwise, a
             new file should be created.
             </summary>
             <param name="fileName">File name of the instrument method.</param>
@@ -28970,7 +28970,7 @@
             <param name="rawFileName">Name of the raw file.</param>
             <param name="inAcquisition">if set to <c>true</c> [in acquisition].</param>
             <param name="fileRevision">The file revision.</param>
-            <param name="finalPacketType">The final known packet type (at the time of writing). 
+            <param name="finalPacketType">The final known packet type (at the time of writing).
             For example: If the MS is compiled against a newer raw file DLL, needed for it's new format,
             then the value saved in a file could be a higher value than that compiled into some data processing application
             built 2 years earlier. On opening the MS data, the raw file reader returns an Error to that application.
@@ -29000,7 +29000,7 @@
             2. Write run header information
             3. Write status log header <para/>
             4. Write trailer extra header <para/>
-            5. Write tune data header <para/>     
+            5. Write tune data header <para/>
             6. Write run header information - expected run time, comments, mass resolution and precision.<para/>
             7. Write method scan events.
             </summary>
@@ -29013,12 +29013,12 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.MassSpecDeviceWriter.WriteInstData(ThermoFisher.CommonCore.Data.Interfaces.IMsInstrumentData)">
             <summary>
             This method is designed for exporting mass spec scanned data to a file (mostly used by the Application). <para/>
-            It converts the input scanned data into the compressed packet format and also generates a profile index 
+            It converts the input scanned data into the compressed packet format and also generates a profile index
              if needed by the specified packet type. <para/>
             Overall, it writes the mass spec data packets, scan index (scan header) and trailer scan event if it is provided,
             to a file. <para/>
             This method will branch to the appropriate packet methods to compress the data block before being written to disk.
-            </summary>       
+            </summary>
             <param name="instData">The transferring data that are going to be saved to a file.</param>
             <returns>True if mass spec data packets are written to disk successfully; false otherwise.</returns>
             <exception cref="T:System.ArgumentNullException">Instrument data cannot be null.</exception>
@@ -29224,15 +29224,15 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Writers.OleInstrumentMethodBuilder">
             <summary>
-            Instrument method file is a compound document file (contains a ROOT Storage) which are organized in a 
+            Instrument method file is a compound document file (contains a ROOT Storage) which are organized in a
             hierarchy of storages. The names of all device storages and streams that are
             direct members of a storage must be different (unique).  Names of device streams or
             storages that are members of different storages may be equal.
             Example.
-            Instrument method file 
+            Instrument method file
                 Root storage
                     |-stream0
-                    |-storage1 
+                    |-storage1
                         |-stream1
                         |-stream2
                     |-storage2
@@ -29270,7 +29270,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.OleInstrumentMethodBuilder.SaveAuditTrail(OpenMcdf.CFStorage,ThermoFisher.CommonCore.RawFileReader.StructWrappers.OldLCQ.AuditTrail,ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors)">
             <summary>
-            Saves the audit trail. 
+            Saves the audit trail.
             </summary>
             <param name="storage">The storage (root storage).</param>
             <param name="auditTrail">The audit trail.</param>
@@ -29314,7 +29314,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.OleInstrumentMethodBuilder.UpdateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.IFileHeader)">
             <summary>
-            Update the instrument method file header with the file header values passed in.  
+            Update the instrument method file header with the file header values passed in.
             Only updates object values in memory, does not write to disk.
             </summary>
             <param name="fileHeader">The file header.</param>
@@ -29332,7 +29332,7 @@
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.OleInstrumentMethodBuilder.SaveAs(System.String)">
             <summary>
             Save this instrument methods to a file.<para/>
-            It should overwrite the instrument methods file if the file exists; otherwise, a 
+            It should overwrite the instrument methods file if the file exists; otherwise, a
             new file should be created.
             </summary>
             <param name="fileName">File name of the instrument method.</param>
@@ -29907,7 +29907,7 @@
             The writer Id.
             </param>
             <param name="permitRenaming">[Optional] it has a default value of true.<para/>
-            True to specify that the raw file writer should create a raw file if the file isn't exist; however, if the file already exists, 
+            True to specify that the raw file writer should create a raw file if the file isn't exist; however, if the file already exists,
             the writer should create a raw file with the time stamp appended to the end of the file name.<para/>
             False to specify that the raw file writer should not create a file and throw an IO exception if the file already exists.
             </param>
@@ -29951,7 +29951,7 @@
         </member>
         <member name="P:ThermoFisher.CommonCore.RawFileReader.Writers.RawFileWriter.ErrorCode">
             <summary>
-            Gets the error code, 0 if no error has occurred. A non 0 value is an error. Can not set to 0 and can not overwrite existing error code. 
+            Gets the error code, 0 if no error has occurred. A non 0 value is an error. Can not set to 0 and can not overwrite existing error code.
             The acquisition service might set an error code due to errors in other libraries/devices.
             </summary>
         </member>
@@ -29982,7 +29982,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.RawFileWriter.UpdateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.IFileHeaderUpdate)">
             <summary>
-            Update the raw file header with the file header values passed in.  
+            Update the raw file header with the file header values passed in.
             Only updates object values in memory, does not write to disk.
             A default FileHeader is created with every new writer instance.
             </summary>
@@ -30263,7 +30263,7 @@
             The raw file name is guaranteed to be unique at this point, create a mutex to prevent multiple save calls interfering.
             </summary>
             <param name="partialSave">
-            True only if saving part of the raw file for the acquisition raw file.  
+            True only if saving part of the raw file for the acquisition raw file.
             On partial save, only raw file header, auto sampler information, sequence row information, and raw file info are written.  No scan data written.
             </param>
             <returns>
@@ -30285,7 +30285,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.RawFileWriter.RefreshViewOfFile">
             <summary>
-            Refreshes view of the raw file.  Reloads the RawFileInfo object and the virtual controllers run headers from shared memory.  
+            Refreshes view of the raw file.  Reloads the RawFileInfo object and the virtual controllers run headers from shared memory.
             Does not read actual data from any temporary files.
             </summary>
             <returns>
@@ -30419,7 +30419,7 @@
             The raw file path.
             </param>
             <param name="permitRenaming">[Optional] it has a default value of true.<para/>
-            True to specify that the raw file writer should create a raw file if the file isn't exist; however, if the file already exists, 
+            True to specify that the raw file writer should create a raw file if the file isn't exist; however, if the file already exists,
             the writer should create a raw file with the timestamp appends to the end of the file name.<para/>
             False to specify that the raw file writer should not create a file and throw an System.IO exception if the file already exists.
             </param>
@@ -30738,7 +30738,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.SequenceFileWriter.UpdateFileHeader(ThermoFisher.CommonCore.Data.Interfaces.IFileHeaderUpdate)">
             <summary>
-            Update the instrument method file header with the file header values passed in.  
+            Update the instrument method file header with the file header values passed in.
             Only updates object values in memory, does not write to disk.
             </summary>
             <param name="fileHeader">The file header.</param>
@@ -30775,7 +30775,7 @@
         </member>
         <member name="T:ThermoFisher.CommonCore.RawFileReader.Writers.SequenceFileWriterAdapter">
             <summary>
-            This static class contains factory to create sequence file writer adapter.  
+            This static class contains factory to create sequence file writer adapter.
             It's used internally to get a sequence file writer object.
             </summary>
         </member>
@@ -31024,7 +31024,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.WriterHelper.CritSec``1(System.Func{ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors,``0},ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors,System.String,System.Boolean)">
             <summary>
-            Use mutex to create a "critical section" region of code that executes in isolation. 
+            Use mutex to create a "critical section" region of code that executes in isolation.
             </summary>
             <typeparam name="T">The type of the parameter of the method that this delegate encapsulates.</typeparam>
             <param name="method">The method.</param>
@@ -31035,7 +31035,7 @@
         </member>
         <member name="M:ThermoFisher.CommonCore.RawFileReader.Writers.WriterHelper.CritSec(System.Func{ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors,System.Boolean},ThermoFisher.CommonCore.RawFileReader.Writers.DeviceErrors,System.Threading.Mutex)">
             <summary>
-            Use mutex to create a "critical section" region of code that executes in isolation. 
+            Use mutex to create a "critical section" region of code that executes in isolation.
             </summary>
             <param name="method">The method.</param>
             <param name="errors">The errors.</param>

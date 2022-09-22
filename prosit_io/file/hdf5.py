@@ -1,31 +1,32 @@
-import pandas as pd
-import numpy as np
-import h5py
-from scipy.sparse import coo_matrix
-from typing import Union, Optional, List
-import scipy
-import pandas as pd
 import logging
 import threading
+from typing import List, Optional, Union
+
+import h5py
+import pandas as pd
+import scipy
+from scipy.sparse import coo_matrix
 
 logger = logging.getLogger(__name__)
 
-META_DATA_KEY = 'meta_data'
-INTENSITY_RAW_KEY = 'raw_intensity'
-INTENSITY_PRED_KEY = 'pred_intensity'
-MZ_RAW_KEY = 'raw_mz'
+META_DATA_KEY = "meta_data"
+INTENSITY_RAW_KEY = "raw_intensity"
+INTENSITY_PRED_KEY = "pred_intensity"
+MZ_RAW_KEY = "raw_mz"
+
 
 def read_file(path: str, key: str) -> pd.DataFrame:
     """
     Read hdf5 file and return dataframe with contents.
+
     With possibility to partial load for memory issues.
-    :param path: The path to the hdf5 file to read.
-    :param key: The key of the dataset/group of interest.
-    :return: a pandas DataFrame
+    :param path: The path to the hdf5 file to read
+    :param key: The key of the dataset/group of interest
+    :return: a pandas DataFrame with contents
     """
     try:
         if key.startswith("sparse"):
-            with h5py.File(path, 'r') as f:
+            with h5py.File(path, "r") as f:
                 logger.info(f"Reading sparse matrix from hdf5 file. Available keys: {f.keys()}")
                 values = f[f"{key}/values"]
                 i = f[f"{key}/i"]
@@ -43,49 +44,54 @@ def read_file(path: str, key: str) -> pd.DataFrame:
     except Exception as e:
         logger.exception(e)
 
+
 def thread_this(fn):
+    """Function for threading."""
+
     def run(*args, **kwargs):
         t = threading.Thread(target=fn, args=args, kwargs=kwargs)
         t.start()
         return t
+
     return run
+
 
 @thread_this
 def write_file(
-        data_sets:[Union[pd.DataFrame, scipy.sparse.spmatrix]],
-        path: str,
-        dataset_names: [str],
-        column_names: [[List[str]]] = None,
-        ):
+    data_sets: [Union[pd.DataFrame, scipy.sparse.spmatrix]],
+    path: str,
+    dataset_names: [str],
+    column_names: [[List[str]]] = None,
+):
     """
     Writes several datasets (spectra) to hdf5 file.
+
     :param data: list of datasets
-    :param path: The path to store the file to.
-    :param dataset_names: List of dataset names
-    :param column_names: List of column_names
-    :return:
+    :param path: path to store the file to
+    :param dataset_names: list of dataset names
+    :param column_names: list of column_names
     """
     index = 0
-    for data_set,dataset_name in zip(data_sets,dataset_names):
+    for data_set, dataset_name in zip(data_sets, dataset_names):
         if isinstance(data_set, pd.DataFrame):
             write_dataset(data_set, path, dataset_name)
         else:
-            write_dataset(data_set, path, dataset_name, mode='a', column_names= column_names[index])
+            write_dataset(data_set, path, dataset_name, mode="a", column_names=column_names[index])
             index += 1
 
 
-
 def write_dataset(
-    data:Union[pd.DataFrame, scipy.sparse.spmatrix],
+    data: Union[pd.DataFrame, scipy.sparse.spmatrix],
     path: str,
     dataset_name: str,
-    mode: str = 'w',
+    mode: str = "w",
     compression: Optional[Union[str, bool]] = True,
     column_names: Optional[Union[List[str], None]] = None,
-    index: Optional[Union[List[str], None]] = None
+    index: Optional[Union[List[str], None]] = None,
 ):
     """
     Writes or appends dataset to an hdf5 file.
+
     :params
         data: The data to store. Can be a pandas DataFrame or a scipy Sparsematrix.
         path: The path to store the file to.
@@ -99,14 +105,11 @@ def write_dataset(
         column_names: Optional, additional column column_names. Ignored if providing a pandas DataFrame. Default: None.
         index: Optional, additional index. Ignored if providing a pandas DataFrame. Default: None.
     """
-    if isinstance(compression, bool):
-        if compression:
-            if isinstance(compression, pd.DataFrame):
-                compression = 'zlib'
-            elif isinstance(compression, scipy.sparse.spmatrix):
-                compression = 'gzip'
-            else:
-                compression = None
+    if isinstance(compression, bool) and compression:
+        if isinstance(compression, pd.DataFrame):
+            compression = "zlib"
+        elif isinstance(compression, scipy.sparse.spmatrix):
+            compression = "gzip"
         else:
             compression = None
     try:
@@ -116,7 +119,7 @@ def write_dataset(
             with h5py.File(path, mode) as f:
                 group_name = f"sparse_{dataset_name}"
                 f.create_group(group_name)
-                i,j, values = scipy.sparse.find(data)
+                i, j, values = scipy.sparse.find(data)
                 shape = data.shape
                 f.create_dataset(f"{group_name}/i", data=i, compression=compression, dtype=int)
                 f.create_dataset(f"{group_name}/j", data=j, compression=compression, dtype=int)
@@ -127,7 +130,7 @@ def write_dataset(
                 if index:
                     f.create_dataset(f"{group_name}/index", data=index, compression=compression)
         else:
-            assert False, "Only pd.DataFrame and scipy.sparse.spmatrix are supported." + type(data)
+            raise AssertionError("Only pd.DataFrame and scipy.sparse.spmatrix are supported." + type(data))
         logger.info(f"Data {'appended' if mode=='a' else 'written'} to {path}")
     except Exception as e:
         logger.exception(e)
