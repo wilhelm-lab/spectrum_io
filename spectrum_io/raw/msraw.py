@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import pymzml
-from fundamentals.constants import MZML_DATA_COLUMNS
+from spec_fundamentals.constants import MZML_DATA_COLUMNS
 from pyteomics import mzml
 
 logger = logging.getLogger(__name__)

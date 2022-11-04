@@ -1,9 +1,9 @@
 import logging
 from typing import Optional
 
-import fundamentals.constants as c
+import spec_fundamentals.constants as c
 import pandas as pd
-from fundamentals.mod_string import internal_without_mods
+from spec_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults
 

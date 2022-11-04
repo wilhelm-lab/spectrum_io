@@ -2,8 +2,8 @@ import os
 
 import numpy as np
 import pandas as pd
-from fundamentals.constants import PARTICLE_MASSES
-from fundamentals.mod_string import internal_to_spectronaut, internal_without_mods
+from spec_fundamentals.constants import PARTICLE_MASSES
+from spec_fundamentals.mod_string import internal_to_spectronaut, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 

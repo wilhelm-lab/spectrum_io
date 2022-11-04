@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import prosit_io.spectral_library.msp as msp
+import spectrum_io.spectral_library.msp as msp
 
 
 class TestMspPrepareSpectrum:

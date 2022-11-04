@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
-from fundamentals.mod_string import internal_to_mod_mass, internal_without_mods
+from spec_fundamentals.mod_string import internal_to_mod_mass, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 

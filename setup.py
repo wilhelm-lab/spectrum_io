@@ -1,11 +1,11 @@
 from setuptools import setup
 
-packages = ["prosit_io", "prosit_io.file", "prosit_io.raw", "prosit_io.search_result", "prosit_io.spectral_library"]
+packages = ["spectrum_io", "spectrum_io.file", "spectrum_io.raw", "spectrum_io.search_result", "spectrum_io.spectral_library"]
 
 package_data = {
     "": ["*"],
-    "prosit_io.raw": ["utils/ThermoRawFileParser/*"],
-    "prosit_io.spectral_library": ["dlib/*", "msp/*", "spectronaut/*"],
+    "spectrum_io.raw": ["utils/ThermoRawFileParser/*"],
+    "spectrum_io.spectral_library": ["dlib/*", "msp/*", "spectronaut/*"],
 }
 
 install_requires = [
