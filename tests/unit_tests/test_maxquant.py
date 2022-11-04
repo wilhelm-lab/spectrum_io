@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import prosit_io.search_result.maxquant as mq
+import spectrum_io.search_result.maxquant as mq
 
 
 class TestAddTMTMod:
