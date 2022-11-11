@@ -1,14 +1,15 @@
-# Status
+# Spectrum IO
 
-[![pipeline status](https://gitlab.lrz.de/compmass/prosit/tools/prosit_io/badges/develop/pipeline.svg)](https://gitlab.lrz.de/compmass/prosit/tools/prosit_io/-/commits/develop) [![coverage report](https://gitlab.lrz.de/compmass/prosit/tools/prosit_io/badges/develop/coverage.svg)](https://gitlab.lrz.de/compmass/prosit/tools/prosit_io/-/commits/develop)
+Spectrum IO is a package we use in our rescoring pipeline. It was created to be able to handle several search engines.
 
-# Updating fundamentals dependency
+## Features
 
-For some reason poetry does install updated versions of git repository dependencies even though they are written to the poetry.lock file (https://github.com/python-poetry/poetry/issues/2921).
-To circumvent this, uninstall the package first before running `poetry install`:
+* Handle search results from different software (Mascot, MaxQuant, MSFragger).
+
+## Installation
+
+Install with:
 
 ```
-poetry update fundamentals
-pip uninstall fundamentals
-poetry install
+pip install git+https://github.com/wilhelm-lab/spectrum_io
 ```

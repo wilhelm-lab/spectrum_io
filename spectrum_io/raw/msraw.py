@@ -120,20 +120,3 @@ class MSRaw:
                 key = f"{file_name}_{spec.ID}"
                 data[key] = [file_name, spec.ID, spec.i, spec.mz]
         data_iter.close()
-
-
-"""
-if __name__ == "__main__":
-    from sys import argv
-
-    if len(argv) == 3:
-        data = {} # type: Dict[str, Any]
-        scanidx = list(map(int, argv[2].split(",")))
-        MSRaw()._get_scans_pymzml(argv[1], data, scanidx)
-        for _, spec_id, intensities, mzs in data.values():
-            print(spec_id)
-            for m, i in zip(mzs, intensities):
-                print(m, i, sep="\t")
-    else:
-        print("Please specify a mzml file and a comma separated list of scan numbers to extract")
-"""
