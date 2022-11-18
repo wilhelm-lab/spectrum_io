@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Optional
 
 import pandas as pd
+
 from spectrum_io.file import csv
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,8 @@ class SearchResults:
 
         return out_path
 
-    def read_internal(self, path: str):
+    @staticmethod
+    def read_internal(path: str):
         """
         Read file from path.
 

@@ -4,7 +4,7 @@ Spectrum IO is a package we use in our rescoring pipeline. It was created to be 
 
 ## Features
 
-* Handle search results from different software (Mascot, MaxQuant, MSFragger).
+-   Handle search results from different software (Mascot, MaxQuant, MSFragger).
 
 ## Installation
 
