@@ -50,8 +50,7 @@ class SearchResults:
 
         return out_path
 
-    @staticmethod
-    def read_internal(path: str):
+    def read_internal(self, path: str):
         """
         Read file from path.
 

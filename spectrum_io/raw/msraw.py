@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import pymzml
-from pyteomics import mzml
 from spec_fundamentals.constants import MZML_DATA_COLUMNS
+from pyteomics import mzml
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,7 @@ class MSRaw:
         source: Union[str, List[str]],
         ext: str = "mzml",
         package: str = "pyteomics",
+        search_type: str = "maxquant",
         scanidx: Optional[List] = None,
         *args,
         **kwargs,
@@ -80,19 +81,31 @@ class MSRaw:
                     fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     key = f"{file_name}_{id}"
-                    data[key] = [
-                        file_name,
-                        id,
-                        spec["intensity array"],
-                        spec["m/z array"],
-                        mass_analyzer,
-                        fragmentation,
-                        mz_range,
-                    ]
+                    if search_type == "maxquant":
+                         data[key] = [
+                            file_name,
+                            id,
+                            spec["intensity array"],
+                            spec["m/z array"],
+                            mz_range
+                        ]
+                    else:
+                        data[key] = [
+                            file_name,
+                            id,
+                            spec["intensity array"],
+                            spec["m/z array"],
+                            mz_range,
+                            mass_analyzer,
+                            fragmentation
+                        ]
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
-        data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
+        if search_type == "maxquant":
+            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
+        else:
+            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"])
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
 
