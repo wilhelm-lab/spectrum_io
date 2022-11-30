@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import pandas as pd
 import spec_fundamentals.constants as c
@@ -82,7 +81,6 @@ class MaxQuant(SearchResults):
             df["MASS_ANALYZER"] = "FTMS"
         if "FRAGMENTATION" not in df.columns:
             df["FRAGMENTATION"] = "HCD"
-
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         logger.info("Converting MaxQuant peptide sequence to internal format")

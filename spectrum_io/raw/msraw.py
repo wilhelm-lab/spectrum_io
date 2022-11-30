@@ -6,8 +6,8 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import pymzml
-from spec_fundamentals.constants import MZML_DATA_COLUMNS
 from pyteomics import mzml
+from spec_fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +53,7 @@ class MSRaw:
         :return: pd.DataFrame with intensities and m/z values
         """
         if isinstance(source, str):
-            file_list = []
-            if os.path.isdir(source):
-                # if string is provided and is a directory, search all mzml files with provided extension
-                for file in os.listdir(source):
-                    if file.lower().endswith(ext.lower()):
-                        file_list.append(file)
-
-            else:
-                file_list = [source]
+            file_list = MSRaw.get_file_list(source, ext)
             source = file_list
         data = {}  # type: Dict[str, Any]
         if package == "pymzml":
@@ -82,13 +74,7 @@ class MSRaw:
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     key = f"{file_name}_{id}"
                     if search_type == "maxquant":
-                         data[key] = [
-                            file_name,
-                            id,
-                            spec["intensity array"],
-                            spec["m/z array"],
-                            mz_range
-                        ]
+                        data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range]
                     else:
                         data[key] = [
                             file_name,
@@ -97,7 +83,7 @@ class MSRaw:
                             spec["m/z array"],
                             mz_range,
                             mass_analyzer,
-                            fragmentation
+                            fragmentation,
                         ]
                 data_iter.close()
         else:
@@ -105,9 +91,31 @@ class MSRaw:
         if search_type == "maxquant":
             data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         else:
-            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"])
+            data = pd.DataFrame.from_dict(
+                data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"]
+            )
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
+
+    @staticmethod
+    def get_file_list(source: Union[str, List[str]], ext: str = "mzml"):
+        """
+        Get list of files from source.
+
+        :param source: a directory containing mzml files, a list of files or a single file
+        :param ext: file extension for searching a specified directory
+        :return: list of files
+        """
+        file_list = []
+        if os.path.isdir(source):
+            # if string is provided and is a directory, search all mzml files with provided extension
+            for file in os.listdir(source):
+                if file.lower().endswith(ext.lower()):
+                    file_list.append(file)
+
+        else:
+            file_list = [source]
+        return file_list
 
     @staticmethod
     def _get_scans_pymzml(file_path: str, data: Dict, scanidx: Optional[List] = None, *args, **kwargs) -> None:
