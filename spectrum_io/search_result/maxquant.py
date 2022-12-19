@@ -1,8 +1,8 @@
 import logging
 
 import pandas as pd
-import spec_fundamentals.constants as c
-from spec_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
+import spectrum_fundamentals.constants as c
+from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
 
 from .search_results import SearchResults
 
