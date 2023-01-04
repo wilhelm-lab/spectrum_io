@@ -3,8 +3,8 @@ import sqlite3
 from typing import Optional
 
 import pandas as pd
-import spec_fundamentals.constants as c
-from spec_fundamentals.mod_string import internal_without_mods
+import spectrum_fundamentals.constants as c
+from spectrum_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults
 

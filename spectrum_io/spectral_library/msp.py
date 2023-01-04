@@ -1,6 +1,6 @@
 import pandas as pd
-from spec_fundamentals.constants import PARTICLE_MASSES
-from spec_fundamentals.mod_string import internal_to_mod_names, internal_without_mods
+from spectrum_fundamentals.constants import PARTICLE_MASSES
+from spectrum_fundamentals.mod_string import internal_to_mod_names, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 
