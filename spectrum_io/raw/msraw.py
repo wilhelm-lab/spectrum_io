@@ -107,14 +107,17 @@ class MSRaw:
         :return: list of files
         """
         file_list = []
-        if os.path.isdir(source):
+        if isinstance(source, str) and os.path.isdir(source):
             # if string is provided and is a directory, search all mzml files with provided extension
             for file in os.listdir(source):
                 if file.lower().endswith(ext.lower()):
                     file_list.append(file)
 
         else:
-            file_list = [source]
+            if isinstance(source, list):
+                file_list.extend(source)
+            else:
+                file_list.append(source)
         return file_list
 
     @staticmethod

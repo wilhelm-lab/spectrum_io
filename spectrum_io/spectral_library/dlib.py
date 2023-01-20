@@ -28,7 +28,7 @@ class DLib(SpectralLibrary):
         self,
         precursor_mz: Union[List[float], np.ndarray],
         precursor_charges: Union[List[int], np.ndarray],
-        modified_sequences: Union[List[str], np.ndarray],
+        modified_sequences: List[str],
         retention_times: Union[List[float], np.ndarray],
         fragmentmz: List[np.ndarray],
         intensities: List[np.ndarray],
