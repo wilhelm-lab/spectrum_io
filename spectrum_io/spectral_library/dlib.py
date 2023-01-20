@@ -89,6 +89,7 @@ class DLib(SpectralLibrary):
             - 'IntensityEncodedLength'.
         :param fragmentmz: fragmentmz provided in __init__
         :param intensities: intensities provided in __init__
+        :param intensity_min_threshold: minimum threshold for tge intensity; default=0.05
         :return: 4 lists as described above
         """
         mz_bytes_list = []
@@ -162,7 +163,6 @@ class DLib(SpectralLibrary):
         c.execute(sql_insert_meta, ["version", "0.1.14"])
         c.execute(sql_insert_meta, ["staleProteinMapping", "true"])
         conn.commit()
-        return conn, c
 
     def write(self, chunksize: Optional[Union[None, int]]):
         """

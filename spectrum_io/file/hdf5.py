@@ -70,6 +70,7 @@ def write_file(
     :param path: path to store the file to
     :param dataset_names: list of dataset names
     :param column_names: list of column_names
+    :raises TypeError: if data_set has an unexpected type
     """
     index = 0
     for data_set, dataset_name in zip(data_sets, dataset_names):
@@ -96,18 +97,18 @@ def write_dataset(
     """
     Writes or appends dataset to an hdf5 file.
 
-    :params
-        data: The data to store. Can be a pandas DataFrame or a scipy Sparsematrix.
-        path: The path to store the file to.
-        dataset_name: The key in the hdf5 file under which to store the data.
-        mode: The method when writing the data. Use 'a' to append to an existing file or 'w' to overwrite.
-        compression: Optional, the method for compressing data. Check pandas.DataFrame.to_hdf docs for supported
+    :param data: The data to store. Can be a pandas DataFrame or a scipy Sparsematrix
+    :param path: The path to store the file to
+    :param dataset_name: The key in the hdf5 file under which to store the data
+    :param mode: The method when writing the data. Use 'a' to append to an existing file or 'w' to overwrite
+    :param compression: Optional, the method for compressing data. Check pandas.DataFrame.to_hdf docs for supported
             compression methods in case of providing a pandas DataFrame and h5py.Dataset docs in case of providing
             a sparse matrix. If providing False, no compression is applied; if providing True, defaults to 'zlib'
             in case of providing a pandas DataFrame and 'gzip' if providing a sparse matrix.
-            standard compression depending on the data type given. Default: True.
-        column_names: Optional, additional column column_names. Ignored if providing a pandas DataFrame. Default: None.
-        index: Optional, additional index. Ignored if providing a pandas DataFrame. Default: None.
+            standard compression depending on the data type given. Default: True
+    :param column_names: Optional, additional column column_names. Ignored if providing a pandas DataFrame. Default: None
+    :param index: Optional, additional index. Ignored if providing a pandas DataFrame. Default: None
+    :raises AssertionError: if data_set has an unexpected type
     """
     if isinstance(compression, bool) and compression:
         if isinstance(compression, pd.DataFrame):
