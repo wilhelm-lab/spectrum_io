@@ -46,7 +46,7 @@ class ThermoRaw(MSRaw):
         exec_path = pathlib.Path(__file__).parent.absolute()  # get path of parent directory of current file
         exec_command = f"{mono} {exec_path}/utils/ThermoRawFileParser/ThermoRawFileParser.exe \
                         {gzip_opt} --msLevel {ms_level} -i {input_path} -b {output_path}.tmp"
-        logger.info(f"Converting thermo rawfile to mzml with the command: '{exec_command}'")
+        logger.info(f"Converting thermo rawfile to mzml with the command: {exec_command}")
         subprocess.run(exec_command, shell=True, check=True)
 
         # only rename the file now, so that we don't have a partially converted file if something fails
