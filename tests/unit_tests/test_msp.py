@@ -23,7 +23,7 @@ class TestMspPrepareSpectrum:
         msp_lib.prepare_spectrum()
         msp_lib.write()
         file_content = out_file.read().decode()
-        file_content = file_content.strip("\r")  # explicitly remove to run on windows
+        file_content = file_content.replace("\r", "")  # explicitly remove to work for windows
         anticipated_content = (
             "Name: AAACCCCKR/1\n"
             "MW: 124.407276467\n"
