@@ -38,7 +38,7 @@ class TestMspPrepareSpectrum:
             '0.6	0.4	"b1^2/0.0ppm"\n'
             '0.5	0.5	"y3^3/0.0ppm"\n'
         )
-        assert file_content == anticipated_content.encode()
+        assert file_content.decode() == anticipated_content
 
 
 @pytest.fixture
