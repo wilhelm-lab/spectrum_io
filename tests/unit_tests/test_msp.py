@@ -22,7 +22,8 @@ class TestMspPrepareSpectrum:
         msp_lib = msp.MSP(spectra_input, grpc_dict, out_file.name)
         msp_lib.prepare_spectrum()
         msp_lib.write()
-        file_content = out_file.read()
+        file_content = out_file.read().decode()
+        file_content = file_content.strip("\r")  # explicitly remove to run on windows
         anticipated_content = (
             "Name: AAACCCCKR/1\n"
             "MW: 124.407276467\n"
@@ -38,7 +39,7 @@ class TestMspPrepareSpectrum:
             '0.6	0.4	"b1^2/0.0ppm"\n'
             '0.5	0.5	"y3^3/0.0ppm"\n'
         )
-        assert file_content.decode() == anticipated_content
+        assert file_content == anticipated_content
 
 
 @pytest.fixture
