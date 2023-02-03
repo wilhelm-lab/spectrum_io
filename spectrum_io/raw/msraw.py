@@ -77,7 +77,7 @@ class MSRaw:
                     fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     key = f"{file_name}_{id}"
-                    if search_type == "maxquant":
+                    if search_type == "Maxquant":
                         data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range]
                     else:
                         data[key] = [
