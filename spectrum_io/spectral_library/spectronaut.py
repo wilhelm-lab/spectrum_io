@@ -108,7 +108,7 @@ class Spectronaut(SpectralLibrary):
                 "PrecursorMz": precursor_mz,
             }
         )
-        inter_df["iRT"]  = irt.tolist() 
+        inter_df["iRT"] = irt.tolist()
         if len(list(self.grpc_output)) > 2:
             inter_df["proteotypicity"] = proteotypicity.tolist()
         inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()

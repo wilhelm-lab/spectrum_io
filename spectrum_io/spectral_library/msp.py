@@ -25,8 +25,7 @@ class MSP(SpectralLibrary):
                 f"iRT={spectrum['iRT']} "
             )
             if len(list(self.grpc_output)) > 2:
-                out.write(
-                    f"proteotypicity={spectrum['proteotypicity']}\n")
+                out.write(f"proteotypicity={spectrum['proteotypicity']}\n")
             else:
                 out.write("\n")
             out.write(f"Num peaks: {sum(elem!='N' for elem in spectrum['fragment_types'])}\n")
@@ -75,7 +74,7 @@ class MSP(SpectralLibrary):
                 "Modifications": msp_mod_strings,
             }
         )
-        inter_df["iRT"]= irt.tolist()
+        inter_df["iRT"] = irt.tolist()
         if len(list(self.grpc_output)) > 2:
             inter_df["proteotypicity"] = proteotypicity.tolist()
         inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()
