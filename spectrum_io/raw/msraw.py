@@ -28,11 +28,6 @@ class MSRaw:
         self.path = path
         self.output_path = output_path
 
-    @abstractmethod
-    def convert_raw_mzml(self, input_path, output_path):
-        """Use https://github.com/compomics/ThermoRawFileParser for conversion."""
-        raise NotImplementedError
-
     @staticmethod
     def read_mzml(
         source: Union[str, List[str]],
