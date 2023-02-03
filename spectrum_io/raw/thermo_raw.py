@@ -20,8 +20,9 @@ class ThermoRaw(MSRaw):
         ms_level: str = "2",
         output_path: Optional[Union[pathlib.Path, str]] = None,
     ) -> str:
-        """
-        Converts a ThermoRaw file to mzML.
+        """Converts a ThermoRaw file to mzML.
+
+        Use https://github.com/compomics/ThermoRawFileParser for conversion.
 
         :param input_path: file path of the Thermo Rawfile
         :param gzip: whether to gzip the file
