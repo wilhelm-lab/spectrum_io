@@ -33,7 +33,7 @@ class MSRaw:
         source: Union[str, List[str]],
         ext: str = "mzml",
         package: str = "pyteomics",
-        search_type: str = "maxquant",
+        search_type: str = "Maxquant",
         scanidx: Optional[List] = None,
         *args,
         **kwargs,
@@ -45,7 +45,7 @@ class MSRaw:
         :param ext: file extension for searching a specified directory
         :param package: package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
         :param scanidx: optional list of scan numbers to extract. if not specified, all scans will be extracted
-        :param search_type: type of the search (maxquant, mascot, msfragger)
+        :param search_type: type of the search (Maxquant, Mascot, Msfragger)
         :param args: additional positional arguments
         :param kwargs: additional keyword arguments
         :raises AssertionError: if package has an unexpected type
@@ -72,7 +72,7 @@ class MSRaw:
                     fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     key = f"{file_name}_{id}"
-                    if search_type == "maxquant":
+                    if search_type == "Maxquant":
                         data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range]
                     else:
                         data[key] = [
@@ -87,7 +87,7 @@ class MSRaw:
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
-        if search_type == "maxquant":
+        if search_type == "Maxquant":
             data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         else:
             data = pd.DataFrame.from_dict(
