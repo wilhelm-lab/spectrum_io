@@ -1,7 +1,7 @@
 import logging
 import os
-import pathlib
 import subprocess  # nosec S603
+from pathlib import Path
 from sys import platform
 from typing import Optional, Union
 
@@ -15,11 +15,11 @@ class ThermoRaw(MSRaw):
 
     @staticmethod
     def convert_raw_mzml(
-        input_path: Union[pathlib.Path, str],
+        input_path: Union[Path, str],
         gzip: bool = False,
         ms_level: str = "2",
-        output_path: Optional[Union[pathlib.Path, str]] = None,
-    ) -> str:
+        output_path: Optional[Union[Path, str]] = None,
+    ) -> Path:
         """Converts a ThermoRaw file to mzML.
 
         Use https://github.com/compomics/ThermoRawFileParser for conversion.
@@ -32,17 +32,17 @@ class ThermoRaw(MSRaw):
         :return: path to converted file as string
         """
         if isinstance(input_path, str):
-            input_path = pathlib.Path(input_path)
+            input_path = Path(input_path)
         if output_path is None:
             output_path = input_path.with_suffix(".mzML")
         if isinstance(output_path, str):
-            output_path = pathlib.Path(output_path)
+            output_path = Path(output_path)
 
         if os.path.isfile(output_path):
             logger.info(f"Found converted file at {output_path}, skipping conversion")
             return output_path
 
-        exec_path = pathlib.Path(__file__).parent.absolute()  # get path of parent directory of this file
+        exec_path = Path(__file__).parent.absolute()  # get path of parent directory of this file
         exec_path /= "utils/ThermoRawFileParser/ThermoRawFileParser.exe"
 
         exec_arg_list = [exec_path, f"--msLevel={ms_level}", "-i", input_path, "-b", output_path]
