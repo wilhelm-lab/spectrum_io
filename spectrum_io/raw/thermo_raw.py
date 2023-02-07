@@ -1,7 +1,7 @@
 import logging
 import os
 import pathlib
-import subprocess
+import subprocess  # nosec S603
 from sys import platform
 from typing import Optional, Union
 
@@ -43,9 +43,12 @@ class ThermoRaw(MSRaw):
             return output_path
 
         exec_path = pathlib.Path(__file__).parent.absolute()  # get path of parent directory of this file
-        exec_path /= "/utils/ThermoRawFileParser/ThermoRawFileParser.exe"
+        exec_path /= "utils/ThermoRawFileParser/ThermoRawFileParser.exe"
 
-        exec_arg_list = [exec_path, f"{'-g ' if gzip else ''}--msLevel {ms_level} -i", input_path, "-b", output_path]
+        exec_arg_list = [exec_path, f"--msLevel={ms_level}", "-i", input_path, "-b", output_path]
+        if gzip:
+            exec_arg_list.append("-g")
+
         if "linux" in platform:
             exec_arg_list = ["mono"] + exec_arg_list
 
@@ -54,7 +57,7 @@ class ThermoRaw(MSRaw):
         )
 
         try:
-            subprocess.run(exec_arg_list, shell=True, check=True)
+            subprocess.run(exec_arg_list, shell=False, check=True)  # nosec S603
         except subprocess.CalledProcessError:
             if os.path.isfile(output_path):
                 os.remove(output_path)
