@@ -1,13 +1,43 @@
 import logging
 import os
-import subprocess  # nosec S603
+import subprocess
 from pathlib import Path
 from sys import platform
-from typing import Optional, Union
+from typing import Any, List, Optional, Tuple, Union
 
 from .msraw import MSRaw
 
 logger = logging.getLogger(__name__)
+
+
+def _type_check(var: Any, varname: str, types: Union[type, Tuple[type, ...]]):
+    if isinstance(var, types):
+        return
+    if isinstance(types, type):
+        possible_types_str = types.__name__
+    else:
+        type_names = [t.__name__ for t in types]
+        possible_types_str = "{} or {}".format(", ".join(type_names[:-1]), type_names[-1])
+    raise TypeError(f"{varname} must be of type {possible_types_str}")
+
+
+def _assemble_arg_list(input_path: Path, output_path: Path, ms_level: List[int], gzip: bool) -> List[Union[str, Path]]:
+    exec_path = Path(__file__).parent.absolute()  # get path of parent directory of this file
+    exec_path /= "utils/ThermoRawFileParser/ThermoRawFileParser.exe"
+    exec_arg_list: List[Union[str, Path]] = [
+        exec_path,
+        f"--msLevel={','.join([str(l) for l in ms_level])}",
+        "-i",
+        input_path,
+        "-b",
+        output_path,
+    ]
+    if gzip:
+        exec_arg_list.append("-g")
+    if "linux" in platform:
+        exec_arg_list.insert(0, "mono")
+
+    return exec_arg_list
 
 
 class ThermoRaw(MSRaw):
@@ -17,7 +47,7 @@ class ThermoRaw(MSRaw):
     def convert_raw_mzml(
         input_path: Union[Path, str],
         gzip: bool = False,
-        ms_level: str = "2",
+        ms_level: Union[int, List[int]] = 2,
         output_path: Optional[Union[Path, str]] = None,
     ) -> Path:
         """Converts a ThermoRaw file to mzML.
@@ -26,38 +56,39 @@ class ThermoRaw(MSRaw):
 
         :param input_path: file path of the Thermo Rawfile
         :param gzip: whether to gzip the file
-        :param ms_level: level of MS
+        :param ms_level: level of MS, can be a single integer (1, 2, 3) or any combination of that provided as a list
         :param output_path: file path of the mzML path
         :raises subprocess.CalledProcessError: if the subprocess for conversion failed
+        :raises ValueError: if ms_level(s) provided are other than 1, 2 or 3.
         :return: path to converted file as string
         """
-        if isinstance(input_path, str):
-            input_path = Path(input_path)
+        _type_check(input_path, "input_path", (Path, str))
+        input_path = Path(input_path)
         if output_path is None:
             output_path = input_path.with_suffix(".mzML")
-        if isinstance(output_path, str):
-            output_path = Path(output_path)
+        _type_check(output_path, "output_path", (Path, str))
+        output_path = Path(output_path)
+
+        _type_check(ms_level, "ms_level", (int, list))
+        if isinstance(ms_level, int):
+            ms_level = [ms_level]
+        for level in ms_level:
+            _type_check(level, "all ms_levels in list", int)
+            if not 1 <= level <= 3:
+                raise ValueError(f"Value of all ms_levels must be within [1,3]. Got {level}")
 
         if os.path.isfile(output_path):
             logger.info(f"Found converted file at {output_path}, skipping conversion")
             return output_path
 
-        exec_path = Path(__file__).parent.absolute()  # get path of parent directory of this file
-        exec_path /= "utils/ThermoRawFileParser/ThermoRawFileParser.exe"
-
-        exec_arg_list = [exec_path, f"--msLevel={ms_level}", "-i", input_path, "-b", output_path]
-        if gzip:
-            exec_arg_list.append("-g")
-
-        if "linux" in platform:
-            exec_arg_list = ["mono"] + exec_arg_list
+        exec_arg_list = _assemble_arg_list(input_path, output_path, ms_level, gzip)
 
         logger.info(
             f"Converting thermo rawfile to mzml with the command: {' '.join([str(arg) for arg in exec_arg_list])}"
         )
 
         try:
-            subprocess.run(exec_arg_list, shell=False, check=True)  # nosec S603
+            subprocess.run(exec_arg_list, shell=False, check=True)
         except subprocess.CalledProcessError:
             if os.path.isfile(output_path):
                 os.remove(output_path)
@@ -70,6 +101,6 @@ if __name__ == "__main__":
     from sys import argv
 
     if len(argv) == 2:
-        converter = ThermoRaw().convert_raw_mzml(argv[1], ms_level="1,2")
+        converter = ThermoRaw().convert_raw_mzml(argv[1], ms_level=[1, 2])
     else:
         print("Please specify a rawfile")
