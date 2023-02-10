@@ -77,7 +77,7 @@ class MSRaw:
                     fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     key = f"{file_name}_{id}"
-                    if search_type == "Maxquant":
+                    if search_type.lower() == "maxquant":
                         data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range]
                     else:
                         data[key] = [
@@ -92,7 +92,7 @@ class MSRaw:
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
-        if search_type == "Maxquant":
+        if search_type.lower() == "maxquant":
             data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         else:
             data = pd.DataFrame.from_dict(
