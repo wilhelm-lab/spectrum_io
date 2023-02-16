@@ -1,8 +1,8 @@
 import logging
+import re
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults
 
@@ -21,31 +21,35 @@ class MSFragger(SearchResults):
         :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msfragger xlsx file")
-        df = pd.read_excel(
+        logger.info("Reading msfragger tsv file")
+        df = pd.read_csv(
             path,
             usecols=lambda x: x.upper()
             in [
-                "SCANID",
-                "PEPTIDE SEQUENCE",
-                "PRECURSOR CHARGE",
-                "PRECURSOR NEUTRAL MASS (DA)",
-                "HYPERSCORE",
+                "PEPTIDE",
                 "PROTEIN",
-                "RETENTION TIME (MINUTES)",
-                "VARIABLE MODIFICATIONS DETECTED (STARTS WITH M, SEPARATED BY |, FORMATED AS POSITION,MASS)",
+                "PEPTIDE LENGTH",
+                "SPECTRUM FILE",
+                "SPECTRUM",
+                "ASSIGNED MODIFICATIONS",
+                "CHARGE",
+                "LABELING STATE",
+                "OBSERVED MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                "HYPERSCORE",
+                "RETENTION",
             ],
+            sep="\t",
         )
-        logger.info("Finished reading msfragger xlsx file")
+        logger.info("Finished reading msfragger tsv file")
 
         df.rename(
             columns={
-                "ScanID": "SCAN NUMBER",
-                "Peptide Sequence": "MODIFIED SEQUENCE",
-                "Precursor neutral mass (Da)": "MASS",
+                "Peptide": "SEQUENCE",
+                "Assigned Modifications": "MODIFICATIONS",
+                "Observed Mass": "MASS",
                 "Hyperscore": "SCORE",
-                "Retention time (minutes)": "RETENTION TIME",
-                "Variable modifications detected (starts with M, separated by |, formated as position,mass)": "MODIFICATIONS",
+                "Retention": "RETENTION TIME",
+                "Spectrum File": "RAW FILE",
             },
             inplace=True,
         )
@@ -53,37 +57,38 @@ class MSFragger(SearchResults):
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
-
         df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
-
+        df[["RAW_FILE", "SCAN_NUMBER"]] = df["SPECTRUM"].str.split(".", expand=True, n=2)[[0, 1]]
         df["REVERSE"] = df["PROTEIN"].str.contains("Reverse")
-        # df["RAW_FILE"] = df.iloc[0]["PROTEIN"]
-        df["RAW_FILE"] = "01625b_GA6-TUM_first_pool_41_01_01-DDA-1h-R2"
-        logger.info("Converting MSFragger  peptide sequence to internal format")
 
+        df["MODIFICATIONS"] = df["MODIFICATIONS"].fillna(0)
         mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}
         sequences = []
         for _, row in df.iterrows():
-            modifications = row["MODIFICATIONS"].split("|")[1:]
-            if len(modifications) == 0:
-                sequences.append(row["MODIFIED_SEQUENCE"])
+            modifications = row["MODIFICATIONS"]
+            if modifications == 0:
+                sequences.append(row["SEQUENCE"])
             else:
-                sequence = row["MODIFIED_SEQUENCE"]
+                modifications = modifications.split(", ")
+                sequence = row["SEQUENCE"]
                 skip = 0
-                for mod in modifications:
-                    pos, mass = mod.split("$")
+                for mod in sorted(
+                    modifications, key=lambda s: 0 if s.startswith("N") else int(re.sub("[^0-9]", "", s.split("(")[0]))
+                ):
+                    pos, mass = mod.split("(")
+                    mass = mass.replace(")", "")
+                    if pos == "N-term":
+                        continue
+                    else:
+                        pos = re.sub("[^0-9]", "", pos)
                     sequence = (
-                        sequence[: int(pos) + 1 + skip]
+                        sequence[: int(pos) + skip]
                         + mod_masses_reverse[round(float(mass), 3)]
-                        + sequence[int(pos) + 1 + skip :]
+                        + sequence[int(pos) + skip :]
                     )
                     skip = skip + len(mod_masses_reverse[round(float(mass), 3)])
                 sequences.append(sequence)
-
         df["MODIFIED_SEQUENCE"] = sequences
-
-        df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-        df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
         logger.info(f"No of sequences before Filtering is {len(df['PEPTIDE_LENGTH'])}")
         df = df[(df["PEPTIDE_LENGTH"] <= 30)]
