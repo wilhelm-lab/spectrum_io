@@ -10,6 +10,7 @@ Welcome to spectrum_io's documentation!
    readme
    installation
    usage
+   modules
    reference
    contributing
    authors
