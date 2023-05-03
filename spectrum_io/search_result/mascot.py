@@ -1,6 +1,7 @@
 import logging
 import sqlite3
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -15,7 +16,7 @@ class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
     @staticmethod
-    def read_result(path: str, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 

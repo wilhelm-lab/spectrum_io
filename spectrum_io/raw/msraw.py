@@ -2,6 +2,7 @@ import logging
 import os
 import warnings
 from abc import abstractmethod
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
@@ -15,16 +16,17 @@ logger = logging.getLogger(__name__)
 class MSRaw:
     """Main to read mzml file and generate dataframe containing intensities and m/z values."""
 
-    path: Optional[str]
-    output_path: Optional[str]
-
-    def __init__(self, path: Optional[str] = None, output_path: Optional[str] = None):
+    def __init__(self, path: Optional[Union[str, Path]] = None, output_path: Optional[Union[str, Path]] = None):
         """
         Initialize a MSRaw object.
 
         :param path: path to mzml file
         :param output_path: path to save the output file
         """
+        if isinstance(path, str):
+            path = Path(path)
+        if isinstance(output_path, str):
+            output_path = Path(output_path)
         self.path = path
         self.output_path = output_path
 
@@ -120,7 +122,9 @@ class MSRaw:
         return file_list
 
     @staticmethod
-    def _get_scans_pymzml(file_path: str, data: Dict, scanidx: Optional[List] = None, *args, **kwargs) -> None:
+    def _get_scans_pymzml(
+        file_path: Union[str, Path], data: Dict, scanidx: Optional[List] = None, *args, **kwargs
+    ) -> None:
         """
         Reads mzml and generates a dataframe containing intensities and m/z values.
 

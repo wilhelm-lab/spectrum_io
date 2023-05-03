@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from pathlib import Path
 from typing import Optional, Union
 
 import numpy as np
@@ -9,12 +10,8 @@ class SpectralLibrary:
     """Main to initialze a SpectralLibrary obj."""
 
     # Check https://gitlab.lrz.de/proteomics/prosit_tools/converter for old code
-    spectra_input: pd.DataFrame
-    grpc_output: dict
-    spectra_output: pd.DataFrame
-    out_path: str
 
-    def __init__(self, input_dataframe: pd.DataFrame, grpc_dict: dict, output_path: str):
+    def __init__(self, input_dataframe: pd.DataFrame, grpc_dict: dict, output_path: Union[str, Path]):
         """
         Initialize a SpectralLibrary obj.
 
@@ -22,6 +19,8 @@ class SpectralLibrary:
         :param grpc_dict: GRPC client output dictionary with spectrum, irt, and proteotypicity prediction
         :param output_path: path to output file including file name
         """
+        if isinstance(output_path, str):
+            output_path = Path(output_path)
         self.spectra_input = input_dataframe
         self.grpc_output = grpc_dict
         self.out_path = output_path

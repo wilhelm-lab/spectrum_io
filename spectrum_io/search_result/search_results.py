@@ -1,7 +1,8 @@
 import logging
 import os
 from abc import abstractmethod
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -13,20 +14,21 @@ logger = logging.getLogger(__name__)
 class SearchResults:
     """Handle search results from different software."""
 
-    path: str
     orig_res: pd.DataFrame
     fake_msms: pd.DataFrame
 
-    def __init__(self, path):
+    def __init__(self, path: Union[str, Path]):
         """
         Init Searchresults object.
 
         :param path: path to file
         """
+        if isinstance(path, str):
+            path = Path(path)
         self.path = path
 
     @abstractmethod
-    def read_result(self, path: str, tmt_labeled: str):
+    def read_result(self, path: Union[str, Path], tmt_labeled: str):
         """Read result."""
         raise NotImplementedError
 
@@ -50,7 +52,7 @@ class SearchResults:
 
         return out_path
 
-    def read_internal(self, path: str) -> pd.DataFrame:
+    def read_internal(self, path: Union[str, Path]) -> pd.DataFrame:
         """
         Read file from path.
 
