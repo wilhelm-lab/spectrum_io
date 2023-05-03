@@ -34,7 +34,7 @@ def _assemble_arg_list(input_path: Path, output_path: Path, ms_level: List[int],
     ]
     if gzip:
         exec_arg_list.append("-g")
-    if "linux" in platform:
+    if "linux" in platform or platform == "darwin":
         exec_arg_list.insert(0, "mono")
 
     return exec_arg_list
