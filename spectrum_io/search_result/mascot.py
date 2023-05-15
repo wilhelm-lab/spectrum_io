@@ -55,7 +55,6 @@ class Mascot(SearchResults):
                 "ModifiedSequence": "MODIFIED SEQUENCE",
                 "Charge": "PRECURSOR CHARGE",
                 "XCorr": "SCORE",
-                "RetentionTime": "RETENTION TIME",
                 "SpectrumFileName": "RAW FILE",
             },
             inplace=True,
@@ -73,7 +72,7 @@ class Mascot(SearchResults):
         )
         df = df.groupby("SCAN_NUMBER", as_index=False).apply(lambda x: x.sort_values("POSITION"))
         df = df.groupby(
-            ["SCAN_NUMBER", "PRECURSOR_CHARGE", "SCORE", "RETENTION_TIME", "RAW_FILE", "SEQUENCE", "REVERSE"],
+            ["SCAN_NUMBER", "PRECURSOR_CHARGE", "SCORE", "RAW_FILE", "SEQUENCE", "REVERSE"],
             as_index=False,
         ).agg({"MODIFICATIONS": "|".join})
         mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}

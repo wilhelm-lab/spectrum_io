@@ -32,7 +32,6 @@ class MSFragger(SearchResults):
                 "PRECURSOR NEUTRAL MASS (DA)",
                 "HYPERSCORE",
                 "PROTEIN",
-                "RETENTION TIME (MINUTES)",
                 "VARIABLE MODIFICATIONS DETECTED (STARTS WITH M, SEPARATED BY |, FORMATED AS POSITION,MASS)",
             ],
         )
@@ -44,7 +43,6 @@ class MSFragger(SearchResults):
                 "Peptide Sequence": "MODIFIED SEQUENCE",
                 "Precursor neutral mass (Da)": "MASS",
                 "Hyperscore": "SCORE",
-                "Retention time (minutes)": "RETENTION TIME",
                 "Variable modifications detected (starts with M, separated by |, formated as position,mass)": "MODIFICATIONS",
             },
             inplace=True,

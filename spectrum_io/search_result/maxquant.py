@@ -51,7 +51,6 @@ class MaxQuant(SearchResults):
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "SCORE",
                 "REVERSE",
-                "RETENTION TIME",
             ],
             sep="\t",
         )

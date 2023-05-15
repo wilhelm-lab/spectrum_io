@@ -71,9 +71,10 @@ class MSRaw:
                     mass_analyzer = spec["scanList"]["scan"][0]["filter string"].split()[0]
                     fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
+                    rt = spec["scanList"]["scan"][0]["scan start time"]
                     key = f"{file_name}_{id}"
                     if search_type == "maxquant":
-                        data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range]
+                        data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range, rt]
                     else:
                         data[key] = [
                             file_name,
@@ -81,6 +82,7 @@ class MSRaw:
                             spec["intensity array"],
                             spec["m/z array"],
                             mz_range,
+                            rt,
                             mass_analyzer,
                             fragmentation,
                         ]
@@ -135,7 +137,10 @@ class MSRaw:
         if scanidx is None:
             for spec in data_iter:
                 key = f"{file_name}_{spec.ID}"
-                data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                mz_min = min(spec.mz)
+                mz_max = max(spec.mz)
+                mz_range = str(mz_min) + "-" + str(mz_max)
+                data[key] = [file_name, spec.ID, spec.i, spec.mz, mz_range, spec.scan_time_in_minutes()]
         else:
             for idx in scanidx:
                 spec = data_iter[idx]
@@ -143,5 +148,8 @@ class MSRaw:
                 # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
                 # /standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
-                data[key] = [file_name, spec.ID, spec.i, spec.mz]
+                mz_min = min(spec.mz)
+                mz_max = max(spec.mz)
+                mz_range = str(mz_min) + "-" + str(mz_max)
+                data[key] = [file_name, spec.ID, spec.i, spec.mz, mz_range, spec.scan_time_in_minutes()]
         data_iter.close()
