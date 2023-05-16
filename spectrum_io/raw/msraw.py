@@ -73,28 +73,26 @@ class MSRaw:
                     mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                     rt = spec["scanList"]["scan"][0]["scan start time"]
                     key = f"{file_name}_{id}"
-                    if search_type == "maxquant":
-                        data[key] = [file_name, id, spec["intensity array"], spec["m/z array"], mz_range, rt]
-                    else:
-                        data[key] = [
-                            file_name,
-                            id,
-                            spec["intensity array"],
-                            spec["m/z array"],
-                            mz_range,
-                            rt,
-                            mass_analyzer,
-                            fragmentation,
-                        ]
+                    data[key] = [
+                        file_name,
+                        id,
+                        spec["intensity array"],
+                        spec["m/z array"],
+                        mz_range,
+                        rt,
+                        mass_analyzer,
+                        fragmentation,
+                    ]
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
-        if search_type == "maxquant":
-            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
-        else:
+
+        if package == "pyteomics":
             data = pd.DataFrame.from_dict(
                 data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"]
             )
+        else:
+            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
 
@@ -140,7 +138,14 @@ class MSRaw:
                 mz_min = min(spec.mz)
                 mz_max = max(spec.mz)
                 mz_range = str(mz_min) + "-" + str(mz_max)
-                data[key] = [file_name, spec.ID, spec.i, spec.mz, mz_range, spec.scan_time_in_minutes()]
+                data[key] = [
+                    file_name,
+                    spec.ID,
+                    spec.i,
+                    spec.mz,
+                    mz_range,
+                    spec.scan_time_in_minutes(),
+                ]
         else:
             for idx in scanidx:
                 spec = data_iter[idx]
@@ -151,5 +156,12 @@ class MSRaw:
                 mz_min = min(spec.mz)
                 mz_max = max(spec.mz)
                 mz_range = str(mz_min) + "-" + str(mz_max)
-                data[key] = [file_name, spec.ID, spec.i, spec.mz, mz_range, spec.scan_time_in_minutes()]
+                data[key] = [
+                    file_name,
+                    spec.ID,
+                    spec.i,
+                    spec.mz,
+                    mz_range,
+                    spec.scan_time_in_minutes(),
+                ]
         data_iter.close()
