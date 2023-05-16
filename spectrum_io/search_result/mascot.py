@@ -6,7 +6,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults
+from .search_results import SearchResults, filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -99,12 +99,5 @@ class Mascot(SearchResults):
 
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
-        logger.info(f"No of sequences before Filtering is {len(df['PEPTIDE_LENGTH'])}")
-        df = df[(df["PEPTIDE_LENGTH"] <= 30)]
-        df = df[(~df["MODIFIED_SEQUENCE"].str.contains(r"\(ac\)"))]
-        df = df[(~df["MODIFIED_SEQUENCE"].str.contains(r"\(Acetyl \(Protein N-term\)\)"))]
-        df = df[(~df["SEQUENCE"].str.contains("U"))]
-        df = df[df["PRECURSOR_CHARGE"] <= 6]
-        df = df[df["PEPTIDE_LENGTH"] >= 7]
-        logger.info(f"No of sequences after Filtering is {len(df['PEPTIDE_LENGTH'])}")
-        return df
+
+        return filter_valid_prosit_sequences(df)
