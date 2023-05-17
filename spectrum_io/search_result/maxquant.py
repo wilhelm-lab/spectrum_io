@@ -44,8 +44,6 @@ class MaxQuant(SearchResults):
                 "SCAN NUMBER",
                 "MODIFIED SEQUENCE",
                 "CHARGE",
-                "FRAGMENTATION",
-                "MASS ANALYZER",
                 "SCAN EVENT NUMBER",
                 "LABELING STATE",
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
@@ -74,10 +72,6 @@ class MaxQuant(SearchResults):
         """
         df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        if "MASS_ANALYZER" not in df.columns:
-            df["MASS_ANALYZER"] = "FTMS"
-        if "FRAGMENTATION" not in df.columns:
-            df["FRAGMENTATION"] = "HCD"
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         logger.info("Converting MaxQuant peptide sequence to internal format")

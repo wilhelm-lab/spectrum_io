@@ -87,12 +87,7 @@ class MSRaw:
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
 
-        if package == "pyteomics":
-            data = pd.DataFrame.from_dict(
-                data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"]
-            )
-        else:
-            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
+        data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
 
@@ -135,9 +130,10 @@ class MSRaw:
         if scanidx is None:
             for spec in data_iter:
                 key = f"{file_name}_{spec.ID}"
-                mz_min = min(spec.mz)
-                mz_max = max(spec.mz)
-                mz_range = str(mz_min) + "-" + str(mz_max)
+                filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
+                mass_analyzer = filter_string.split()[0]
+                fragmentation = filter_string.split("@")[1][:3]
+                mz_range = filter_string.split("[")[1][:-1]
                 data[key] = [
                     file_name,
                     spec.ID,
@@ -145,6 +141,8 @@ class MSRaw:
                     spec.mz,
                     mz_range,
                     spec.scan_time_in_minutes(),
+                    mass_analyzer,
+                    fragmentation,
                 ]
         else:
             for idx in scanidx:
@@ -153,9 +151,10 @@ class MSRaw:
                 # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
                 # /standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
-                mz_min = min(spec.mz)
-                mz_max = max(spec.mz)
-                mz_range = str(mz_min) + "-" + str(mz_max)
+                filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
+                mass_analyzer = filter_string.split()[0]
+                fragmentation = filter_string.split("@")[1][:3]
+                mz_range = filter_string.split("[")[1][:-1]
                 data[key] = [
                     file_name,
                     spec.ID,
@@ -163,5 +162,7 @@ class MSRaw:
                     spec.mz,
                     mz_range,
                     spec.scan_time_in_minutes(),
+                    mass_analyzer,
+                    fragmentation,
                 ]
         data_iter.close()
