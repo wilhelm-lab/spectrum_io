@@ -67,22 +67,23 @@ class MSRaw:
                 data_iter = mzml.read(source=file_path, *args, **kwargs)
                 file_name = os.path.splitext(os.path.basename(file_path))[0]
                 for spec in data_iter:
-                    id = spec["id"].split("scan=")[-1]
-                    mass_analyzer = spec["scanList"]["scan"][0]["filter string"].split()[0]
-                    fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
-                    mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
-                    rt = spec["scanList"]["scan"][0]["scan start time"]
-                    key = f"{file_name}_{id}"
-                    data[key] = [
-                        file_name,
-                        id,
-                        spec["intensity array"],
-                        spec["m/z array"],
-                        mz_range,
-                        rt,
-                        mass_analyzer,
-                        fragmentation,
-                    ]
+                    if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
+                        spec_id = spec["id"].split("scan=")[-1]
+                        mass_analyzer = spec["scanList"]["scan"][0]["filter string"].split()[0]
+                        fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3]
+                        mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
+                        rt = spec["scanList"]["scan"][0]["scan start time"]
+                        key = f"{file_name}_{spec_id}"
+                        data[key] = [
+                            file_name,
+                            spec_id,
+                            spec["intensity array"],
+                            spec["m/z array"],
+                            mz_range,
+                            rt,
+                            mass_analyzer,
+                            fragmentation,
+                        ]
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
@@ -129,21 +130,22 @@ class MSRaw:
         file_name = os.path.splitext(os.path.basename(file_path))[0]
         if scanidx is None:
             for spec in data_iter:
-                key = f"{file_name}_{spec.ID}"
-                filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
-                mass_analyzer = filter_string.split()[0]
-                fragmentation = filter_string.split("@")[1][:3]
-                mz_range = filter_string.split("[")[1][:-1]
-                data[key] = [
-                    file_name,
-                    spec.ID,
-                    spec.i,
-                    spec.mz,
-                    mz_range,
-                    spec.scan_time_in_minutes(),
-                    mass_analyzer,
-                    fragmentation,
-                ]
+                if spec.ms_level != 1:  # filter out ms1 spectra if there are any
+                    key = f"{file_name}_{spec.ID}"
+                    filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
+                    mass_analyzer = filter_string.split()[0]
+                    fragmentation = filter_string.split("@")[1][:3]
+                    mz_range = filter_string.split("[")[1][:-1]
+                    data[key] = [
+                        file_name,
+                        spec.ID,
+                        spec.i,
+                        spec.mz,
+                        mz_range,
+                        spec.scan_time_in_minutes(),
+                        mass_analyzer,
+                        fragmentation,
+                    ]
         else:
             for idx in scanidx:
                 spec = data_iter[idx]
