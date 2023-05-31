@@ -31,7 +31,7 @@ class SearchResults:
         """Read result."""
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> str:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> Path:
         """
         Generate df and save to out_path.
 

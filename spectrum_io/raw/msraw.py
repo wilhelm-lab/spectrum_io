@@ -52,16 +52,16 @@ class MSRaw:
         :raises AssertionError: if package has an unexpected type
         :return: pd.DataFrame with intensities and m/z values
         """
-        source = MSRaw.get_file_list(source, ext)
+        file_list = MSRaw.get_file_list(source, ext)
         data = {}  # type: Dict[str, Any]
         if package == "pymzml":
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category=ImportWarning)
-                for file_path in source:
+                for file_path in file_list:
                     logger.info(f"Reading mzML file: {file_path}")
                     MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
         elif package == "pyteomics":
-            for file_path in source:
+            for file_path in file_list:
                 logger.info(f"Reading mzML file: {file_path}")
                 data_iter = mzml.read(source=str(file_path), *args, **kwargs)
                 file_name = file_path.stem
