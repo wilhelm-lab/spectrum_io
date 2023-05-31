@@ -1,7 +1,7 @@
 import logging
-import os
 import warnings
 from abc import abstractmethod
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
@@ -15,22 +15,23 @@ logger = logging.getLogger(__name__)
 class MSRaw:
     """Main to read mzml file and generate dataframe containing intensities and m/z values."""
 
-    path: Optional[str]
-    output_path: Optional[str]
-
-    def __init__(self, path: Optional[str] = None, output_path: Optional[str] = None):
+    def __init__(self, path: Optional[Union[str, Path]] = None, output_path: Optional[Union[str, Path]] = None):
         """
         Initialize a MSRaw object.
 
         :param path: path to mzml file
         :param output_path: path to save the output file
         """
+        if isinstance(path, str):
+            path = Path(path)
+        if isinstance(output_path, str):
+            output_path = Path(output_path)
         self.path = path
         self.output_path = output_path
 
     @staticmethod
     def read_mzml(
-        source: Union[str, List[str]],
+        source: Union[str, Path, List[Union[str, Path]]],
         ext: str = "mzml",
         package: str = "pyteomics",
         search_type: str = "Maxquant",
@@ -51,21 +52,19 @@ class MSRaw:
         :raises AssertionError: if package has an unexpected type
         :return: pd.DataFrame with intensities and m/z values
         """
-        if isinstance(source, str):
-            file_list = MSRaw.get_file_list(source, ext)
-            source = file_list
+        file_list = MSRaw.get_file_list(source, ext)
         data = {}  # type: Dict[str, Any]
         if package == "pymzml":
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category=ImportWarning)
-                for file_path in source:
+                for file_path in file_list:
                     logger.info(f"Reading mzML file: {file_path}")
                     MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
         elif package == "pyteomics":
-            for file_path in source:
+            for file_path in file_list:
                 logger.info(f"Reading mzML file: {file_path}")
-                data_iter = mzml.read(source=file_path, *args, **kwargs)
-                file_name = os.path.splitext(os.path.basename(file_path))[0]
+                data_iter = mzml.read(source=str(file_path), *args, **kwargs)
+                file_name = file_path.stem
                 for spec in data_iter:
                     id = spec["id"].split("scan=")[-1]
                     mass_analyzer = spec["scanList"]["scan"][0]["filter string"].split()[0]
@@ -97,30 +96,42 @@ class MSRaw:
         return data
 
     @staticmethod
-    def get_file_list(source: Union[str, List[str]], ext: str = "mzml"):
+    def get_file_list(source: Union[str, Path, List[Union[str, Path]]], ext: str = "mzml") -> List[Path]:
         """
         Get list of files from source.
 
         :param source: a directory containing mzml files, a list of files or a single file
         :param ext: file extension for searching a specified directory
+        :raises FileNotFoundError: if one of the files given by source does not exist
+        :raises TypeError: if source is not given as a str, Path or list object
         :return: list of files
         """
         file_list = []
-        if isinstance(source, str) and os.path.isdir(source):
-            # if string is provided and is a directory, search all mzml files with provided extension
-            for file in os.listdir(source):
-                if file.lower().endswith(ext.lower()):
-                    file_list.append(file)
-
-        else:
-            if isinstance(source, list):
-                file_list.extend(source)
+        if isinstance(source, str):
+            source = Path(source)
+        if isinstance(source, Path):
+            if source.is_file():
+                file_list = [source]
+            elif source.is_dir():
+                file_list = list(source.glob("*[mM][zZ][mM][lL]"))
             else:
-                file_list.append(source)
+                raise FileNotFoundError(f"{source} does not exist.")
+        elif isinstance(source, list):
+            for elem in source:
+                if isinstance(elem, str):
+                    elem = Path(elem)
+                if elem.is_file():
+                    file_list.append(elem)
+                else:
+                    raise FileNotFoundError(f"{elem} does not exist,")
+        else:
+            raise TypeError("source can only be a single str or Path or a list of files.")
         return file_list
 
     @staticmethod
-    def _get_scans_pymzml(file_path: str, data: Dict, scanidx: Optional[List] = None, *args, **kwargs) -> None:
+    def _get_scans_pymzml(
+        file_path: Union[str, Path], data: Dict, scanidx: Optional[List] = None, *args, **kwargs
+    ) -> None:
         """
         Reads mzml and generates a dataframe containing intensities and m/z values.
 
@@ -130,8 +141,10 @@ class MSRaw:
         :param args: additional positional arguments
         :param kwargs: additional keyword arguments
         """
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
         data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
-        file_name = os.path.splitext(os.path.basename(file_path))[0]
+        file_name = file_path.stem
         if scanidx is None:
             for spec in data_iter:
                 key = f"{file_name}_{spec.ID}"

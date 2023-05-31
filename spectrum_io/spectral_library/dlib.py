@@ -1,5 +1,6 @@
 import sqlite3
 import zlib
+from pathlib import Path
 from typing import List, Optional, Union
 
 import numpy as np
@@ -32,7 +33,7 @@ class DLib(SpectralLibrary):
         retention_times: Union[List[float], np.ndarray],
         fragmentmz: List[np.ndarray],
         intensities: List[np.ndarray],
-        path: str,
+        path: Union[str, Path],
         min_intensity_threshold: Optional[float] = 0.05,
     ):
         """
@@ -118,7 +119,7 @@ class DLib(SpectralLibrary):
         return mz_bytes_list, i_bytes_list, mz_lengths, i_lengths
 
     @staticmethod
-    def create_database(path: str):
+    def create_database(path: Union[str, Path]):
         """
         Creates the database file with prefab tables entries, peptidetoprotein (p2p) and metadata, according to the \
         dlib specification.
