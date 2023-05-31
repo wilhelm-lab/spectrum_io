@@ -1,4 +1,6 @@
 import logging
+from pathlib import Path
+from typing import Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -27,7 +29,7 @@ class MaxQuant(SearchResults):
         return mass
 
     @staticmethod
-    def read_result(path: str, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
