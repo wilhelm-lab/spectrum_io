@@ -1,5 +1,4 @@
 import logging
-import os
 import subprocess
 from pathlib import Path
 from sys import platform
@@ -77,7 +76,7 @@ class ThermoRaw(MSRaw):
             if not 1 <= level <= 3:
                 raise ValueError(f"Value of all ms_levels must be within [1,3]. Got {level}")
 
-        if os.path.isfile(output_path):
+        if output_path.is_file():
             logger.info(f"Found converted file at {output_path}, skipping conversion")
             return output_path
 
@@ -90,8 +89,8 @@ class ThermoRaw(MSRaw):
         try:
             subprocess.run(exec_arg_list, shell=False, check=True)
         except subprocess.CalledProcessError:
-            if os.path.isfile(output_path):
-                os.remove(output_path)
+            if output_path.is_file():
+                output_path.unlink()
             raise  # reraise only after removing a corrupted file
 
         return output_path

@@ -1,5 +1,4 @@
 import logging
-import os
 from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Union
@@ -32,7 +31,7 @@ class SearchResults:
         """Read result."""
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[str] = None) -> str:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> str:
         """
         Generate df and save to out_path.
 
@@ -41,9 +40,11 @@ class SearchResults:
         :return: path to output file
         """
         if out_path is None:
-            out_path = f"{os.path.splitext(self.path)[0]}.prosit"
+            out_path = self.path.with_suffix(".prosit")
+        if isinstance(out_path, str):
+            out_path = Path(out_path)
 
-        if os.path.isfile(out_path):
+        if out_path.is_file():
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
             return out_path
 

@@ -9,8 +9,6 @@ import pandas as pd
 class SpectralLibrary:
     """Main to initialze a SpectralLibrary obj."""
 
-    # Check https://gitlab.lrz.de/proteomics/prosit_tools/converter for old code
-
     def __init__(self, input_dataframe: pd.DataFrame, grpc_dict: dict, output_path: Union[str, Path]):
         """
         Initialize a SpectralLibrary obj.
