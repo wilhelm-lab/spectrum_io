@@ -30,13 +30,13 @@ class SearchResults:
         """Read result."""
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[str] = None):
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[str] = None) -> str:
         """
         Generate df and save to out_path.
 
         :param out_path: path to output
-        :tmt_labeled: tmt label as str
-        :retrun: path to output file
+        :param tmt_labeled: tmt label as str
+        :return: path to output file
         """
         if out_path is None:
             out_path = f"{os.path.splitext(self.path)[0]}.prosit"
@@ -50,10 +50,11 @@ class SearchResults:
 
         return out_path
 
-    def read_internal(self, path: str):
+    def read_internal(self, path: str) -> pd.DataFrame:
         """
         Read file from path.
 
         :param path: path to file
+        :return: dataframe after reading the file
         """
         return csv.read_file(path)

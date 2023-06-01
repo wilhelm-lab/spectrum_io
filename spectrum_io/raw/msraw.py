@@ -28,17 +28,12 @@ class MSRaw:
         self.path = path
         self.output_path = output_path
 
-    @abstractmethod
-    def convert_raw_mzml(self, input_path, output_path):
-        """Use https://github.com/compomics/ThermoRawFileParser for conversion."""
-        raise NotImplementedError
-
     @staticmethod
     def read_mzml(
         source: Union[str, List[str]],
         ext: str = "mzml",
         package: str = "pyteomics",
-        search_type: str = "maxquant",
+        search_type: str = "Maxquant",
         scanidx: Optional[List] = None,
         *args,
         **kwargs,
@@ -50,6 +45,10 @@ class MSRaw:
         :param ext: file extension for searching a specified directory
         :param package: package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
         :param scanidx: optional list of scan numbers to extract. if not specified, all scans will be extracted
+        :param search_type: type of the search (Maxquant, Mascot, Msfragger)
+        :param args: additional positional arguments
+        :param kwargs: additional keyword arguments
+        :raises AssertionError: if package has an unexpected type
         :return: pd.DataFrame with intensities and m/z values
         """
         if isinstance(source, str):
@@ -107,14 +106,17 @@ class MSRaw:
         :return: list of files
         """
         file_list = []
-        if os.path.isdir(source):
+        if isinstance(source, str) and os.path.isdir(source):
             # if string is provided and is a directory, search all mzml files with provided extension
             for file in os.listdir(source):
                 if file.lower().endswith(ext.lower()):
                     file_list.append(file)
 
         else:
-            file_list = [source]
+            if isinstance(source, list):
+                file_list.extend(source)
+            else:
+                file_list.append(source)
         return file_list
 
     @staticmethod
@@ -125,6 +127,8 @@ class MSRaw:
         :param file_path: path to a single mzml file.
         :param data: dictionary to be added to by this function
         :param scanidx: optional list of scan numbers to extract. if not specified, all scans will be extracted
+        :param args: additional positional arguments
+        :param kwargs: additional keyword arguments
         """
         data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
         file_name = os.path.splitext(os.path.basename(file_path))[0]

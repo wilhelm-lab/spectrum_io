@@ -18,6 +18,7 @@ class MSFragger(SearchResults):
         Function to read a msms txt and perform some basic formatting.
 
         :param path: path to msms.txt to read
+        :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msfragger xlsx file")

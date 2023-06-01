@@ -38,23 +38,41 @@ class Spectronaut(SpectralLibrary):
                 inplace=True,
             )
             segment["FragmentLossType"] = "noloss"
-            segment = segment[
-                [
-                    "RelativeIntensity",
-                    "FragmentMz",
-                    "ModifiedPeptide",
-                    "LabeledPeptide",
-                    "StrippedPeptide",
-                    "PrecursorCharge",
-                    "PrecursorMz",
-                    "iRT",
-                    "proteotypicity",
-                    "FragmentNumber",
-                    "FragmentType",
-                    "FragmentCharge",
-                    "FragmentLossType",
+            if len(list(self.grpc_output)) > 2:
+                segment = segment[
+                    [
+                        "RelativeIntensity",
+                        "FragmentMz",
+                        "ModifiedPeptide",
+                        "LabeledPeptide",
+                        "StrippedPeptide",
+                        "PrecursorCharge",
+                        "PrecursorMz",
+                        "iRT",
+                        "proteotypicity",
+                        "FragmentNumber",
+                        "FragmentType",
+                        "FragmentCharge",
+                        "FragmentLossType",
+                    ]
                 ]
-            ]
+            else:
+                segment = segment[
+                    [
+                        "RelativeIntensity",
+                        "FragmentMz",
+                        "ModifiedPeptide",
+                        "LabeledPeptide",
+                        "StrippedPeptide",
+                        "PrecursorCharge",
+                        "PrecursorMz",
+                        "iRT",
+                        "FragmentNumber",
+                        "FragmentType",
+                        "FragmentCharge",
+                        "FragmentLossType",
+                    ]
+                ]
             segment.to_csv(self.out_path, mode="a", header=initial, index=False)
 
     def prepare_spectrum(self):
@@ -67,8 +85,9 @@ class Spectronaut(SpectralLibrary):
         fragment_charges = annotation["charge"]
         irt = self.grpc_output[list(self.grpc_output)[1]]
         irt = irt.flatten()
-        proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-        proteotypicity = proteotypicity.flatten()
+        if len(list(self.grpc_output)) > 2:
+            proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
+            proteotypicity = proteotypicity.flatten()
         modified_sequences_spec = internal_to_spectronaut(
             self.spectra_input["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_")
         )
@@ -89,7 +108,9 @@ class Spectronaut(SpectralLibrary):
                 "PrecursorMz": precursor_mz,
             }
         )
-        inter_df["iRT"], inter_df["proteotypicity"] = irt.tolist(), proteotypicity.tolist()
+        inter_df["iRT"] = irt.tolist()
+        if len(list(self.grpc_output)) > 2:
+            inter_df["proteotypicity"] = proteotypicity.tolist()
         inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()
         inter_df["fragment_types"] = fragment_types.tolist()
         inter_df["fragment_numbers"] = fragment_numbers.tolist()

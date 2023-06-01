@@ -23,8 +23,11 @@ class MSP(SpectralLibrary):
                 f"Mods={spectrum['Modifications'][0]} "
                 f"ModString={spectrum['Modifications'][1]}/{spectrum['PrecursorCharge']} "
                 f"iRT={spectrum['iRT']} "
-                f"proteotypicity={spectrum['proteotypicity']}\n"
             )
+            if len(list(self.grpc_output)) > 2:
+                out.write(f"proteotypicity={spectrum['proteotypicity']}\n")
+            else:
+                out.write("\n")
             out.write(f"Num peaks: {sum(elem!='N' for elem in spectrum['fragment_types'])}\n")
             for fmz, fintensity, ftype, fcharge, fnumber in zip(
                 spectrum["fragment_mz"],
@@ -48,8 +51,9 @@ class MSP(SpectralLibrary):
         fragment_charges = annotation["charge"]
         irt = self.grpc_output[list(self.grpc_output)[1]]
         irt = irt.flatten()
-        proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-        proteotypicity = proteotypicity.flatten()
+        if len(list(self.grpc_output)) > 2:
+            proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
+            proteotypicity = proteotypicity.flatten()
         modified_sequences = self.spectra_input["MODIFIED_SEQUENCE"]
         collision_energies = self.spectra_input["COLLISION_ENERGY"]
 
@@ -70,7 +74,9 @@ class MSP(SpectralLibrary):
                 "Modifications": msp_mod_strings,
             }
         )
-        inter_df["iRT"], inter_df["proteotypicity"] = irt.tolist(), proteotypicity.tolist()
+        inter_df["iRT"] = irt.tolist()
+        if len(list(self.grpc_output)) > 2:
+            inter_df["proteotypicity"] = proteotypicity.tolist()
         inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()
         inter_df["fragment_types"] = fragment_types.tolist()
         inter_df["fragment_numbers"] = fragment_numbers.tolist()

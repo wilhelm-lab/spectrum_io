@@ -284,7 +284,7 @@ def read_fasta_maxquant(
 
     hasspecial_aas = len(special_aas) > 0
     name = None
-    seq = ""
+    seq: List[str] = []
     with open(file_path) as fp:
         for line in itertools.chain(fp, [">"]):
             line = line.rstrip()

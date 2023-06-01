@@ -20,6 +20,7 @@ class Mascot(SearchResults):
         Function to read a mascot msf file and perform some basic formatting.
 
         :param path: path to msms.txt to read
+        :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading mascot msf file")
