@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spectrum_io.raw package &mdash; spectrum_io 0.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom_cookietemple.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="spectrum_io.search_result package" href="spectrum_io.search_result.html" />
+    <link rel="prev" title="spectrum_io.file package" href="spectrum_io.file.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            spectrum_io
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">spectrum_io</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">spectrum_io</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="spectrum_io.html">spectrum_io package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="spectrum_io.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="spectrum_io.file.html">spectrum_io.file package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">spectrum_io.raw package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="spectrum_io.search_result.html">spectrum_io.search_result package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="spectrum_io.spectral_library.html">spectrum_io.spectral_library package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="spectrum_io.html#module-spectrum_io">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="spectrum_io.file.html">spectrum_io.file package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">spectrum_io.raw package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.raw.msraw">spectrum_io.raw.msraw module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.msraw.MSRaw"><code class="docutils literal notranslate"><span class="pre">MSRaw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.msraw.get_mass_analyzer"><code class="docutils literal notranslate"><span class="pre">get_mass_analyzer()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.raw.thermo_raw">spectrum_io.raw.thermo_raw module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.thermo_raw.ThermoRaw"><code class="docutils literal notranslate"><span class="pre">ThermoRaw</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.raw">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="spectrum_io.search_result.html">spectrum_io.search_result package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectrum_io.spectral_library.html">spectrum_io.spectral_library package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributor Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">spectrum_io</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">spectrum_io</a></li>
+          <li class="breadcrumb-item"><a href="spectrum_io.html">spectrum_io package</a></li>
+      <li class="breadcrumb-item active">spectrum_io.raw package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/wilhelm-lab/spectrum_io/blob/main/spectrum_io/spectrum_io.raw.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="spectrum-io-raw-package">
+<h1>spectrum_io.raw package<a class="headerlink" href="#spectrum-io-raw-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-spectrum_io.raw.msraw">
+<span id="spectrum-io-raw-msraw-module"></span><h2>spectrum_io.raw.msraw module<a class="headerlink" href="#module-spectrum_io.raw.msraw" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">MSRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L52-L219"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Main to read mzml file and generate dataframe containing intensities and m/z values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw.get_file_list">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L131-L162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.get_file_list" title="Permalink to this definition"></a></dt>
+<dd><p>Get list of files from source.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>List</em><em>[</em><em>str</em><em> | </em><em>Path</em><em>]</em>) – a directory containing mzml files, a list of files or a single file</p></li>
+<li><p><strong>ext</strong> (<em>str</em>) – file extension for searching a specified directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – if one of the files given by source does not exist</p></li>
+<li><p><strong>TypeError</strong> – if source is not given as a str, Path or list object</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of files</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>List</em>[<em>Path</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw.read_mzml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pyteomics'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Maxquant'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scanidx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L69-L129"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.read_mzml" title="Permalink to this definition"></a></dt>
+<dd><p>Reads mzml and generates a dataframe containing intensities and m/z values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>List</em><em>[</em><em>str</em><em> | </em><em>Path</em><em>]</em>) – a directory containing mzml files, a list of files or a single file</p></li>
+<li><p><strong>ext</strong> (<em>str</em>) – file extension for searching a specified directory</p></li>
+<li><p><strong>package</strong> (<em>str</em>) – package for parsing the mzml file. Can eiter be “pymzml” or “pyteomics”</p></li>
+<li><p><strong>scanidx</strong> (<em>List</em><em> | </em><em>None</em>) – optional list of scan numbers to extract. if not specified, all scans will be extracted</p></li>
+<li><p><strong>search_type</strong> (<em>str</em>) – type of the search (Maxquant, Mascot, Msfragger)</p></li>
+<li><p><strong>args</strong> – additional positional arguments</p></li>
+<li><p><strong>kwargs</strong> – additional keyword arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – if package has an unexpected type</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame with intensities and m/z values</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.raw.msraw.get_mass_analyzer">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">get_mass_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L16-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.get_mass_analyzer" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve mass analyzer information from mzml file.</p>
+<p>This is using the description of the mzml format to check for specific accessions in the mzml file
+that are not covered by pyteomics or pymzml. The documentation can be found here:
+<a class="reference external" href="https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo">https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – The path to the mzml file to parse</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – if the mass analyzer metadata cannot be found in the file or the search
+was conducted with an unsupported mass analyzer.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string that is either FTMS or ITMS to represent the respective mass analyzer category.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-spectrum_io.raw.thermo_raw">
+<span id="spectrum-io-raw-thermo-raw-module"></span><h2>spectrum_io.raw.thermo_raw module<a class="headerlink" href="#module-spectrum_io.raw.thermo_raw" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.raw.thermo_raw.ThermoRaw">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.thermo_raw.</span></span><span class="sig-name descname"><span class="pre">ThermoRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L42-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spectrum_io.raw.msraw.MSRaw" title="spectrum_io.raw.msraw.MSRaw"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSRaw</span></code></a></p>
+<p>Main to convert a ThermoRaw file into mzml file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.raw.thermo_raw.ThermoRaw.convert_raw_mzml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_raw_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ms_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L45-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw.convert_raw_mzml" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a ThermoRaw file to mzML.</p>
+<p>Use <a class="reference external" href="https://github.com/compomics/ThermoRawFileParser">https://github.com/compomics/ThermoRawFileParser</a> for conversion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path</strong> (<em>Path</em><em> | </em><em>str</em>) – file path of the Thermo Rawfile</p></li>
+<li><p><strong>gzip</strong> (<em>bool</em>) – whether to gzip the file</p></li>
+<li><p><strong>ms_level</strong> (<em>int</em><em> | </em><em>List</em><em>[</em><em>int</em><em>]</em>) – level of MS, can be a single integer (1, 2, 3) or any combination of that provided as a list</p></li>
+<li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – file path of the mzML path</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>subprocess.CalledProcessError</strong> – if the subprocess for conversion failed</p></li>
+<li><p><strong>ValueError</strong> – if ms_level(s) provided are other than 1, 2 or 3.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>path to converted file as string</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Path</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-spectrum_io.raw">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-spectrum_io.raw" title="Permalink to this heading"></a></h2>
+<p>Init raw.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="spectrum_io.file.html" class="btn btn-neutral float-left" title="spectrum_io.file package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="spectrum_io.search_result.html" class="btn btn-neutral float-right" title="spectrum_io.search_result package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Mario Picciani.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
