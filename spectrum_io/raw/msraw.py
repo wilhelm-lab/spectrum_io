@@ -1,9 +1,9 @@
 import logging
 import warnings
-import xml.etree.ElementTree as ElementTree
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
+from xml.etree import ElementTree
 
 import pandas as pd
 import pymzml
@@ -11,6 +11,42 @@ from pyteomics import mzml
 from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
+
+
+def get_mass_analyzer(file_path: Path) -> str:
+    """
+    Retrieve mass analyzer information from mzml file.
+
+    This is using the description of the mzml format to check for specific accessions in the mzml file
+    that are not covered by pyteomics or pymzml. The documentation can be found here:
+    https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
+
+    :param file_path: The path to the mzml file to parse
+    :raises AssertionError: if the mass analyzer metadata cannot be found in the file or the search
+        was conducted with an unsupported mass analyzer.
+    :return: A string that is either FTMS or ITMS to represent the respective mass analyzer category.
+    """
+    tree = ElementTree.parse(file_path)
+    root = tree.getroot()
+    namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
+    analyzer = root.find(
+        ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
+        namespace,
+    )
+    if analyzer is None:
+        raise AssertionError("The mass analyzer information can not be retrieved from the mzml file!")
+
+    acc = analyzer.get("accession")
+    if acc in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
+        mass_analyzer = "FTMS"
+    elif acc in ["MS:1000082", "MS:1000264"]:  # quadrupole ion-trap, io-trap
+        mass_analyzer = "ITMS"
+    elif acc in ["MS:1000084"]:  # TOF
+        mass_analyzer = "TOF"
+    else:
+        raise AssertionError(f"The mass analyzer with accession {acc} ({analyzer.get('name')}) is not supported.")
+
+    return mass_analyzer
 
 
 class MSRaw:
@@ -63,24 +99,10 @@ class MSRaw:
                     MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
         elif package == "pyteomics":
             for file_path in file_list:
+                mass_analyzer = get_mass_analyzer(file_path)
                 logger.info(f"Reading mzML file: {file_path}")
                 data_iter = mzml.read(source=str(file_path), *args, **kwargs)
                 file_name = file_path.stem
-                tree = ElementTree.parse(file_path)
-                root = tree.getroot()
-                namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
-                analyzer = root.find(
-                    ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
-                    namespace,
-                )
-                mass_analyzer = analyzer.get("name")
-                if (
-                    mass_analyzer == "fourier transform ion cyclotron resonance mass spectrometer"
-                    or mass_analyzer == "orbitrap"
-                ):
-                    mass_analyzer = "FTMS"
-                else:
-                    mass_analyzer = "ITMS"
                 for spec in data_iter:
                     if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
                         spec_id = spec["id"].split("scan=")[-1]
@@ -156,21 +178,7 @@ class MSRaw:
             file_path = Path(file_path)
         data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
         file_name = file_path.stem
-        tree = ElementTree.parse(file_path)
-        root = tree.getroot()
-        namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
-        analyzer = root.find(
-            ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
-            namespace,
-        )
-        mass_analyzer = analyzer.get("name")
-        if (
-            mass_analyzer == "fourier transform ion cyclotron resonance mass spectrometer"
-            or mass_analyzer == "orbitrap"
-        ):
-            mass_analyzer = "FTMS"
-        else:
-            mass_analyzer = "ITMS"
+        mass_analyzer = get_mass_analyzer(file_path)
         if scanidx is None:
             for spec in data_iter:
                 if spec.ms_level != 1:  # filter out ms1 spectra if there are any
