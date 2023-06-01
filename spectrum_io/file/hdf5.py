@@ -1,5 +1,6 @@
 import logging
 import threading
+from pathlib import Path
 from typing import List, Optional, Union
 
 import h5py
@@ -15,7 +16,7 @@ INTENSITY_PRED_KEY = "pred_intensity"
 MZ_RAW_KEY = "raw_mz"
 
 
-def read_file(path: str, key: str) -> pd.DataFrame:
+def read_file(path: Union[str, Path], key: str) -> pd.DataFrame:
     """
     Read hdf5 file and return dataframe with contents.
 
