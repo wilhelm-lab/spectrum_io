@@ -6,7 +6,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
 
-from .search_results import SearchResults
+from .search_results import SearchResults, filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +46,11 @@ class MaxQuant(SearchResults):
                 "SCAN NUMBER",
                 "MODIFIED SEQUENCE",
                 "CHARGE",
-                "FRAGMENTATION",
-                "MASS ANALYZER",
                 "SCAN EVENT NUMBER",
                 "LABELING STATE",
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "SCORE",
                 "REVERSE",
-                "RETENTION TIME",
             ],
             sep="\t",
         )
@@ -64,9 +61,7 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.replace(" ", "_")
 
         df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
-        df = MaxQuant.filter_valid_prosit_sequences(df)
-
-        return df
+        return filter_valid_prosit_sequences(df)
 
     @staticmethod
     def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
@@ -79,10 +74,6 @@ class MaxQuant(SearchResults):
         """
         df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        if "MASS_ANALYZER" not in df.columns:
-            df["MASS_ANALYZER"] = "FTMS"
-        if "FRAGMENTATION" not in df.columns:
-            df["FRAGMENTATION"] = "HCD"
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         logger.info("Converting MaxQuant peptide sequence to internal format")
@@ -115,24 +106,5 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
-
-        return df
-
-    @staticmethod
-    def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Filter valid Prosit sequences.
-
-        :param df: df to filter
-        :return: df after filtration
-        """
-        logger.info(f"#sequences before filtering for valid prosit sequences: {len(df.index)}")
-        df = df[(df["PEPTIDE_LENGTH"] <= 30)]
-        df = df[(~df["MODIFIED_SEQUENCE"].str.contains("(ac)", regex=False))]
-        df = df[(~df["MODIFIED_SEQUENCE"].str.contains("(Acetyl (Protein N-term))", regex=False))]
-        df = df[(~df["SEQUENCE"].str.contains("U"))]
-        df = df[df["PRECURSOR_CHARGE"] <= 6]
-        df = df[df["PEPTIDE_LENGTH"] >= 7]
-        logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
         return df
