@@ -1,5 +1,6 @@
 import logging
 import warnings
+import xml.etree.ElementTree as ElementTree
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -65,10 +66,24 @@ class MSRaw:
                 logger.info(f"Reading mzML file: {file_path}")
                 data_iter = mzml.read(source=str(file_path), *args, **kwargs)
                 file_name = file_path.stem
+                tree = ElementTree.parse(file_path)
+                root = tree.getroot()
+                namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
+                analyzer = root.find(
+                    ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
+                    namespace,
+                )
+                mass_analyzer = analyzer.get("name")
+                if (
+                    mass_analyzer == "fourier transform ion cyclotron resonance mass spectrometer"
+                    or mass_analyzer == "orbitrap"
+                ):
+                    mass_analyzer = "FTMS"
+                else:
+                    mass_analyzer = "ITMS"
                 for spec in data_iter:
                     if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
                         spec_id = spec["id"].split("scan=")[-1]
-                        mass_analyzer = spec["scanList"]["scan"][0]["filter string"].split()[0]
                         fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3].upper()
                         mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                         rt = spec["scanList"]["scan"][0]["scan start time"]
@@ -141,12 +156,26 @@ class MSRaw:
             file_path = Path(file_path)
         data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
         file_name = file_path.stem
+        tree = ElementTree.parse(file_path)
+        root = tree.getroot()
+        namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
+        analyzer = root.find(
+            ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
+            namespace,
+        )
+        mass_analyzer = analyzer.get("name")
+        if (
+            mass_analyzer == "fourier transform ion cyclotron resonance mass spectrometer"
+            or mass_analyzer == "orbitrap"
+        ):
+            mass_analyzer = "FTMS"
+        else:
+            mass_analyzer = "ITMS"
         if scanidx is None:
             for spec in data_iter:
                 if spec.ms_level != 1:  # filter out ms1 spectra if there are any
                     key = f"{file_name}_{spec.ID}"
                     filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
-                    mass_analyzer = filter_string.split()[0]
                     fragmentation = filter_string.split("@")[1][:3].upper()
                     mz_range = filter_string.split("[")[1][:-1]
                     data[key] = [
@@ -167,7 +196,6 @@ class MSRaw:
                 # /standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
                 filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
-                mass_analyzer = filter_string.split()[0]
                 fragmentation = filter_string.split("@")[1][:3].upper()
                 mz_range = filter_string.split("[")[1][:-1]
                 data[key] = [
