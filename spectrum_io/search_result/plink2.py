@@ -149,8 +149,7 @@ class Plink2(SearchResults):
                                                                                  row['crosslinker_position_B'],
                                                                                  row["CROSSLINKER_TYPE"]), axis=1, result_type='expand')
         
-        #df["REVERSE"].fillna(False, inplace=True)
-        df["REVERSE"].replace("1", True, inplace=True)
+        df["REVERSE"].replace(1, False, inplace=True)
         return df
 
     @staticmethod
