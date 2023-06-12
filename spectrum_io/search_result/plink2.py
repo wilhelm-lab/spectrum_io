@@ -6,8 +6,9 @@ from .search_results import SearchResults
 
 import re
 
-logger = logging.getLogger(__name__)
 
+logger = logging.getLogger(__name__)
+from .search_results import SearchResults
 
 class Plink2(SearchResults):
     """Handle search results from Plink2."""
@@ -124,29 +125,30 @@ class Plink2(SearchResults):
         if "FRAGMENTATION" not in df.columns:
             df["FRAGMENTATION"] = "HCD"
         
-        df['RAW_FILE'] = df['RAW_FILE'].str.split('.').str[0]
         df['SCAN_NUMBER'] = df['RAW_FILE'].str.split('.').str[1]
+        df['RAW_FILE'] = df['RAW_FILE'].str.split('.').str[0]
+        
 
         logger.info("Converting Plink2 peptide sequence to internal format")
         df['SEQUENCE_A'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[0])
         df['SEQUENCE_B'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[3])
-        df['crosslinker_position_A'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[1])
-        df['crosslinker_position_B'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[4])
+        df['CROSSLINKER_POSITION_A'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[1])
+        df['CROSSLINKER_POSITION_B'] = df['Peptide'].apply(lambda x: re.split(r'[\(\)-]', x)[4])
 
         df["PEPTIDE_LENGTH_A"] = df['SEQUENCE_A'].apply(len) 
         df["PEPTIDE_LENGTH_B"] = df['SEQUENCE_B'].apply(len)
 
         df['Modifications'] = df['Modifications'].astype('str') 
-        df['crosslinker_position_A'] = df['crosslinker_position_A'].astype('int')
-        df['crosslinker_position_B'] = df['crosslinker_position_B'].astype('int')
+        df['CROSSLINKER_POSITION_A'] = df['CROSSLINKER_POSITION_A'].astype('int')
+        df['CROSSLINKER_POSITION_B'] = df['CROSSLINKER_POSITION_B'].astype('int')
             
         logger.info("Converting MaxQuant peptide sequence to internal format")
         df[['MODIFIED_SEQUENCE_A','MODIFIED_SEQUENCE_B']] = df.apply(lambda row: Plink2.add_mod_sequence(row['SEQUENCE_A'], 
                                                                                  row['SEQUENCE_B'],
                                                                                  row['Modifications'],
                                                                                  row['PEPTIDE_LENGTH_A'],
-                                                                                 row['crosslinker_position_A'],
-                                                                                 row['crosslinker_position_B'],
+                                                                                 row['CROSSLINKER_POSITION_A'],
+                                                                                 row['CROSSLINKER_POSITION_B'],
                                                                                  row["CROSSLINKER_TYPE"]), axis=1, result_type='expand')
         
         df["REVERSE"].replace(1, False, inplace=True)
@@ -172,5 +174,4 @@ class Plink2(SearchResults):
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
         return df
-
 
