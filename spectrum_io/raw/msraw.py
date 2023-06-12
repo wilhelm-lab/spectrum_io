@@ -90,6 +90,7 @@ class MSRaw:
         if search_type == "maxquant":
             data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         else:
+
             data = pd.DataFrame.from_dict(
                 data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"]
             )
