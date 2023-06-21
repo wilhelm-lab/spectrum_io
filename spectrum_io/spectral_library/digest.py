@@ -290,7 +290,7 @@ def read_fasta_maxquant(
             line = line.rstrip()
             if line.startswith(">"):
                 if name:
-                    seq = "".join(seq)
+                    seq = ["".join(seq)]
                     if db in ["target", "concat"]:
                         yield (name, seq)
 

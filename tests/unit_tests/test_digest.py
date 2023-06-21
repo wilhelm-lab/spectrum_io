@@ -6,7 +6,7 @@ import numpy as np
 import spectrum_io.spectral_library.digest as digest
 
 
-class TestCharge(unittest.TestCase):
+class TestDigest(unittest.TestCase):
     """Class to test digest."""
 
     def test_main(self):

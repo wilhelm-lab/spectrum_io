@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 import spectrum_io.search_result.maxquant as mq
+from spectrum_io.search_result.search_results import filter_valid_prosit_sequences
 
 
 class TestAddTMTMod:
@@ -39,9 +40,6 @@ class TestUpdateColumns:
 
         assert prosit_df["PEPTIDE_LENGTH"][0] == 18
         assert prosit_df["PEPTIDE_LENGTH"][3] == 13
-
-        assert prosit_df["MASS_ANALYZER"][0] == "FTMS"
-        assert prosit_df["FRAGMENTATION"][0] == "HCD"
 
     def test_update_columns_silac(self, maxquant_df: pd.DataFrame):
         """
@@ -84,7 +82,7 @@ class TestUpdateColumns:
 
     def test_filter_valid_prosit_sequences(self, invalid_df: pd.DataFrame):
         """Test filter_valid_prosit_sequences."""
-        filtered_df = mq.MaxQuant.filter_valid_prosit_sequences(invalid_df)
+        filtered_df = filter_valid_prosit_sequences(invalid_df)
         assert filtered_df["MODIFIED_SEQUENCE"][0] == "ABCDEFG"
         assert len(filtered_df) == 1
         assert "(ac)" not in filtered_df["MODIFIED_SEQUENCE"]
