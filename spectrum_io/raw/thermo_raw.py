@@ -27,7 +27,7 @@ def _assemble_arg_list(input_path: Path, output_path: Path, ms_level: List[int],
         exec_path,
         f"--msLevel={','.join([str(l) for l in ms_level])}",
         "-i",
-        input_path,
+        input_path.resolve(),
         "-b",
         output_path,
     ]
