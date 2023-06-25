@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 import spectrum_io.search_result.maxquant as mq
+from spectrum_io.search_result.search_results import filter_valid_prosit_sequences
 
 
 class TestAddTMTMod:
@@ -79,6 +80,17 @@ class TestUpdateColumns:
         )
         assert prosit_df["MODIFIED_SEQUENCE_MSA"][3] == "[UNIMOD:737]SS[UNIMOD:23]PTPES[UNIMOD:23]PTMLTK[UNIMOD:737]"
 
+    def test_filter_valid_prosit_sequences(self, invalid_df: pd.DataFrame):
+        """Test filter_valid_prosit_sequences."""
+        filtered_df = filter_valid_prosit_sequences(invalid_df)
+        assert filtered_df["MODIFIED_SEQUENCE"][0] == "ABCDEFG"
+        assert len(filtered_df) == 1
+        assert "(ac)" not in filtered_df["MODIFIED_SEQUENCE"]
+        assert "(Acetyl (Protein N-term))" not in filtered_df["MODIFIED_SEQUENCE"]
+        assert "U" not in filtered_df["SEQUENCE"]
+        assert filtered_df["PEPTIDE_LENGTH"].min() >= 7
+        assert filtered_df["PRECURSOR_CHARGE"].max() <= 6
+
 
 @pytest.fixture
 def maxquant_df():
@@ -91,4 +103,23 @@ _DS(Phospho (STY))DSWDADAFS(Phospho (STY))VEDPVRK_;        ;  1.0;
      _SS(Phospho (STY))PTPES(Phospho (STY))PTMLTK_;       +;  2.0;"""
     df = pd.read_csv(io.StringIO(df_string), delimiter=";", skipinitialspace=True)
     df["Charge"] = 2
+    return df
+
+
+@pytest.fixture
+def invalid_df():
+    """Create invalid df."""
+    df = pd.DataFrame(
+        {
+            "PEPTIDE_LENGTH": [7, 7, 6, 32],
+            "MODIFIED_SEQUENCE": [
+                "ABCDEFG",
+                "GHD(ac)IJKL",
+                "MN(Acetyl (Protein N-term))OPQR",
+                "STUVWDEFSTUVWDEFSTUVWDEFSTUVWDEF",
+            ],
+            "SEQUENCE": ["ABCDEFG", "GHDIJKL", "MNOPQR", "STUVWDEFSTUVWDEFSTUVWDEFSTUVWDEF"],
+            "PRECURSOR_CHARGE": [2, 5, 7, 6],
+        }
+    )
     return df
