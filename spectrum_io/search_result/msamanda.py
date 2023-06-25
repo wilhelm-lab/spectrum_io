@@ -63,12 +63,6 @@ def _remove_decoys_in_targets(full_df):
     return full_df
 
 
-def _filter_unmatched_scans(df):
-    unmatched = df["Sequence"].isnull()
-    logger.info(f"Removing {sum(unmatched)} unmatched PSMs")
-    return df[~df["Sequence"].isnull()]
-
-
 def read_result(path: Union[str, Path], suffix: str = "output.csv") -> pd.DataFrame:
     """
     Function to read a msms txt and perform some basic formatting.
@@ -108,7 +102,6 @@ def read_result(path: Union[str, Path], suffix: str = "output.csv") -> pd.DataFr
                 "Protein Accessions",
             ],
         )
-        df = _filter_unmatched_scans(df)
         df.columns = [
             "SCAN_NUMBER",
             "SEQUENCE",
