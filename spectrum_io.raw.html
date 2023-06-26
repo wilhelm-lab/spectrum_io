@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.raw package &mdash; spectrum_io 0.2.0 documentation</title>
+  <title>spectrum_io.raw package &mdash; spectrum_io 0.2.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom_cookietemple.css" type="text/css" />
@@ -36,7 +36,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.2.0
+                0.2.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -68,6 +68,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.raw.msraw">spectrum_io.raw.msraw module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.msraw.MSRaw"><code class="docutils literal notranslate"><span class="pre">MSRaw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.msraw.check_analyzer"><code class="docutils literal notranslate"><span class="pre">check_analyzer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#spectrum_io.raw.msraw.get_mass_analyzer"><code class="docutils literal notranslate"><span class="pre">get_mass_analyzer()</span></code></a></li>
 </ul>
 </li>
@@ -123,7 +124,7 @@
 <span id="spectrum-io-raw-msraw-module"></span><h2>spectrum_io.raw.msraw module<a class="headerlink" href="#module-spectrum_io.raw.msraw" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">MSRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L52-L219"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">MSRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L98-L268"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Main to read mzml file and generate dataframe containing intensities and m/z values.</p>
 <dl class="field-list simple">
@@ -136,7 +137,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw.get_file_list">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L131-L162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.get_file_list" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_file_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L178-L209"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.get_file_list" title="Permalink to this definition"></a></dt>
 <dd><p>Get list of files from source.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -162,7 +163,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.raw.msraw.MSRaw.read_mzml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pyteomics'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Maxquant'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scanidx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L69-L129"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.read_mzml" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mzml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pyteomics'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Maxquant'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scanidx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L115-L176"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.MSRaw.read_mzml" title="Permalink to this definition"></a></dt>
 <dd><p>Reads mzml and generates a dataframe containing intensities and m/z values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -191,8 +192,29 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.raw.msraw.check_analyzer">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">check_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass_analyzers</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L16-L35"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.check_analyzer" title="Permalink to this definition"></a></dt>
+<dd><p>Convert mass analyzer accession ids to internal format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mass_analyzers</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – dictionary with instrumentConfigurationRef, analyzer accession</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – if the mass analyzer metadata cannot be found in the file or the search
+was conducted with an unsupported mass analyzer.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dictionary with instrumentConfigurationRef, one of (ITMS, FTMS, TOF)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Dict</em>[str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="spectrum_io.raw.msraw.get_mass_analyzer">
-<span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">get_mass_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L16-L49"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.get_mass_analyzer" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.msraw.</span></span><span class="sig-name descname"><span class="pre">get_mass_analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/msraw.py#L38-L95"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.msraw.get_mass_analyzer" title="Permalink to this definition"></a></dt>
 <dd><p>Retrieve mass analyzer information from mzml file.</p>
 <p>This is using the description of the mzml format to check for specific accessions in the mzml file
 that are not covered by pyteomics or pymzml. The documentation can be found here:
@@ -201,15 +223,12 @@ that are not covered by pyteomics or pymzml. The documentation can be found here
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – The path to the mzml file to parse</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AssertionError</strong> – if the mass analyzer metadata cannot be found in the file or the search
-was conducted with an unsupported mass analyzer.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with instrumentConfigurationId, mass analyzer (ITMS, FTMS or TOF) to represent
+the respective mass analyzer category for each MS level that is present in the mzml file, i.e. MS1/MS2/MS3.</p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A string that is either FTMS or ITMS to represent the respective mass analyzer category.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Dict</em>[str, str]</p>
 </dd>
 </dl>
 </dd></dl>
