@@ -13,7 +13,29 @@ from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 logger = logging.getLogger(__name__)
 
 
-def get_mass_analyzer(file_path: Path) -> str:
+def check_analyzer(mass_analyzers: Dict[str, str]) -> Dict[str, str]:
+    """
+    Convert mass analyzer accession ids to internal format.
+
+    :param mass_analyzers: dictionary with instrumentConfigurationRef, analyzer accession
+    :raises AssertionError: if the mass analyzer metadata cannot be found in the file or the search
+        was conducted with an unsupported mass analyzer.
+    :return: dictionary with instrumentConfigurationRef, one of (ITMS, FTMS, TOF)
+    """
+    for elem in mass_analyzers.keys():
+        accession = mass_analyzers[elem]
+        if accession in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
+            mass_analyzers[elem] = "FTMS"
+        elif accession in ["MS:1000082", "MS:1000264"]:  # quadrupole ion-trap, io-trap
+            mass_analyzers[elem] = "ITMS"
+        elif accession in ["MS:1000084"]:  # TOF
+            mass_analyzers[elem] = "TOF"
+        else:
+            raise AssertionError(f"The mass analyzer with accession {accession} is not supported.")
+    return mass_analyzers
+
+
+def get_mass_analyzer(file_path: Path) -> Dict[str, str]:
     """
     Retrieve mass analyzer information from mzml file.
 
@@ -22,31 +44,55 @@ def get_mass_analyzer(file_path: Path) -> str:
     https://raw.githubusercontent.com/HUPO-PSI/psi-ms-CV/master/psi-ms.obo
 
     :param file_path: The path to the mzml file to parse
-    :raises AssertionError: if the mass analyzer metadata cannot be found in the file or the search
-        was conducted with an unsupported mass analyzer.
-    :return: A string that is either FTMS or ITMS to represent the respective mass analyzer category.
+    :return: A dictionary with instrumentConfigurationId, mass analyzer (ITMS, FTMS or TOF) to represent
+        the respective mass analyzer category for each MS level that is present in the mzml file, i.e. MS1/MS2/MS3.
     """
-    tree = ElementTree.parse(file_path)
-    root = tree.getroot()
-    namespace = {"ns0": "http://psi.hupo.org/ms/mzml"}
-    analyzer = root.find(
-        ".//ns0:instrumentConfigurationList/ns0:instrumentConfiguration/ns0:componentList/ns0:analyzer/ns0:cvParam",
-        namespace,
-    )
-    if analyzer is None:
-        raise AssertionError("The mass analyzer information can not be retrieved from the mzml file!")
+    context = ElementTree.iterparse(file_path, events=("start", "end"))
+    _, root = next(context)  # Get the root element
 
-    acc = analyzer.get("accession")
-    if acc in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
-        mass_analyzer = "FTMS"
-    elif acc in ["MS:1000082", "MS:1000264"]:  # quadrupole ion-trap, io-trap
-        mass_analyzer = "ITMS"
-    elif acc in ["MS:1000084"]:  # TOF
-        mass_analyzer = "TOF"
-    else:
-        raise AssertionError(f"The mass analyzer with accession {acc} ({analyzer.get('name')}) is not supported.")
+    namespace = "{http://psi.hupo.org/ms/mzml}"
+    mass_analyzers = {}
 
-    return mass_analyzer
+    config_id = None
+    accession = None
+    within_instrument_configuration_list = False
+    within_instrument_configuration = False
+
+    for event, element in context:
+        if event == "start" and element.tag == f"{namespace}instrumentConfigurationList":
+            within_instrument_configuration_list = True
+        elif event == "end" and element.tag == f"{namespace}instrumentConfigurationList":
+            within_instrument_configuration_list = False
+            break
+        elif (
+            within_instrument_configuration_list
+            and event == "start"
+            and element.tag == f"{namespace}instrumentConfiguration"
+        ):
+            within_instrument_configuration = True
+            config_id = element.attrib.get("id")
+        elif (
+            within_instrument_configuration
+            and element.tag == f"{namespace}analyzer"
+            and element.attrib.get("order") == "2"
+            and event == "start"
+        ):
+            accession = None  # Reset accession
+        elif (
+            within_instrument_configuration
+            and element.tag == f"{namespace}cvParam"
+            and element.get("accession") is not None
+        ):
+            if accession is None:
+                accession = element.attrib.get("accession")
+        elif (
+            within_instrument_configuration and event == "end" and element.tag == f"{namespace}instrumentConfiguration"
+        ):
+            within_instrument_configuration = False
+            if config_id is not None and accession is not None:
+                mass_analyzers[config_id] = accession
+
+    return check_analyzer(mass_analyzers)
 
 
 class MSRaw:
@@ -106,6 +152,7 @@ class MSRaw:
                 for spec in data_iter:
                     if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
                         spec_id = spec["id"].split("scan=")[-1]
+                        instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
                         fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3].upper()
                         mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                         rt = spec["scanList"]["scan"][0]["scan start time"]
@@ -117,18 +164,14 @@ class MSRaw:
                             spec["m/z array"],
                             mz_range,
                             rt,
-                            mass_analyzer,
+                            mass_analyzer[instrument_configuration_ref],
                             fragmentation,
                         ]
                 data_iter.close()
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
-        if search_type == "maxquant":
-            data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
-        else:
-            data = pd.DataFrame.from_dict(
-                data, orient="index", columns=MZML_DATA_COLUMNS + ["MASS_ANALYZER", "FRAGMENTATION"]
-            )
+
+        data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
 
@@ -187,6 +230,7 @@ class MSRaw:
             for spec in data_iter:
                 if spec.ms_level != 1:  # filter out ms1 spectra if there are any
                     key = f"{file_name}_{spec.ID}"
+                    instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
                     filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
                     fragmentation = filter_string.split("@")[1][:3].upper()
                     mz_range = filter_string.split("[")[1][:-1]
@@ -197,7 +241,7 @@ class MSRaw:
                         spec.mz,
                         mz_range,
                         spec.scan_time_in_minutes(),
-                        mass_analyzer,
+                        mass_analyzer[instrument_configuration_ref],
                         fragmentation,
                     ]
         else:
@@ -207,6 +251,7 @@ class MSRaw:
                 # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
                 # /standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
+                instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
                 filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
                 fragmentation = filter_string.split("@")[1][:3].upper()
                 mz_range = filter_string.split("[")[1][:-1]
@@ -217,7 +262,7 @@ class MSRaw:
                     spec.mz,
                     mz_range,
                     spec.scan_time_in_minutes(),
-                    mass_analyzer,
+                    mass_analyzer[instrument_configuration_ref],
                     fragmentation,
                 ]
         data_iter.close()
