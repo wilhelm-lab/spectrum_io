@@ -22,6 +22,8 @@ class TestDigest(unittest.TestCase):
             str(Path(__file__).parent / "data/prosit_input.csv"),
             "--fasta",
             str(Path(__file__).parent / "data/fasta.fasta"),
+            "--peptide_protein_map",
+            str(Path(__file__).parent / "data/peptide_protein_map.tsv"),
         ]
 
         digest.main(args)
