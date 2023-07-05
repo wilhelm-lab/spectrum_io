@@ -63,7 +63,7 @@ def main(args):
             f.write(" ".join(sys.argv))
         writer = get_tsv_writer(args.peptide_protein_map, delimiter="\t")
 
-        pre, not_post = cleavage_sites(args.enzyme)
+        pre, not_post = cleavage_sites[args.enzyme]
         for peptide, proteins in get_peptide_to_protein_map(
             args.fasta,
             db="concat",
@@ -283,27 +283,25 @@ def read_fasta_maxquant(
         sys.exit("unknown db mode: %s" % db)
 
     hasspecial_aas = len(special_aas) > 0
-    name = None
-    seq: List[str] = []
     with open(file_path) as fp:
+        line = next(fp).rstrip()
+        name = parse_id(line[1:])
+        sequence_lines: List[str] = []
         for line in itertools.chain(fp, [">"]):
             line = line.rstrip()
             if line.startswith(">"):
-                if name:
-                    seq = ["".join(seq)]
-                    if db in ["target", "concat"]:
-                        yield (name, seq)
-
-                    if db in ["decoy", "concat"]:
-                        rev_seq = seq[::-1]
-                        if hasspecial_aas:
-                            rev_seq = swap_special_aas(rev_seq, special_aas)
-                        yield (decoy_prefix + name, rev_seq)
-
-                if len(line) > 1:
-                    name, seq = parse_id(line[1:]), []
-            else:
-                seq.append(line)
+                sequence = "".join(sequence_lines)
+                if db in ["target", "concat"]:
+                    yield name, sequence
+                if db in ["decoy", "concat"]:
+                    rev_sequence = sequence[::-1]
+                    if hasspecial_aas:
+                        rev_sequence = swap_special_aas(rev_sequence, special_aas)
+                    yield decoy_prefix + name, rev_sequence
+                name = parse_id(line[1:])
+                sequence_lines = []
+                continue
+            sequence_lines.append(line)
 
 
 read_fasta = read_fasta_maxquant
