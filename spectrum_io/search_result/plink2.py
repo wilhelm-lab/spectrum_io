@@ -1,27 +1,25 @@
 import logging
-
+import re
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from .search_results import SearchResults
 
-import re
-
+#from search_results import SearchResults
 
 logger = logging.getLogger(__name__)
-from .search_results import SearchResults
 
 class Plink2(SearchResults):
     """Handle search results from Plink2."""
 
     @staticmethod
-    def read_result(path: str) -> pd.DataFrame:
+    def read_result(path: str, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a csv_file and perform some basic formatting.
 
         :param path: path to csv_file to read
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading csv_file file")
+        logger.info("Reading csv file")
         columns_to_read = ["Title",
                            "Charge",
                           "Precursor_Mass",
@@ -31,12 +29,11 @@ class Plink2(SearchResults):
                           "Score",
                           "LabelID"] 
         df = pd.read_csv(path, usecols=columns_to_read)
-        logger.info("Finished reading csv_file file")
+        logger.info("Finished reading csv file")
 
         # Standardize column names
         df = Plink2.update_columns_for_prosit(df)
         df = Plink2.filter_valid_prosit_sequences(df)
-
         return df
 
     def add_mod_sequence(seq_a: str,
@@ -119,12 +116,12 @@ class Plink2(SearchResults):
                            "LabelID": "REVERSE"},
                              inplace=True)
         
-        if "MASS_ANALYZER" not in df.columns:
-            df["MASS_ANALYZER"] = "FTMS"
+        #if "MASS_ANALYZER" not in df.columns:
+            #df["MASS_ANALYZER"] = "FTMS"
 
-        if "FRAGMENTATION" not in df.columns:
-            df["FRAGMENTATION"] = "HCD"
-        
+        #if "FRAGMENTATION" not in df.columns:
+            #df["FRAGMENTATION"] = "HCD"
+
         df['SCAN_NUMBER'] = df['RAW_FILE'].str.split('.').str[1]
         df['RAW_FILE'] = df['RAW_FILE'].str.split('.').str[0]
         
@@ -142,7 +139,7 @@ class Plink2(SearchResults):
         df['CROSSLINKER_POSITION_A'] = df['CROSSLINKER_POSITION_A'].astype('int')
         df['CROSSLINKER_POSITION_B'] = df['CROSSLINKER_POSITION_B'].astype('int')
             
-        logger.info("Converting MaxQuant peptide sequence to internal format")
+        logger.info("Converting Plink2 peptide sequence to internal format")
         df[['MODIFIED_SEQUENCE_A','MODIFIED_SEQUENCE_B']] = df.apply(lambda row: Plink2.add_mod_sequence(row['SEQUENCE_A'], 
                                                                                  row['SEQUENCE_B'],
                                                                                  row['Modifications'],
@@ -150,8 +147,9 @@ class Plink2(SearchResults):
                                                                                  row['CROSSLINKER_POSITION_A'],
                                                                                  row['CROSSLINKER_POSITION_B'],
                                                                                  row["CROSSLINKER_TYPE"]), axis=1, result_type='expand')
-        
+        #df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace(1, False, inplace=True)
+        
         return df
 
     @staticmethod
@@ -174,4 +172,8 @@ class Plink2(SearchResults):
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
         return df
+
+
+
+
 
