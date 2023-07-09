@@ -116,12 +116,6 @@ class Plink2(SearchResults):
                            "LabelID": "REVERSE"},
                              inplace=True)
         
-        #if "MASS_ANALYZER" not in df.columns:
-            #df["MASS_ANALYZER"] = "FTMS"
-
-        #if "FRAGMENTATION" not in df.columns:
-            #df["FRAGMENTATION"] = "HCD"
-
         df['SCAN_NUMBER'] = df['RAW_FILE'].str.split('.').str[1]
         df['RAW_FILE'] = df['RAW_FILE'].str.split('.').str[0]
         
@@ -147,9 +141,11 @@ class Plink2(SearchResults):
                                                                                  row['CROSSLINKER_POSITION_A'],
                                                                                  row['CROSSLINKER_POSITION_B'],
                                                                                  row["CROSSLINKER_TYPE"]), axis=1, result_type='expand')
+        
         #df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace(1, False, inplace=True)
-        
+        df.drop(columns=["Modifications"], inplace=True)
+
         return df
 
     @staticmethod
