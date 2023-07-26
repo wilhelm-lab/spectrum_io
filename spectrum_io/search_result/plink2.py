@@ -133,7 +133,6 @@ class Plink2(SearchResults):
         df['CROSSLINKER_POSITION_A'] = df['CROSSLINKER_POSITION_A'].astype('int')
         df['CROSSLINKER_POSITION_B'] = df['CROSSLINKER_POSITION_B'].astype('int')
             
-        logger.info("Converting Plink2 peptide sequence to internal format")
         df[['MODIFIED_SEQUENCE_A','MODIFIED_SEQUENCE_B']] = df.apply(lambda row: Plink2.add_mod_sequence(row['SEQUENCE_A'], 
                                                                                  row['SEQUENCE_B'],
                                                                                  row['Modifications'],
