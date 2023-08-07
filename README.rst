@@ -21,7 +21,7 @@ spectrum_io
 .. |Tests| image:: https://github.com/wilhelm-lab/spectrum_io/workflows/Run%20spectrum_io%20Tests/badge.svg
    :target: https://github.com/wilhelm-lab/spectrum_io/actions?workflow=Tests
    :alt: Run Tests Status
-.. |Codecov| image:: https://codecov.io/gh/wilhelm-lab/spectrum_io/branch/master/graph/badge.svg
+.. |Codecov| image:: https://codecov.io/gh/wilhelm-lab/spectrum_io/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/wilhelm-lab/spectrum_io
    :alt: Codecov
 .. |pre-commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white

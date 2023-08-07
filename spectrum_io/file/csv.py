@@ -1,7 +1,10 @@
+from pathlib import Path
+from typing import Union
+
 import pandas as pd
 
 
-def read_file(path: str) -> pd.DataFrame:
+def read_file(path: Union[str, Path]) -> pd.DataFrame:
     """
     Read csv file and return df with contents.
 
@@ -12,7 +15,7 @@ def read_file(path: str) -> pd.DataFrame:
     return df
 
 
-def write_file(df: pd.DataFrame, path: str):
+def write_file(df: pd.DataFrame, path: Union[str, Path]):
     """
     Write dataframe to csv file.
 
