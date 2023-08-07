@@ -26,15 +26,18 @@ class MSFragger(SearchResults):
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
+        if isinstance(path, str):
+            path = Path(path)
+
         if path.is_file():
             file_list = [path]
         elif path.is_dir():
-            file_list = path.rglob("*.pepXML")
+            file_list = list(path.rglob("*.pepXML"))
         else:
             raise FileNotFoundError(f"{path} could not be found.")
 
         ms_frag_results = []
-        for pep_xml_file in tqdm(list(file_list)):
+        for pep_xml_file in tqdm(file_list):
             ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
         df = pd.concat(ms_frag_results)
