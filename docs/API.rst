@@ -1,5 +1,5 @@
-spectrum_io
-===========
+API
+===
 
 .. toctree::
    :maxdepth: 4

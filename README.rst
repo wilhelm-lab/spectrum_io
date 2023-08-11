@@ -1,6 +1,3 @@
-spectrum_io
-===========================
-
 |PyPI| |Python Version| |License| |Read the Docs| |Build| |Tests| |Codecov| |pre-commit| |Black|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/spectrum_io.svg
@@ -32,10 +29,10 @@ spectrum_io
    :alt: Black
 
 
-Features
---------
+Spectrum IO
+===========
 
-* TODO
+Spectrum IO is a package primarily developed for usage within oktoberfest (https://github.com/wilhelm-lab/oktoberfest). It handles file conversions and input / output operations for oktoberfest.
 
 
 Installation
