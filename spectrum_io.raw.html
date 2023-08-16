@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.raw package &mdash; spectrum_io 0.2.1 documentation</title>
+  <title>spectrum_io.raw package &mdash; spectrum_io 0.3.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom_cookietemple.css" type="text/css" />
@@ -36,7 +36,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.2.1
+                0.3.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -238,7 +238,7 @@ the respective mass analyzer category for each MS level that is present in the m
 <span id="spectrum-io-raw-thermo-raw-module"></span><h2>spectrum_io.raw.thermo_raw module<a class="headerlink" href="#module-spectrum_io.raw.thermo_raw" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.raw.thermo_raw.ThermoRaw">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.thermo_raw.</span></span><span class="sig-name descname"><span class="pre">ThermoRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L42-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.raw.thermo_raw.</span></span><span class="sig-name descname"><span class="pre">ThermoRaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L42-L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#spectrum_io.raw.msraw.MSRaw" title="spectrum_io.raw.msraw.MSRaw"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSRaw</span></code></a></p>
 <p>Main to convert a ThermoRaw file into mzml file.</p>
 <dl class="field-list simple">
@@ -251,7 +251,7 @@ the respective mass analyzer category for each MS level that is present in the m
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.raw.thermo_raw.ThermoRaw.convert_raw_mzml">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_raw_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ms_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L45-L96"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw.convert_raw_mzml" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_raw_mzml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gzip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ms_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thermo_exe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ThermoRawFileParser.exe'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/raw/thermo_raw.py#L45-L101"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.raw.thermo_raw.ThermoRaw.convert_raw_mzml" title="Permalink to this definition"></a></dt>
 <dd><p>Converts a ThermoRaw file to mzML.</p>
 <p>Use <a class="reference external" href="https://github.com/compomics/ThermoRawFileParser">https://github.com/compomics/ThermoRawFileParser</a> for conversion.</p>
 <dl class="field-list simple">
@@ -261,6 +261,7 @@ the respective mass analyzer category for each MS level that is present in the m
 <li><p><strong>gzip</strong> (<em>bool</em>) – whether to gzip the file</p></li>
 <li><p><strong>ms_level</strong> (<em>int</em><em> | </em><em>List</em><em>[</em><em>int</em><em>]</em>) – level of MS, can be a single integer (1, 2, 3) or any combination of that provided as a list</p></li>
 <li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – file path of the mzML path</p></li>
+<li><p><strong>thermo_exe</strong> (<em>Path</em><em> | </em><em>str</em>) – path to the executable of ThermoRawFileParser. Default: ThermoRawFileParser.exe</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
