@@ -20,11 +20,11 @@ def _type_check(var: Any, varname: str, types: Union[type, Tuple[type, ...]]):
     raise TypeError(f"{varname} must be of type {possible_types_str}")
 
 
-def _assemble_arg_list(input_path: Path, output_path: Path, ms_level: List[int], gzip: bool) -> List[Union[str, Path]]:
-    exec_path = Path(__file__).parent.absolute()  # get path of parent directory of this file
-    exec_path /= "utils/ThermoRawFileParser/ThermoRawFileParser.exe"
+def _assemble_arg_list(
+    input_path: Path, output_path: Path, ms_level: List[int], gzip: bool, thermo_exe: Path
+) -> List[Union[str, Path]]:
     exec_arg_list: List[Union[str, Path]] = [
-        exec_path,
+        thermo_exe,
         f"--msLevel={','.join([str(l) for l in ms_level])}",
         "-i",
         input_path.resolve(),
@@ -48,6 +48,7 @@ class ThermoRaw(MSRaw):
         gzip: bool = False,
         ms_level: Union[int, List[int]] = 2,
         output_path: Optional[Union[Path, str]] = None,
+        thermo_exe: Union[Path, str] = "ThermoRawFileParser.exe",
     ) -> Path:
         """Converts a ThermoRaw file to mzML.
 
@@ -57,6 +58,7 @@ class ThermoRaw(MSRaw):
         :param gzip: whether to gzip the file
         :param ms_level: level of MS, can be a single integer (1, 2, 3) or any combination of that provided as a list
         :param output_path: file path of the mzML path
+        :param thermo_exe: path to the executable of ThermoRawFileParser. Default: ThermoRawFileParser.exe
         :raises subprocess.CalledProcessError: if the subprocess for conversion failed
         :raises ValueError: if ms_level(s) provided are other than 1, 2 or 3.
         :return: path to converted file as string
@@ -67,6 +69,9 @@ class ThermoRaw(MSRaw):
             output_path = input_path.with_suffix(".mzML")
         _type_check(output_path, "output_path", (Path, str))
         output_path = Path(output_path)
+
+        _type_check(thermo_exe, "thermo_exe", (Path, str))
+        thermo_exe = Path(thermo_exe)
 
         _type_check(ms_level, "ms_level", (int, list))
         if isinstance(ms_level, int):
@@ -80,7 +85,7 @@ class ThermoRaw(MSRaw):
             logger.info(f"Found converted file at {output_path}, skipping conversion")
             return output_path
 
-        exec_arg_list = _assemble_arg_list(input_path, output_path, ms_level, gzip)
+        exec_arg_list = _assemble_arg_list(input_path, output_path, ms_level, gzip, thermo_exe)
 
         logger.info(
             f"Converting thermo rawfile to mzml with the command: {' '.join([str(arg) for arg in exec_arg_list])}"
