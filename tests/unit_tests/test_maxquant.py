@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import spectrum_io.search_result.maxquant as mq
-from spectrum_io.search_result.search_results import filter_valid_prosit_sequences
+from spectrum_io.search_result.filter import filter_valid_prosit_sequences
+from spectrum_io.search_result.maxquant import add_tmt_mod, update_columns_for_prosit
 
 
 class TestAddTMTMod:
@@ -13,10 +13,7 @@ class TestAddTMTMod:
 
     def test_add_tmt_mod(self):
         """Test addition of tmt modification."""
-        assert (
-            mq.MaxQuant.add_tmt_mod(1.0, "[UNIMOD:2016]ABC[UNIMOD:4]K[UNIMOD:2016]", "[UNIMOD:2016]")
-            == 1.0 + 2 * 304.207146
-        )
+        assert add_tmt_mod(1.0, "[UNIMOD:2016]ABC[UNIMOD:4]K[UNIMOD:2016]", "[UNIMOD:2016]") == 1.0 + 2 * 304.207146
 
 
 class TestUpdateColumns:
@@ -28,7 +25,7 @@ class TestUpdateColumns:
 
         :param maxquant_df: maxquant df as pd.DataFrame
         """
-        prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="")
+        prosit_df = update_columns_for_prosit(maxquant_df, tmt_labeled="")
         assert not prosit_df["REVERSE"][0]
         assert prosit_df["REVERSE"][3]
 
@@ -48,7 +45,7 @@ class TestUpdateColumns:
         :param maxquant_df: maxquant df as pd.DataFrame
         """
         maxquant_df["LABELING_STATE"] = [1, 1, 1, 2, 2]
-        prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="")
+        prosit_df = update_columns_for_prosit(maxquant_df, tmt_labeled="")
         assert prosit_df["MODIFIED_SEQUENCE"][0] == "DS[UNIMOD:21]DS[UNIMOD:21]WDADAFSVEDPVR[UNIMOD:267]K[UNIMOD:259]"
         assert prosit_df["MODIFIED_SEQUENCE"][3] == "SS[UNIMOD:21]PTPES[UNIMOD:21]PTMLTK"
 
@@ -61,7 +58,7 @@ class TestUpdateColumns:
 
         :param maxquant_df: maxquant df as pd.DataFrame
         """
-        prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="tmt")
+        prosit_df = update_columns_for_prosit(maxquant_df, tmt_labeled="tmt")
         assert prosit_df["MODIFIED_SEQUENCE"][0] == "[UNIMOD:737]DS[UNIMOD:21]DS[UNIMOD:21]WDADAFSVEDPVRK[UNIMOD:737]"
         assert prosit_df["MODIFIED_SEQUENCE"][3] == "[UNIMOD:737]SS[UNIMOD:21]PTPES[UNIMOD:21]PTMLTK[UNIMOD:737]"
 
@@ -74,7 +71,7 @@ class TestUpdateColumns:
 
         :param maxquant_df: maxquant df as pd.DataFrame
         """
-        prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="tmt_msa")
+        prosit_df = update_columns_for_prosit(maxquant_df, tmt_labeled="tmt_msa")
         assert (
             prosit_df["MODIFIED_SEQUENCE_MSA"][0] == "[UNIMOD:737]DS[UNIMOD:23]DS[UNIMOD:23]WDADAFSVEDPVRK[UNIMOD:737]"
         )

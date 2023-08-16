@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from spectrum_io.search_result.msfragger import MSFragger
+from spectrum_io.search_result.msfragger import read_msfragger
 
 
 class TestMSFragger(unittest.TestCase):
@@ -11,8 +11,7 @@ class TestMSFragger(unittest.TestCase):
 
     def test_read_result(self):
         """Test read_result for MSFragger."""
-        msfragger = MSFragger(Path(__file__).parent / "data/")
-        df = msfragger.read_result(Path(__file__).parent / "data/psm.pepXML", "")
+        df = read_msfragger(Path(__file__).parent / "data/psm.pepXML", "")
         self.assertIsInstance(df, pd.DataFrame)
         self.assertTrue("RAW_FILE" in df.columns)
         self.assertTrue("SCAN_NUMBER" in df.columns)

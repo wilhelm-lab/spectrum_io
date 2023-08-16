@@ -8,42 +8,38 @@ from pyteomics import pepxml
 from spectrum_fundamentals.mod_string import internal_without_mods
 from tqdm import tqdm
 
-from .search_results import SearchResults, filter_valid_prosit_sequences
+from .filter import filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
 
-class MSFragger(SearchResults):
-    """Handle search results from MSFragger."""
+def read_msfragger(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    """
+    Function to read a msms txt and perform some basic formatting.
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
-        """
-        Function to read a msms txt and perform some basic formatting.
+    :param path: path to pepXML folder or single pepXML file to read
+    :param tmt_labeled: tmt label as str
+    :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
+    :return: pd.DataFrame with the formatted data
+    """
+    if isinstance(path, str):
+        path = Path(path)
 
-        :param path: path to pepXML folder or single pepXML file to read
-        :param tmt_labeled: tmt label as str
-        :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
-        :return: pd.DataFrame with the formatted data
-        """
-        if isinstance(path, str):
-            path = Path(path)
+    if path.is_file():
+        file_list = [path]
+    elif path.is_dir():
+        file_list = list(path.rglob("*.pepXML"))
+    else:
+        raise FileNotFoundError(f"{path} could not be found.")
 
-        if path.is_file():
-            file_list = [path]
-        elif path.is_dir():
-            file_list = list(path.rglob("*.pepXML"))
-        else:
-            raise FileNotFoundError(f"{path} could not be found.")
+    ms_frag_results = []
+    for pep_xml_file in tqdm(file_list):
+        ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
-        ms_frag_results = []
-        for pep_xml_file in tqdm(file_list):
-            ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
+    df = pd.concat(ms_frag_results)
 
-        df = pd.concat(ms_frag_results)
-
-        df = update_columns_for_prosit(df, "")
-        return filter_valid_prosit_sequences(df)
+    df = update_columns_for_prosit(df, "")
+    return filter_valid_prosit_sequences(df)
 
 
 def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:

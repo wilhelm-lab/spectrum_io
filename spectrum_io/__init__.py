@@ -10,7 +10,6 @@ import sys
 import time
 
 from . import file, raw
-from .search_result import MaxQuant
 from .spectral_library import DLib, Spectronaut
 
 CONSOLE_LOG_LEVEL = logging.INFO
