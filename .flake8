@@ -10,3 +10,4 @@ per-file-ignores =
 	spectrum_io/raw/thermo_raw.py:S603,S404
 	spectrum_io/raw/msraw.py:S405,S314
         docs/conf.py:S404,S607,S603
+        spectrum_io/search_result/__init__.py:F403

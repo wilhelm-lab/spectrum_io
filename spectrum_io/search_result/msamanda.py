@@ -5,7 +5,7 @@ from typing import Union
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
 
-from .search_results import filter_valid_prosit_sequences
+from .filter import filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ def _remove_decoys_in_targets(full_df):
     return full_df
 
 
-def read_result(path: Union[str, Path], suffix: str = "output.csv") -> pd.DataFrame:
+def read_msamanda(path: Union[str, Path], suffix: str = "output.csv") -> pd.DataFrame:
     """
     Function to read a msms txt and perform some basic formatting.
 
