@@ -7,7 +7,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .filter import filter_valid_prosit_sequences
+from .filter import add_tmt_mod, filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +91,13 @@ def read_mascot(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
             sequences.append(sequence)
 
     df["MODIFIED_SEQUENCE"] = sequences
+
+    if tmt_labeled != "":
+        unimod_tag = c.TMT_MODS[tmt_labeled]
+        logger.info("Adding TMT fixed modifications")
+        df["MODIFIED_SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace("K", f"K{unimod_tag}")
+        df["MODIFIED_SEQUENCE"] = unimod_tag + "-" + df["MODIFIED_SEQUENCE"]
+        df["MASS"] = df.apply(lambda x: add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
 
     df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
     df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))

@@ -2,6 +2,7 @@ import logging
 import re
 
 import pandas as pd
+import spectrum_fundamentals.constants as c
 
 logger = logging.getLogger(__name__)
 
@@ -27,3 +28,17 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
     return df
+
+
+def add_tmt_mod(mass: float, seq: str, unimod_tag: str) -> float:
+    """
+    Add tmt modification.
+
+    :param mass: mass without tmt modification
+    :param seq: sequence of the peptide
+    :param unimod_tag: UNIMOD tag for the modification
+    :return: mass as float
+    """
+    num_of_tmt = seq.count(unimod_tag)
+    mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
+    return mass

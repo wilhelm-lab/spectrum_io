@@ -8,7 +8,7 @@ from pyteomics import pepxml
 from spectrum_fundamentals.mod_string import internal_without_mods
 from tqdm import tqdm
 
-from .filter import filter_valid_prosit_sequences
+from .filter import add_tmt_mod, filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def read_msfragger(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
 
     df = pd.concat(ms_frag_results)
 
-    df = update_columns_for_prosit(df, "")
+    df = update_columns_for_prosit(df, tmt_labeled)
     return filter_valid_prosit_sequences(df)
 
 
@@ -55,6 +55,11 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
     df["MASS"] = df["precursor_neutral_mass"]
     df["PEPTIDE_LENGTH"] = df["peptide"].apply(lambda x: len(x))
     df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"])
+    if tmt_labeled != "":
+        unimod_tag = c.TMT_MODS[tmt_labeled]
+        df["MODIFIED_SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace("K", f"K{unimod_tag}")
+        df["MODIFIED_SEQUENCE"] = unimod_tag + "-" + df["MODIFIED_SEQUENCE"]
+        df["MASS"] = df.apply(lambda x: add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
     df.rename(
         columns={
             "assumed_charge": "PRECURSOR_CHARGE",

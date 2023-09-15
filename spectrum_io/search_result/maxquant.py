@@ -6,7 +6,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
 
-from .filter import filter_valid_prosit_sequences
+from .filter import add_tmt_mod, filter_valid_prosit_sequences
 
 logger = logging.getLogger(__name__)
 
@@ -88,17 +88,3 @@ def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFram
     df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
     return df
-
-
-def add_tmt_mod(mass: float, seq: str, unimod_tag: str) -> float:
-    """
-    Add tmt modification.
-
-    :param mass: mass without tmt modification
-    :param seq: sequence of the peptide
-    :param unimod_tag: UNIMOD tag for the modification
-    :return: mass as float
-    """
-    num_of_tmt = seq.count(unimod_tag)
-    mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
-    return mass
