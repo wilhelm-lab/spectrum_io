@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 import pandas as pd
+from spectrum_fundamentals.constants import PARTICLE_MASSES
 from spectrum_fundamentals.mod_string import internal_to_mod_mass, internal_without_mods
 
 from .spectral_library import SpectralLibrary
@@ -25,62 +26,9 @@ DLIB_COL_NAMES = [
 class DLib(SpectralLibrary):
     """Main to init a DLib obj."""
 
-    def __init__(
-        self,
-        precursor_mz: Union[List[float], np.ndarray],
-        precursor_charges: Union[List[int], np.ndarray],
-        modified_sequences: List[str],
-        retention_times: Union[List[float], np.ndarray],
-        fragmentmz: List[np.ndarray],
-        intensities: List[np.ndarray],
-        path: Union[str, Path],
-        min_intensity_threshold: Optional[float] = 0.05,
-    ):
+    def _calculate_masked_values(self, fragmentmz: List[np.ndarray], intensities: List[np.ndarray]):
         """
-        Initializer for the DLib class.
-
-        :param precursor_mz: precursor mass to charge ratios
-        :param precursor_charges: precurosr charges
-        :param modified_sequences: modified sequences in internal format
-        :param retention_times: retention times
-        :param fragmentmz: mass to charge ratio of fragments
-        :param intensities: intensities
-        :param path: path to the file the dlib is written to
-        :param min_intensity_threshold: minimal intensity required when masking fragmentmz and intensities
-        """
-        self.path = path
-        self.create_database(self.path)
-
-        # gather all values for the entries table and create pandas DataFrame
-        masked_values = self._calculate_masked_values(fragmentmz, intensities, min_intensity_threshold)
-        mass_mod_sequences = internal_to_mod_mass(modified_sequences)
-        sequences = internal_without_mods(modified_sequences)
-        data_list = [*masked_values, precursor_charges, mass_mod_sequences, sequences, retention_times, precursor_mz]
-        self.entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
-
-        # hardcoded entries that we currently not use.
-        # Visit https://bitbucket.org/searleb/encyclopedia/wiki/EncyclopeDIA%20File%20Formats for dlib specs
-        self.entries["Copies"] = 1  # this is hardcorded for now and unused
-        self.entries["Score"] = 0
-        self.entries["CorrelationEncodedLength"] = None
-        self.entries["CorrelationArray"] = None
-        self.entries["RTInSecondsStart"] = None
-        self.entries["RTInSecondsStop"] = None
-        self.entries["MedianChromatogramEncodedLength"] = None
-        self.entries["MedianChromatogramArray"] = None
-        self.entries["SourceFile"] = "Prosit"
-
-        # gather all values for the p2p table and create pandas DataFrame
-        self.p2p = pd.DataFrame({"PeptideSeq": sequences, "isDecoy": False, "ProteinAccession": "unknown"})
-
-    @staticmethod
-    def _calculate_masked_values(
-        fragmentmz: List[np.ndarray],
-        intensities: List[np.ndarray],
-        intensity_min_threshold: Optional[float] = 0.05,
-    ):
-        """
-        Internal function called during __init__ that masks, filters, byte encodes, swaps and compresses fragmentmz \
+        Internal function that masks, filters, byte encodes, swaps and compresses fragmentmz \
         and intensities.
 
         This will produce the data for the following columns in this order:
@@ -90,7 +38,6 @@ class DLib(SpectralLibrary):
             - 'IntensityEncodedLength'.
         :param fragmentmz: fragmentmz provided in __init__
         :param intensities: intensities provided in __init__
-        :param intensity_min_threshold: minimum threshold for tge intensity; default=0.05
         :return: 4 lists as described above
         """
         mz_bytes_list = []
@@ -99,8 +46,7 @@ class DLib(SpectralLibrary):
         i_lengths = []
         for mz, i in zip(fragmentmz, intensities):
             # mask to only existing peaks
-            mask = i >= intensity_min_threshold
-            print(mask)
+            mask = i >= self.min_intensity_threshold
             sort_index = np.argsort(mz[mask])
             masked_mz_ordered = mz[mask][sort_index]
             masked_i_ordered = i[mask][sort_index]
@@ -165,14 +111,10 @@ class DLib(SpectralLibrary):
         c.execute(sql_insert_meta, ["staleProteinMapping", "true"])
         conn.commit()
 
-    def write(self, chunksize: Optional[Union[None, int]]):
-        """
-        Writes the entries ad p2p table to file.
-
-        :param chunksize: optional size of chunks to insert at once
-        """
-        self._write_entries(index=False, if_exists="append", method="multi", chunksize=chunksize)
-        self._write_p2p(index=False, if_exists="append", method="multi", chunksize=chunksize)
+    def write(self):
+        """Writes the entries ad p2p table to file."""
+        self._write_entries(index=False, if_exists="append", method="multi", chunksize=self.chunksize)
+        self._write_p2p(index=False, if_exists="append", method="multi", chunksize=self.chunksize)
 
     def _write_entries(self, *args, **kwargs):
         """
@@ -181,7 +123,7 @@ class DLib(SpectralLibrary):
         :param args: forwarded to pandas.to_sql
         :param kwargs: forwarded to pandas.to_sql
         """
-        conn = sqlite3.connect(self.path)
+        conn = sqlite3.connect(self.out_path)
         self.entries.to_sql(name="entries", con=conn, *args, **kwargs)
         conn.commit()
 
@@ -192,10 +134,50 @@ class DLib(SpectralLibrary):
         :param args: forwarded to pandas.to_sql
         :param kwargs: forwarded to pandas.to_sql
         """
-        conn = sqlite3.connect(self.path)
+        conn = sqlite3.connect(self.out_path)
         self.p2p.to_sql(name="peptidetoprotein", con=conn, *args, **kwargs)
         conn.commit()
 
     def prepare_spectrum(self):
-        """Prepare spectrum."""
-        pass
+        """Converts grpc output and metadata dataframe into dlib format."""
+        # precursor_mz: Union[List[float], np.ndarray],
+        # precursor_charges: Union[List[int], np.ndarray],
+        # modified_sequences: List[str],
+        # retention_times: Union[List[float], np.ndarray],
+        # fragmentmz: List[np.ndarray],
+        # intensities: List[np.ndarray],
+
+        intensities = self.grpc_output[list(self.grpc_output)[0]]["intensity"]
+        fragment_mz = self.grpc_output[list(self.grpc_output)[0]]["fragmentmz"]
+        # annotation = self.grpc_output[list(self.grpc_output)[0]]["annotation"]
+        irt = self.grpc_output[list(self.grpc_output)[1]]
+        retention_times = irt.flatten()
+        modified_sequences = self.spectra_input["MODIFIED_SEQUENCE"]
+
+        precursor_charges = self.spectra_input["PRECURSOR_CHARGE"]
+        precursor_masses = self.spectra_input["MASS"]
+        precursor_mz = (precursor_masses + (precursor_charges * PARTICLE_MASSES["PROTON"])) / precursor_charges
+
+        self.create_database(self.out_path)
+
+        # gather all values for the entries table and create pandas DataFrame
+        masked_values = self._calculate_masked_values(fragment_mz, intensities)
+        mass_mod_sequences = internal_to_mod_mass(modified_sequences)
+        sequences = internal_without_mods(modified_sequences)
+        data_list = [*masked_values, precursor_charges, mass_mod_sequences, sequences, retention_times, precursor_mz]
+        self.entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
+
+        # hardcoded entries that we currently not use.
+        # Visit https://bitbucket.org/searleb/encyclopedia/wiki/EncyclopeDIA%20File%20Formats for dlib specs
+        self.entries["Copies"] = 1  # this is hardcorded for now and unused
+        self.entries["Score"] = 0
+        self.entries["CorrelationEncodedLength"] = None
+        self.entries["CorrelationArray"] = None
+        self.entries["RTInSecondsStart"] = None
+        self.entries["RTInSecondsStop"] = None
+        self.entries["MedianChromatogramEncodedLength"] = None
+        self.entries["MedianChromatogramArray"] = None
+        self.entries["SourceFile"] = "Prosit"
+
+        # gather all values for the p2p table and create pandas DataFrame
+        self.p2p = pd.DataFrame({"PeptideSeq": sequences, "isDecoy": False, "ProteinAccession": "unknown"})
