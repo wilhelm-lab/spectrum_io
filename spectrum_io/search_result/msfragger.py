@@ -4,7 +4,9 @@ from typing import Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
+from pyteomics import pepxml
 from spectrum_fundamentals.mod_string import internal_without_mods
+from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -19,82 +21,83 @@ class MSFragger(SearchResults):
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: path to msms.txt to read
+        :param path: path to pepXML folder or single pepXML file to read
         :param tmt_labeled: tmt label as str
+        :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msfragger xlsx file")
-        df = pd.read_excel(
-            path,
-            usecols=lambda x: x.upper()
-            in [
-                "SCANID",
-                "PEPTIDE SEQUENCE",
-                "PRECURSOR CHARGE",
-                "PRECURSOR NEUTRAL MASS (DA)",
-                "HYPERSCORE",
-                "PROTEIN",
-                "VARIABLE MODIFICATIONS DETECTED (STARTS WITH M, SEPARATED BY |, FORMATED AS POSITION,MASS)",
-            ],
-        )
-        logger.info("Finished reading msfragger xlsx file")
+        if isinstance(path, str):
+            path = Path(path)
 
-        df.rename(
-            columns={
-                "ScanID": "SCAN NUMBER",
-                "Peptide Sequence": "MODIFIED SEQUENCE",
-                "Precursor neutral mass (Da)": "MASS",
-                "Hyperscore": "SCORE",
-                "Variable modifications detected (starts with M, separated by |, formated as position,mass)": "MODIFICATIONS",
-            },
-            inplace=True,
-        )
+        if path.is_file():
+            file_list = [path]
+        elif path.is_dir():
+            file_list = list(path.rglob("*.pepXML"))
+        else:
+            raise FileNotFoundError(f"{path} could not be found.")
 
-        # Standardize column names
-        df.columns = df.columns.str.upper()
-        df.columns = df.columns.str.replace(" ", "_")
+        ms_frag_results = []
+        for pep_xml_file in tqdm(file_list):
+            ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
-        df = MSFragger.update_columns_for_prosit(df, tmt_labeled)
+        df = pd.concat(ms_frag_results)
+
+        df = update_columns_for_prosit(df, "")
         return filter_valid_prosit_sequences(df)
 
-    @staticmethod
-    def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
-        """
-        Update columns of df to work with Prosit.
 
-        :param df: df to modify
-        :param tmt_labeled: True if tmt labeled
-        :return: modified df as pd.DataFrame
-        """
-        df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
+    """
+    Update columns of df to work with Prosit.
 
-        df["REVERSE"] = df["PROTEIN"].str.contains("Reverse")
-        # df["RAW_FILE"] = df.iloc[0]["PROTEIN"]
-        df["RAW_FILE"] = "01625b_GA6-TUM_first_pool_41_01_01-DDA-1h-R2"
-        logger.info("Converting MSFragger  peptide sequence to internal format")
+    :param df: df to modify
+    :param tmt_labeled: True if tmt labeled
+    :return: modified df as pd.DataFrame
+    """
+    df["REVERSE"] = df["protein"].apply(lambda x: "rev" in str(x))
+    df["RAW_FILE"] = df["spectrum"].apply(lambda x: x.split(".")[0])
+    df["MASS"] = df["precursor_neutral_mass"]
+    df["PEPTIDE_LENGTH"] = df["peptide"].apply(lambda x: len(x))
+    df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"])
+    df.rename(
+        columns={
+            "assumed_charge": "PRECURSOR_CHARGE",
+            "index": "SCAN_EVENT_NUMBER",
+            "peptide": "SEQUENCE",
+            "start_scan": "SCAN_NUMBER",
+            "hyperscore": "SCORE",
+        },
+        inplace=True,
+    )
+    df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
+    return df[
+        [
+            "RAW_FILE",
+            "SCAN_NUMBER",
+            "MODIFIED_SEQUENCE",
+            "PRECURSOR_CHARGE",
+            "SCAN_EVENT_NUMBER",
+            "MASS",
+            "SCORE",
+            "REVERSE",
+            "SEQUENCE",
+            "PEPTIDE_LENGTH",
+        ]
+    ]
 
-        mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}
-        sequences = []
-        for _, row in df.iterrows():
-            modifications = row["MODIFICATIONS"].split("|")[1:]
-            if len(modifications) == 0:
-                sequences.append(row["MODIFIED_SEQUENCE"])
-            else:
-                sequence = row["MODIFIED_SEQUENCE"]
-                skip = 0
-                for mod in modifications:
-                    pos, mass = mod.split("$")
-                    sequence = (
-                        sequence[: int(pos) + 1 + skip]
-                        + mod_masses_reverse[round(float(mass), 3)]
-                        + sequence[int(pos) + 1 + skip :]
-                    )
-                    skip = skip + len(mod_masses_reverse[round(float(mass), 3)])
-                sequences.append(sequence)
 
-        df["MODIFIED_SEQUENCE"] = sequences
+def msfragger_to_internal(modstrings: pd.Series):
+    """
+    Transform modstring from msfragger format to internal format.
 
-        df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-        df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
+    This function takes a modstrings column from a pandas dataframe and converts each
+    supported modification (M[147] and C[160]) to the internal representation that is
+    M[UNIMOD:35] and C[UNIMOD:4], respectively. Since C is considered a fixed modification,
+    every occurence of a C is transformed to C[UNIMOD:4] as well.
 
-        return df
+    :param modstrings: pd.Series containing the msfragger modstrings
+    :return: pd.Series with internal modstrings
+    """
+    modstrings = modstrings.str.replace("M[147]", "M[UNIMOD:35]", regex=False)
+    modstrings = modstrings.str.replace(r"C\[160\]|C", "C[UNIMOD:4]", regex=True)
+    return modstrings
