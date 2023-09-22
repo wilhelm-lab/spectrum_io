@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.search_result package &mdash; spectrum_io 0.3.0 documentation</title>
+  <title>spectrum_io.search_result package &mdash; spectrum_io 0.3.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom_cookietemple.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=645b84c4"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -36,7 +36,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.3.0
+                0.3.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -77,6 +77,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.msfragger">spectrum_io.search_result.msfragger module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.msfragger.MSFragger"><code class="docutils literal notranslate"><span class="pre">MSFragger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.msfragger.msfragger_to_internal"><code class="docutils literal notranslate"><span class="pre">msfragger_to_internal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.msfragger.update_columns_for_prosit"><code class="docutils literal notranslate"><span class="pre">update_columns_for_prosit()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.search_results">spectrum_io.search_result.search_results module</a><ul>
@@ -262,7 +264,7 @@
 <span id="spectrum-io-search-result-msfragger-module"></span><h2>spectrum_io.search_result.msfragger module<a class="headerlink" href="#module-spectrum_io.search_result.msfragger" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">MSFragger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L14-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">MSFragger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L16-L46"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#spectrum_io.search_result.search_results.SearchResults" title="spectrum_io.search_result.search_results.SearchResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchResults</span></code></a></p>
 <p>Handle search results from MSFragger.</p>
 <dl class="field-list simple">
@@ -282,27 +284,50 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger.read_result">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L17-L58"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.read_result" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L19-L46"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.read_result" title="Permalink to this definition"></a></dt>
 <dd><p>Function to read a msms txt and perform some basic formatting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – path to msms.txt to read</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – path to pepXML folder or single pepXML file to read</p></li>
 <li><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>pd.DataFrame with the formatted data</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – in case the given path is neither a file, nor a directory.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><em>DataFrame</em></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame with the formatted data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger.update_columns_for_prosit">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_columns_for_prosit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L60-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.update_columns_for_prosit" title="Permalink to this definition"></a></dt>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.msfragger_to_internal">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">msfragger_to_internal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modstrings</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L89-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.msfragger_to_internal" title="Permalink to this definition"></a></dt>
+<dd><p>Transform modstring from msfragger format to internal format.</p>
+<p>This function takes a modstrings column from a pandas dataframe and converts each
+supported modification (M[147] and C[160]) to the internal representation that is
+M[UNIMOD:35] and C[UNIMOD:4], respectively. Since C is considered a fixed modification,
+every occurence of a C is transformed to C[UNIMOD:4] as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>modstrings</strong> (<em>Series</em>) – pd.Series containing the msfragger modstrings</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.Series with internal modstrings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.update_columns_for_prosit">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">update_columns_for_prosit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L49-L86"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.update_columns_for_prosit" title="Permalink to this definition"></a></dt>
 <dd><p>Update columns of df to work with Prosit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -318,8 +343,6 @@
 <dd class="field-odd"><p><em>DataFrame</em></p>
 </dd>
 </dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
