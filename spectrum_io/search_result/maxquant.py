@@ -82,7 +82,7 @@ class MaxQuant(SearchResults):
             logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(
                 df["MODIFIED_SEQUENCE"].to_numpy(),
-                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}", "K": f"K{unimod_tag}"},
+                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"},
             )
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
             if "msa" in tmt_labeled:
