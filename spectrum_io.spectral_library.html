@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.spectral_library package &mdash; spectrum_io 0.3.1 documentation</title>
+  <title>spectrum_io.spectral_library package &mdash; spectrum_io 0.3.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom_cookietemple.css" type="text/css" />
@@ -14,7 +14,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=645b84c4"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=53a30eae"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -36,7 +36,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.3.1
+                0.3.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -427,26 +427,23 @@
 <span id="spectrum-io-spectral-library-dlib-module"></span><h2>spectrum_io.spectral_library.dlib module<a class="headerlink" href="#module-spectrum_io.spectral_library.dlib" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.dlib.DLib">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.dlib.</span></span><span class="sig-name descname"><span class="pre">DLib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precursor_mz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precursor_charges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modified_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retention_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragmentmz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L25-L201"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.dlib.</span></span><span class="sig-name descname"><span class="pre">DLib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L26-L183"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary" title="spectrum_io.spectral_library.spectral_library.SpectralLibrary"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralLibrary</span></code></a></p>
 <p>Main to init a DLib obj.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>precursor_mz</strong> (<em>List</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em>) – </p></li>
-<li><p><strong>precursor_charges</strong> (<em>List</em><em>[</em><em>int</em><em>] </em><em>| </em><em>ndarray</em>) – </p></li>
-<li><p><strong>modified_sequences</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – </p></li>
-<li><p><strong>retention_times</strong> (<em>List</em><em>[</em><em>float</em><em>] </em><em>| </em><em>ndarray</em>) – </p></li>
-<li><p><strong>fragmentmz</strong> (<em>List</em><em>[</em><em>ndarray</em><em>]</em>) – </p></li>
-<li><p><strong>intensities</strong> (<em>List</em><em>[</em><em>ndarray</em><em>]</em>) – </p></li>
-<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
+<li><p><strong>input_dataframe</strong> (<em>DataFrame</em>) – </p></li>
+<li><p><strong>grpc_dict</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
 <li><p><strong>min_intensity_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.dlib.DLib.create_database">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L121-L166"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.create_database" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_database</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L67-L112"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.create_database" title="Permalink to this definition"></a></dt>
 <dd><p>Creates the database file with prefab tables entries, peptidetoprotein (p2p) and metadata, according to the         dlib specification.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -457,19 +454,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.dlib.DLib.prepare_spectrum">
-<span class="sig-name descname"><span class="pre">prepare_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L199-L201"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.prepare_spectrum" title="Permalink to this definition"></a></dt>
-<dd><p>Prepare spectrum.</p>
+<span class="sig-name descname"><span class="pre">prepare_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L141-L183"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.prepare_spectrum" title="Permalink to this definition"></a></dt>
+<dd><p>Converts grpc output and metadata dataframe into dlib format.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.dlib.DLib.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunksize</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L168-L175"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.write" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/dlib.py#L114-L117"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.dlib.DLib.write" title="Permalink to this definition"></a></dt>
 <dd><p>Writes the entries ad p2p table to file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chunksize</strong> (<em>None</em><em> | </em><em>int</em>) – optional size of chunks to insert at once</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -479,7 +471,7 @@
 <span id="spectrum-io-spectral-library-msp-module"></span><h2>spectrum_io.spectral_library.msp module<a class="headerlink" href="#module-spectrum_io.spectral_library.msp" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.msp.MSP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.msp.</span></span><span class="sig-name descname"><span class="pre">MSP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/msp.py#L8-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.msp.MSP" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.msp.</span></span><span class="sig-name descname"><span class="pre">MSP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/msp.py#L8-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.msp.MSP" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary" title="spectrum_io.spectral_library.spectral_library.SpectralLibrary"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralLibrary</span></code></a></p>
 <p>Main to initialze a MSP obj.</p>
 <dl class="field-list simple">
@@ -488,6 +480,8 @@
 <li><p><strong>input_dataframe</strong> (<em>DataFrame</em>) – </p></li>
 <li><p><strong>grpc_dict</strong> (<em>dict</em>) – </p></li>
 <li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
+<li><p><strong>min_intensity_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -510,7 +504,7 @@
 <span id="spectrum-io-spectral-library-spectral-library-module"></span><h2>spectrum_io.spectral_library.spectral_library module<a class="headerlink" href="#module-spectrum_io.spectral_library.spectral_library" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.spectral_library.SpectralLibrary">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.spectral_library.</span></span><span class="sig-name descname"><span class="pre">SpectralLibrary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L9-L37"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.spectral_library.</span></span><span class="sig-name descname"><span class="pre">SpectralLibrary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L9-L48"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Main to initialze a SpectralLibrary obj.</p>
 <dl class="field-list simple">
@@ -519,30 +513,27 @@
 <li><p><strong>input_dataframe</strong> (<em>DataFrame</em>) – </p></li>
 <li><p><strong>grpc_dict</strong> (<em>dict</em>) – </p></li>
 <li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
+<li><p><strong>min_intensity_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.spectral_library.SpectralLibrary.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L26-L27"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.load" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L37-L38"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load predictions from hdf5 file.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.spectral_library.SpectralLibrary.prepare_spectrum">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L34-L37"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.prepare_spectrum" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prepare_spectrum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L45-L48"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.prepare_spectrum" title="Permalink to this definition"></a></dt>
 <dd><p>Prepare spectrum.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.spectral_library.SpectralLibrary.write">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunksize</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L29-L32"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.write" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectral_library.py#L40-L43"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary.write" title="Permalink to this definition"></a></dt>
 <dd><p>Write predictions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chunksize</strong> (<em>None</em><em> | </em><em>int</em>) – </p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -552,7 +543,7 @@
 <span id="spectrum-io-spectral-library-spectronaut-module"></span><h2>spectrum_io.spectral_library.spectronaut module<a class="headerlink" href="#module-spectrum_io.spectral_library.spectronaut" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="spectrum_io.spectral_library.spectronaut.Spectronaut">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.spectronaut.</span></span><span class="sig-name descname"><span class="pre">Spectronaut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectronaut.py#L11-L119"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectronaut.Spectronaut" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.spectral_library.spectronaut.</span></span><span class="sig-name descname"><span class="pre">Spectronaut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grpc_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_intensity_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunksize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/spectral_library/spectronaut.py#L11-L119"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.spectral_library.spectronaut.Spectronaut" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#spectrum_io.spectral_library.spectral_library.SpectralLibrary" title="spectrum_io.spectral_library.spectral_library.SpectralLibrary"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectralLibrary</span></code></a></p>
 <p>Main to initialze a Spectronaut obj.</p>
 <dl class="field-list simple">
@@ -561,6 +552,8 @@
 <li><p><strong>input_dataframe</strong> (<em>DataFrame</em>) – </p></li>
 <li><p><strong>grpc_dict</strong> (<em>dict</em>) – </p></li>
 <li><p><strong>output_path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
+<li><p><strong>min_intensity_threshold</strong> (<em>float</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>chunksize</strong> (<em>int</em><em> | </em><em>None</em>) – </p></li>
 </ul>
 </dd>
 </dl>
