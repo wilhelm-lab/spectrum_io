@@ -151,7 +151,7 @@ class MSRaw:
                 for spec in data_iter:
                     if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
                         spec_id = spec["id"].split("scan=")[-1]
-                        instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
+                        instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
                         fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3].upper()
                         mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
                         rt = spec["scanList"]["scan"][0]["scan start time"]
@@ -163,7 +163,7 @@ class MSRaw:
                             spec["m/z array"],
                             mz_range,
                             rt,
-                            mass_analyzer[instrument_configuration_ref],
+                            mass_analyzer.get(instrument_configuration_ref, "unknown"),
                             fragmentation,
                         ]
                 data_iter.close()
@@ -229,7 +229,7 @@ class MSRaw:
             for spec in data_iter:
                 if spec.ms_level != 1:  # filter out ms1 spectra if there are any
                     key = f"{file_name}_{spec.ID}"
-                    instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
+                    instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
                     filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
                     fragmentation = filter_string.split("@")[1][:3].upper()
                     mz_range = filter_string.split("[")[1][:-1]
@@ -240,7 +240,7 @@ class MSRaw:
                         spec.mz,
                         mz_range,
                         spec.scan_time_in_minutes(),
-                        mass_analyzer[instrument_configuration_ref],
+                        mass_analyzer.get(instrument_configuration_ref, "unknown"),
                         fragmentation,
                     ]
         else:
@@ -250,7 +250,7 @@ class MSRaw:
                 # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
                 # /standardMzml.py#L81-L84
                 key = f"{file_name}_{spec.ID}"
-                instrument_configuration_ref = spec["scanList"]["scan"][0]["instrumentConfigurationRef"]
+                instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
                 filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
                 fragmentation = filter_string.split("@")[1][:3].upper()
                 mz_range = filter_string.split("[")[1][:-1]
@@ -261,7 +261,7 @@ class MSRaw:
                     spec.mz,
                     mz_range,
                     spec.scan_time_in_minutes(),
-                    mass_analyzer[instrument_configuration_ref],
+                    mass_analyzer.get(instrument_configuration_ref, "unknown"),
                     fragmentation,
                 ]
         data_iter.close()
