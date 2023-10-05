@@ -18,20 +18,19 @@ def check_analyzer(mass_analyzers: Dict[str, str]) -> Dict[str, str]:
     Convert mass analyzer accession ids to internal format.
 
     :param mass_analyzers: dictionary with instrumentConfigurationRef, analyzer accession
-    :raises AssertionError: if the mass analyzer metadata cannot be found in the file or the search
-        was conducted with an unsupported mass analyzer.
-    :return: dictionary with instrumentConfigurationRef, one of (ITMS, FTMS, TOF)
+    :return: dictionary with instrumentConfigurationRef, one of "ITMS", "FTMS", "TOF" or "unknown",
+        in case the analyzer accession cannot be mapped to one of the three groups.
     """
     for elem in mass_analyzers.keys():
         accession = mass_analyzers[elem]
         if accession in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
             mass_analyzers[elem] = "FTMS"
-        elif accession in ["MS:1000082", "MS:1000264"]:  # quadrupole ion-trap, io-trap
+        elif accession in ["MS:1000082", "MS:1000264" "MS:1000078"]:  # quadrupole ion-trap, ion-trap, linear ion-trap
             mass_analyzers[elem] = "ITMS"
         elif accession in ["MS:1000084"]:  # TOF
             mass_analyzers[elem] = "TOF"
         else:
-            raise AssertionError(f"The mass analyzer with accession {accession} is not supported.")
+            mass_analyzers[elem] = "unsupported"
     return mass_analyzers
 
 
