@@ -135,44 +135,70 @@ class MSRaw:
         :return: pd.DataFrame with intensities and m/z values
         """
         file_list = MSRaw.get_file_list(source, ext)
-        data = {}  # type: Dict[str, Any]
+
         if package == "pymzml":
-            with warnings.catch_warnings():
-                warnings.filterwarnings("ignore", category=ImportWarning)
-                for file_path in file_list:
-                    logger.info(f"Reading mzML file: {file_path}")
-                    MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
+            data = MSRaw._read_mzml_pymzml(file_list, scanidx, *args, **kwargs)
         elif package == "pyteomics":
-            for file_path in file_list:
-                mass_analyzer = get_mass_analyzer(file_path)
-                logger.info(f"Reading mzML file: {file_path}")
-                data_iter = mzml.read(source=str(file_path), *args, **kwargs)
-                file_name = file_path.stem
-                for spec in data_iter:
-                    if spec["ms level"] != 1:  # filter out ms1 spectra if there are any
-                        spec_id = spec["id"].split("scan=")[-1]
-                        instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
-                        fragmentation = spec["scanList"]["scan"][0]["filter string"].split("@")[1][:3].upper()
-                        mz_range = spec["scanList"]["scan"][0]["filter string"].split("[")[1][:-1]
-                        rt = spec["scanList"]["scan"][0]["scan start time"]
-                        key = f"{file_name}_{spec_id}"
-                        data[key] = [
-                            file_name,
-                            spec_id,
-                            spec["intensity array"],
-                            spec["m/z array"],
-                            mz_range,
-                            rt,
-                            mass_analyzer.get(instrument_configuration_ref, "unknown"),
-                            fragmentation,
-                        ]
-                data_iter.close()
+            data = MSRaw._read_mzml_pyteomics(file_list, *args, **kwargs)
         else:
             raise AssertionError("Choose either 'pymzml' or 'pyteomics'")
 
         data = pd.DataFrame.from_dict(data, orient="index", columns=MZML_DATA_COLUMNS)
         data["SCAN_NUMBER"] = pd.to_numeric(data["SCAN_NUMBER"])
         return data
+
+    @staticmethod
+    def _read_mzml_pymzml(file_list: List[Path], scanidx: Optional[List] = None, *args, **kwargs) -> Dict[str, str]:
+        data = {}
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=ImportWarning)
+            for file_path in file_list:
+                logger.info(f"Reading mzML file: {file_path}")
+                MSRaw._get_scans_pymzml(file_path, data, scanidx, *args, **kwargs)
+
+    @staticmethod
+    def _read_mzml_pyteomics(file_list: List[Path], *args, **kwargs) -> Dict[str, str]:
+        data = {}
+        for file_path in file_list:
+            mass_analyzer = get_mass_analyzer(file_path)
+            logger.info(f"Reading mzML file: {file_path}")
+            data_iter = mzml.read(source=str(file_path), *args, **kwargs)
+            file_name = file_path.stem
+            for spec in data_iter:
+                if spec["ms level"] != 2:
+                    continue  # filter out ms1 spectra if there are any
+                spec_id = spec["id"].split("scan=")[-1]
+                scan = spec["scanList"]["scan"][0]
+                instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
+                activation = spec["precursorList"]["precursor"][0]["activation"]
+                fragmentation = "unknown"
+                for key in activation.keys():
+                    if key == "collision energy":
+                        pass
+                    if "beam-type" in key:
+                        fragmentation = "HCD"
+                        break
+                    if "collision-induced dissociation" in key:
+                        fragmentation = "CID"
+                        break
+                    else:
+                        fragmentation = key
+                scan_lower_limit = scan["scanWindowList"]["scanWindow"][0]["scan window lower limit"]
+                scan_upper_limit = scan["scanWindowList"]["scanWindow"][0]["scan window upper limit"]
+                mz_range = f"{scan_lower_limit}-{scan_upper_limit}"
+                rt = spec["scanList"]["scan"][0]["scan start time"]
+                key = f"{file_name}_{spec_id}"
+                data[key] = [
+                    file_name,
+                    spec_id,
+                    spec["intensity array"],
+                    spec["m/z array"],
+                    mz_range,
+                    rt,
+                    mass_analyzer.get(instrument_configuration_ref, "unknown"),
+                    fragmentation,
+                ]
+            data_iter.close()
 
     @staticmethod
     def get_file_list(source: Union[str, Path, List[Union[str, Path]]], ext: str = "mzml") -> List[Path]:
@@ -225,43 +251,48 @@ class MSRaw:
         data_iter = pymzml.run.Reader(file_path, args=args, kwargs=kwargs)
         file_name = file_path.stem
         mass_analyzer = get_mass_analyzer(file_path)
+        namespace = "{http://psi.hupo.org/ms/mzml}"
+
         if scanidx is None:
-            for spec in data_iter:
-                if spec.ms_level != 1:  # filter out ms1 spectra if there are any
-                    key = f"{file_name}_{spec.ID}"
-                    instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
-                    filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
-                    fragmentation = filter_string.split("@")[1][:3].upper()
-                    mz_range = filter_string.split("[")[1][:-1]
-                    data[key] = [
-                        file_name,
-                        spec.ID,
-                        spec.i,
-                        spec.mz,
-                        mz_range,
-                        spec.scan_time_in_minutes(),
-                        mass_analyzer.get(instrument_configuration_ref, "unknown"),
-                        fragmentation,
-                    ]
+            spectra = data_iter
         else:
-            for idx in scanidx:
-                spec = data_iter[idx]
-                # this does not work if some spectra are filtered out, e.g. mzML files with only MS2 spectra, see:
-                # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
-                # /standardMzml.py#L81-L84
-                key = f"{file_name}_{spec.ID}"
-                instrument_configuration_ref = spec["scanList"]["scan"][0].get("instrumentConfigurationRef", "")
-                filter_string = str(spec.element.find(".//*[@accession='MS:1000512']").get("value"))
-                fragmentation = filter_string.split("@")[1][:3].upper()
-                mz_range = filter_string.split("[")[1][:-1]
-                data[key] = [
-                    file_name,
-                    spec.ID,
-                    spec.i,
-                    spec.mz,
-                    mz_range,
-                    spec.scan_time_in_minutes(),
-                    mass_analyzer.get(instrument_configuration_ref, "unknown"),
-                    fragmentation,
-                ]
+            # this does not work if some spectra are filtered out, e.g. mzML files with only MS2 spectra, see:
+            # https://github.com/pymzml/pymzML/blob/a883ff0e61fd97465b0a74667233ff594238e335/pymzml/file_classes
+            # /standardMzml.py#L81-L84
+            spectra = (data_iter[idx] for idx in scanidx)
+
+        for spec in spectra:
+            if spec.ms_level != 2:
+                continue  # filter out ms1 spectra if there are any
+            key = f"{file_name}_{spec.ID}"
+            scan = spec.get_element_by_path(["scanList", "scan"])[0]
+            instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
+            activation = spec.get_element_by_path(["precursorList", "precursor", "activation"])[0]
+            fragmentation = "unknown"
+            for cv_param in activation:
+                name = cv_param.get("name")
+                if name == "collision energy":
+                    pass
+                if "beam-type" in name:
+                    fragmentation = "HCD"
+                    break
+                if "collision-induced dissociation" in name:
+                    fragmentation = "CID"
+                    break
+                else:
+                    fragmentation = name
+            scan_window = scan.find(f".//{namespace}scanWindow")
+            scan_lower_limit = scan_window.find(f'./{namespace}cvParam[@accession="MS:1000501"]').get("value")
+            scan_upper_limit = scan_window.find(f'./{namespace}cvParam[@accession="MS:1000500"]').get("value")
+            mz_range = f"{scan_lower_limit}-{scan_upper_limit}"
+            data[key] = [
+                file_name,
+                spec.ID,
+                spec.i,
+                spec.mz,
+                mz_range,
+                spec.scan_time_in_minutes(),
+                mass_analyzer.get(instrument_configuration_ref, "unknown"),
+                fragmentation,
+            ]
         data_iter.close()
