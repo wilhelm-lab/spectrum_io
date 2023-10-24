@@ -22,8 +22,11 @@ import pickle
 
 logger = logging.getLogger(__name__)
 
+# TODO figure out a nice way to get the script directory
+
 def load_timstof(txt_path, path_to_bruker_dll, d_path):
-    script_directory = os.path.dirname(os.path.abspath(__file__))
+    # Load R dependencies
+    # script_directory = os.path.dirname(os.path.abspath(__file__))
     r_script = f'source("{script_directory}/extract_d.R")'
     base = importr("base")
     utils = importr("utils")
@@ -31,24 +34,24 @@ def load_timstof(txt_path, path_to_bruker_dll, d_path):
     data_table = importr("data.table")
     opentimsr = importr("opentimsr")
     tidyverse = importr("tidyverse")
-
+    # Get the file name
+    file_name = os.path.splitext(os.path.basename(d_path))[0]
+    # Load and run the R function
     pandas2ri.activate()
     robjects.r(r_script)
-
     extract_d = robjects.globalenv["extract_d"] # da = name of function
-    res = extract_d(d_path, txt_path, path_to_bruker_dll, "AspN_F1_E1_1_4468")
-
+    res = extract_d(d_path, txt_path, path_to_bruker_dll, file_name)
+    # Extract the results
     df_raw = robjects.conversion.rpy2py(res[0])
     df_pasef = robjects.conversion.rpy2py(res[1])
     scan_precursor_map = robjects.conversion.rpy2py(res[2])
     df_msms = robjects.conversion.rpy2py(res[3])
-
+    # Get the information for each frame
     df_raw_pasef = pd.merge(df_raw, df_pasef, on="FRAME")
     df_raw_mapped = df_raw_pasef[(df_raw_pasef['SCANNUMBEGIN'] <= df_raw_pasef['SCAN']) &
         (df_raw_pasef['SCAN'] <= df_raw_pasef['SCANNUMEND'])]
-
     df_raw_mapped = df_raw_mapped.sort_values(by='MZ')
-
+    # Combine the MZ and INTENSITY information
     df_raw_scans = df_raw_mapped.groupby(['PRECURSOR', 'FRAME']).agg({
         'INTENSITY': list,
         'MZ': list,
@@ -56,9 +59,8 @@ def load_timstof(txt_path, path_to_bruker_dll, d_path):
         'COLLISION_ENERGY': 'first',
         'INV_ION_MOBILITY': 'first'
     }).reset_index()
-
+    # Map the scan number and combine the MZ and INTENSITY
     df_scan_group = pd.merge(df_raw_scans, scan_precursor_map)
-
     df_scans = df_scan_group.groupby('SCAN_NUMBER').agg(
         median_CE=('COLLISION_ENERGY', 'median'),
         combined_INTENSITIES=('INTENSITY', lambda x: [item for sublist in x for item in sublist]),
@@ -66,14 +68,12 @@ def load_timstof(txt_path, path_to_bruker_dll, d_path):
         median_RETENTION_TIME=('RETENTION_TIME', 'median'),
         median_INV_ION_MOBILITY=('INV_ION_MOBILITY', 'median')
     ).reset_index()
-
+    # Get the CHARGE, MASS_ANALYZER, RAW_FILE, and FRAGMENTATION from the msms.txt file
     df_msms_scans = pd.merge(df_scans, df_msms, on="SCAN_NUMBER")
-
     df_msms_scans = df_msms_scans[["RAW_FILE", "SCAN_NUMBER", "combined_INTENSITIES",
         "combined_MZ", "MASS_ANALYZER", "FRAGMENTATION",
         "median_RETENTION_TIME", "median_INV_ION_MOBILITY",
         "median_CE", "CHARGE"]]
-
     return df_msms_scans
 
 def binning(inp, ignoreCharges, rescoring_path):
@@ -86,20 +86,19 @@ def binning(inp, ignoreCharges, rescoring_path):
     comb_ms = comb_ms.drop(columns=["counts", "left border", "right border", "start_mz", "ms1_charge", "rel_intensity_ratio", "counts_ratio"])
     return comb_ms
 
-def combine_spectra(df_msms_scans):
+def combine_spectra(df_msms_scans, rescoring_path):
     bin_result_list = []
     for index, line in df_msms_scans.iterrows():
         bin_result = binning(line, True, rescoring_path)
         bin_result_list.append(bin_result)
-
     bin_result_df = pd.concat(bin_result_list)
     bin_result_df_collapsed = bin_result_df.groupby("SCAN_NUMBER").agg(list)
     scans_combined = pd.merge(df_msms_scans, bin_result_df_collapsed, on="SCAN_NUMBER")
     scans_comb = scans_combined.drop(columns = ["combined_INTENSITIES", "combined_MZ"]).rename(columns={"intensity":"INTENSITIES", "mz":"MZ", "median_CE":"COLLISION_ENERGY"})
-
+    # Convert lists into arrays
     scans_comb['INTENSITIES'] = scans_comb['INTENSITIES'].apply(lambda x: np.array(x))
     scans_comb['MZ'] = scans_comb['MZ'].apply(lambda x: np.array(x))
-
+    # Sort the MZ (and linked INTENSITIES)
     total_list = []
     for i in range (len(scans_comb)):
         zipped_list = zip(scans_comb.iloc[i]["MZ"], scans_comb.iloc[i]["INTENSITIES"])
@@ -109,9 +108,23 @@ def combine_spectra(df_msms_scans):
         scans_comb.at[i, "MZ"] = list_1
         scans_comb.at[i, "INTENSITIES"] = list_2
         total_list.append(scans_comb)
-
     total_df = pd.concat(total_list, ignore_index=True)
     total_df["MZ_RANGE"] = "0"
     file_name = total_df["RAW_FILE"][0]
     # Write to pickle
     total_df.to_pickle(rescoring_path + "/" + file_name + ".pkl")
+
+def convert_d_pkl(
+    input_path: Union[Path, str],
+    txt_path: Union[Path, str],
+    path_to_bruker_dll: Union[Path, str],
+    output_path: Optional[Union[Path, str]] = None):
+    """Converts a .d folder to pkl.
+    :param input_path: path of the .d folder
+    :param txt_path: path of the txt folder from MaxQuant,
+    containing msms.txt, accumulatedMsmsScans.txt, and pasefMsmsScans.txt
+    :param output_path: file path of the pkl file
+    :return: path to converted file as string
+    """
+    df_msms_scans = load_timstof(txt_path, path_to_bruker_dll, input_path)
+    combine_spectra(df_msms_scans, output_path)
