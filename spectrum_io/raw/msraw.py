@@ -209,7 +209,7 @@ class MSRaw:
         return data
 
     @staticmethod
-    def _read_mzml_pyteomics(file_list: List[Path], *args, **kwargs) -> Dict[str, str]:
+    def _read_mzml_pyteomics(file_list: List[Path], *args, **kwargs) -> pd.DataFrame:
         data_dict = {}
         for file_path in file_list:
             mass_analyzer = get_mass_analyzer(file_path)
