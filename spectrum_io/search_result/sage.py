@@ -4,7 +4,7 @@ from typing import Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
+from spectrum_fundamentals.mod_string import sage_to_internal
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -39,14 +39,14 @@ class Sage(SearchResults):
         logger.info("Reading msms.txt file")
         df = pd.read_csv(
             path,
-            usecols=lambda x: x.upper()
-            in [
+            usecols=[
                 "filename",
                 "scannr",
                 "peptide",
                 "charge",
                 "hyperscore",
                 "calcmass",
+                "proteins"
             ],
             sep="\t",
         )
@@ -55,14 +55,16 @@ class Sage(SearchResults):
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
-
-        df = Sage.modify_columns_for_prosit(df, tmt_labeled)
+        print(df)
+        df = Sage.update_columns_for_prosit(df)
         return filter_valid_prosit_sequences(df)
     
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame , tmt_labeled: str) -> pd.DataFrame:
-        df = df.rename (columns={'FILENAME':'RAW_FILE','SCANNR':'SCAN_NUMBER','PEPTIDE':'MODIFIED_SEQUENCE','CHARGE':'PRECURSOR_CHARGE'})
-        # TODO modified sequence should be changed from proforma to unimod
+    def update_columns_for_prosit(df: pd.DataFrame ) -> pd.DataFrame:
+        # renaming input columns
+        print(df.columns)
+        df = df.rename(columns={'FILENAME':'RAW_FILE','SCANNR':'SCAN_NUMBER','PEPTIDE':'MODIFIED_SEQUENCE','CHARGE':'PRECURSOR_CHARGE'})
+        print(df.columns)
         # removing .mzML
         df['RAW_FILE'] = df['RAW_FILE'].str.replace(".mzML","")
         # extracting only the scan number 
@@ -71,14 +73,18 @@ class Sage(SearchResults):
         df['REVERSE'] = df['PROTEINS'].str.startswith('rev_')
         # removing modification to create the unmodified sequences
         df['SEQUENCE'] = df['MODIFIED_SEQUENCE'].str.replace(r'\[.*?\]', '', regex=True)
-        #length of the peptide
+        # length of the peptide
         df['PEPTIDE_LENGTH'] = df['SEQUENCE'].str.len()
         # mass of the peptide
         df['MASS'] = df['CALCMASS']
         # score of the peptide
         df['SCORE'] = df['HYPERSCORE']
+        # converting proforma to unimode
+        print(df)
+        df['MODIFIED_SEQUENCE'] = sage_to_internal(df['MODIFIED_SEQUENCE'].to_numpy())
         
-        return df
+        print(df.columns)
+        return df 
     
 
 
