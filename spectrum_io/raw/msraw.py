@@ -174,16 +174,16 @@ class MSRaw:
                     instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                     activation = spec.get_element_by_path(["precursorList", "precursor", "activation"])[0]
                     fragmentation = "unknown"
+                    collision_energy = 0.0
                     for cv_param in activation:
                         name = cv_param.get("name")
                         if name == "collision energy":
-                            pass
+                            collision_energy = float(cv_param.get("value"))
+                            continue
                         if "beam-type" in name:
                             fragmentation = "HCD"
-                            break
-                        if "collision-induced dissociation" in name:
+                        elif "collision-induced dissociation" in name:
                             fragmentation = "CID"
-                            break
                         else:
                             fragmentation = name
                     scan_window = scan.find(f".//{namespace}scanWindow")
@@ -203,6 +203,7 @@ class MSRaw:
                         spec.scan_time_in_minutes(),
                         mass_analyzer.get(instrument_configuration_ref, "unknown"),
                         fragmentation,
+                        collision_energy,
                     ]
                 data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
@@ -224,15 +225,14 @@ class MSRaw:
                 instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                 activation = spec["precursorList"]["precursor"][0]["activation"]
                 fragmentation = "unknown"
-                for key in activation.keys():
+                collision_energy = 0.0
+                for key, value in activation.items():
                     if key == "collision energy":
-                        pass
-                    if "beam-type" in key:
+                        collision_energy = value
+                    elif "beam-type" in key:
                         fragmentation = "HCD"
-                        break
-                    if "collision-induced dissociation" in key:
+                    elif "collision-induced dissociation" in key:
                         fragmentation = "CID"
-                        break
                     else:
                         fragmentation = key
                 scan_lower_limit = scan["scanWindowList"]["scanWindow"][0]["scan window lower limit"]
@@ -249,6 +249,7 @@ class MSRaw:
                     rt,
                     mass_analyzer.get(instrument_configuration_ref, "unknown"),
                     fragmentation,
+                    collision_energy,
                 ]
             data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
