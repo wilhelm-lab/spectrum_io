@@ -5,7 +5,7 @@ from typing import Union
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.mod_string import internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_to_internal
 from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
@@ -84,20 +84,3 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
             "PEPTIDE_LENGTH",
         ]
     ]
-
-
-def msfragger_to_internal(modstrings: pd.Series):
-    """
-    Transform modstring from msfragger format to internal format.
-
-    This function takes a modstrings column from a pandas dataframe and converts each
-    supported modification (M[147] and C[160]) to the internal representation that is
-    M[UNIMOD:35] and C[UNIMOD:4], respectively. Since C is considered a fixed modification,
-    every occurence of a C is transformed to C[UNIMOD:4] as well.
-
-    :param modstrings: pd.Series containing the msfragger modstrings
-    :return: pd.Series with internal modstrings
-    """
-    modstrings = modstrings.str.replace("M[147]", "M[UNIMOD:35]", regex=False)
-    modstrings = modstrings.str.replace(r"C\[160\]|C", "C[UNIMOD:4]", regex=True)
-    return modstrings
