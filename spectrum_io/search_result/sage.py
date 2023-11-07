@@ -55,16 +55,16 @@ class Sage(SearchResults):
         # Standardize column names
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
-        print(df)
-        df = Sage.update_columns_for_prosit(df)
+        
+        df = Sage.update_columns_for_prosit(df,tmt_labeled)
         return filter_valid_prosit_sequences(df)
     
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame ) -> pd.DataFrame:
+    def update_columns_for_prosit(df: pd.DataFrame , tmt_labeled: str ) -> pd.DataFrame:
         # renaming input columns
-        print(df.columns)
+        
         df = df.rename(columns={'FILENAME':'RAW_FILE','SCANNR':'SCAN_NUMBER','PEPTIDE':'MODIFIED_SEQUENCE','CHARGE':'PRECURSOR_CHARGE'})
-        print(df.columns)
+        
         # removing .mzML
         df['RAW_FILE'] = df['RAW_FILE'].str.replace(".mzML","")
         # extracting only the scan number 
