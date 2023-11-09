@@ -42,7 +42,7 @@ class MSFragger(SearchResults):
 
         df = pd.concat(ms_frag_results)
 
-        df = update_columns_for_prosit(df, "")
+        df = update_columns_for_prosit(df, tmt_labeled)
         return filter_valid_prosit_sequences(df)
 
 
@@ -58,7 +58,17 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
     df["RAW_FILE"] = df["spectrum"].apply(lambda x: x.split(".")[0])
     df["MASS"] = df["precursor_neutral_mass"]
     df["PEPTIDE_LENGTH"] = df["peptide"].apply(lambda x: len(x))
-    df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"])
+
+    if tmt_labeled != "":
+        unimod_tag = c.TMT_MODS[tmt_labeled]
+        logger.info("Adding TMT fixed modifications")
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(
+            df["modified_peptide"].to_list(),
+            fixed_mods={"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"},
+        )
+    else:
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list())
+
     df.rename(
         columns={
             "assumed_charge": "PRECURSOR_CHARGE",
