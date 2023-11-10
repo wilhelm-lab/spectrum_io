@@ -66,7 +66,7 @@ class Sage(SearchResults):
         df = df.rename(columns={'FILENAME':'RAW_FILE','SCANNR':'SCAN_NUMBER','PEPTIDE':'MODIFIED_SEQUENCE','CHARGE':'PRECURSOR_CHARGE'})
         
         # removing .mzML
-        df['RAW_FILE'] = df['RAW_FILE'].str.replace(".mzML","")
+        df['RAW_FILE'] = df['RAW_FILE'].str.replace(".mzML","",regex=True)
         # extracting only the scan number 
         df['SCAN_NUMBER'] = df['SCAN_NUMBER'].str.split('=').str[3:].str.join('=')
         # creating a column of decoys and targets
@@ -82,6 +82,15 @@ class Sage(SearchResults):
         # converting proforma to unimode
         print(df)
         df['MODIFIED_SEQUENCE'] = sage_to_internal(df['MODIFIED_SEQUENCE'])
+
+        if tmt_labeled != "":
+            unimod_tag = c.TMT_MODS[tmt_labeled]
+            logger.info("Adding TMT fixed modifications")
+            df["MODIFIED_SEQUENCE"] = sage_to_internal(
+                df["MODIFIED_SEQUENCE"].to_numpy(),
+                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"},
+            )
+            df["MASS"] = df.apply(lambda x: Sage.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
         
         print(df.columns)
         return df 

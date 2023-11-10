@@ -42,14 +42,16 @@ class MaxQuant(SearchResults):
             path,
             usecols=lambda x: x.upper()
             in [
-                "FILENAME",
-                "SCANNR",
-                "PEPTIDE",
+                "RAW FILE",
+                "SCAN NUMBER",
+                "MODIFIED SEQUENCE",
                 "CHARGE",
-                "HYPERSCORE",
-                "CALCMASS",
-                "PROTEINS"                       
-                ],
+                "SCAN EVENT NUMBER",
+                "LABELING STATE",
+                "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                "SCORE",
+                "REVERSE",
+            ],
             sep="\t",
         )
         logger.info("Finished reading msms.txt file")
