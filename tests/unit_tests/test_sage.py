@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 
 import pandas as pd
+
 from spectrum_io.search_result import Sage
 
 
@@ -14,8 +15,6 @@ class TestSage(unittest.TestCase):
         expected_sage_internal_path = Path(__file__).parent / "data" / "sage_output_internal.csv"
 
         internal_search_results_df = Sage.read_result(sage_output_path)
+        expected_df = pd.read_csv(expected_sage_internal_path, index_col=0)
 
-        # execute only once, then remove and test again
-        internal_search_results_df.to_csv(expected_sage_internal_path)
-
-        self.assertEqual(internal_search_results_df, pd.read_csv(expected_sage_internal_path))
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)

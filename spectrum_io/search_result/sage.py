@@ -26,15 +26,7 @@ class Sage(SearchResults):
         logger.info("Reading msms.tsv file")
         df = pd.read_csv(
             path,
-            usecols=[
-                "filename",
-                "scannr",
-                "peptide",
-                "charge",
-                "hyperscore",
-                "calcmass",
-                "proteins"
-            ],
+            usecols=["filename", "scannr", "peptide", "charge", "hyperscore", "calcmass", "proteins"],
             sep="\t",
         )
         logger.info("Finished reading msms.tsv file")
@@ -65,9 +57,9 @@ class Sage(SearchResults):
         )
 
         # removing .mzML
-        df['RAW_FILE'] = df['RAW_FILE'].str.replace(".mzML","",regex=True)
-        # extracting only the scan number 
-        df['SCAN_NUMBER'] = df['SCAN_NUMBER'].str.split('=').str[3:].str.join('=')
+        df["RAW_FILE"] = df["RAW_FILE"].str.replace(".mzML", "", regex=True)
+        # extracting only the scan number
+        df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
         # creating a column of decoys and targets
         df["REVERSE"] = df["PROTEINS"].str.startswith("rev_")
         # removing modification to create the unmodified sequences
