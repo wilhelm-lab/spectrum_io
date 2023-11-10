@@ -136,10 +136,6 @@ class MSRaw:
         """
         file_list = MSRaw.get_file_list(source, ext)
 
-        # this is a temporary fix until this is changed in spectrum_fundamentals
-        global MZML_DATA_COLUMNS
-        MZML_DATA_COLUMNS = MZML_DATA_COLUMNS + ["COLLISION_ENERGY"]
-
         if package == "pymzml":
             data = MSRaw._read_mzml_pymzml(file_list, scanidx, *args, **kwargs)
         elif package == "pyteomics":
