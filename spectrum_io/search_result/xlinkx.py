@@ -3,6 +3,10 @@ import re
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from .search_results import SearchResults
+import os
+from spectrum_io.spectral_library import digest 
+import glob
+import numpy as np
 
 #from search_results import SearchResults
 
@@ -45,8 +49,83 @@ class XlinkX(SearchResults):
         # Standardize column names
         df = XlinkX.update_columns_for_prosit(df)
         df = XlinkX.filter_valid_prosit_sequences(df)
+        # create all possible peptides from fasta file
+        logger.info("Digestion part is running")
+        #df = XlinkX.gen_lib_xl( fasta_file_path ="/cmnfs/home/m.kalhor/wilhelmlab/notebooks/notebooks",df=df)
+        #df["label_pep_a"] = "True"
+        #df["label_pep_b"] = "True"
+        #df.loc[df["REVERSE"],"label_pep_a"] = False
+        #df.loc[0,"label_pep_b"] = False
+        
+        
+        #df["label_pep_a"] = df["label_pep_a"].astype(str)
+        #df["label_pep_a"] = df["label_pep_a"].astype(str)
+        #df["REVERSE"] = df["REVERSE"].astype(str)
+
+        #df.loc[df["REVERSE"] == "True", "label_pep_a"] = "False"
+
+        #df["label_pep_a"] = np.where(df["REVERSE"] == "False", "True", df["label_pep_a"])
+        #df["label_pep_b"] = np.where(df["REVERSE"] == "False", "True", df["label_pep_b"])
+        #df.loc[df["REVERSE"] == "False", "label_pep_a"] = "True"
+        #df.loc[df["REVERSE"] == "False", "label_pep_b"] = "True"
+        #df.loc[df['REVERSE'] == 'False', ['label_pep_a', 'label_pep_B']] = 'True'
+        #df.loc[1:600, 'label_pep_a'] = 'True'
+        #df.loc[1:600, 'label_pep_b'] = 'True'
+        df.to_csv('/cmnfs/home/m.kalhor/wilhelmlab/notebooks/notebooks/xlinkx/df.csv', index=False)
         return df
 
+    def gen_lib_xl(fasta_file_path: str, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Function to get df_result and all used fasta files and create all possible peptides
+        and count the number peptides (pep a and b) coming from the target: 2 or 1 or 0
+
+        :fasta_file_path: path of the folder containing all fasta files.
+        :param df: df to modify
+        :return: modified df as pd.DataFrame with new column showing number of pep coming from target
+        """
+        fasta_path = []
+        if os.path.exists(fasta_file_path) and os.path.isdir(fasta_file_path):
+            fasta_path = glob.glob(os.path.join(fasta_file_path, "*.fasta"))
+            for i in range(len(fasta_path)):
+                cmd = [
+                    "--fasta",
+                    fasta_path[i],
+                    "--prosit_input",
+                    fasta_file_path + "/peptide_target.csv",
+                    "--fragmentation",
+                    "HCD",
+                    "--digestion",
+                    "full",
+                    "--cleavages",
+                    "3",
+                    "--db",
+                    "target",
+                    "--enzyme",
+                    "trypsinp",
+                    "--min-length",
+                    "5",
+                    "--max-length",
+                    "30",
+                ]
+                digest.main(cmd)
+                pep_target = pd.read_csv(fasta_file_path + "/peptide_target.csv")
+            peptides_target = pep_target['modified_sequence']
+            df['label_pep_a'] = df['SEQUENCE_A'].apply(XlinkX.check_label_pep, peptides_target=peptides_target)
+            df['label_pep_a'] = df['label_pep_a'].astype(str)
+            df['label_pep_b'] = df['SEQUENCE_B'].apply(XlinkX.check_label_pep, peptides_target=peptides_target)
+            df['label_pep_b'] = df['label_pep_b'].astype(str)
+
+        else:
+            raise AssertionError(f"fasta file not provided")
+        return df
+        
+
+    def check_label_pep(pep, peptides_target):
+        if pep in peptides_target.values:
+            return "True"
+        else:
+            return "False"
+    
     def add_mod_sequence(seq_a: str,
                          seq_b: str,
                          mod_a: str,
