@@ -53,6 +53,8 @@ class Sage(SearchResults):
                 "SCANNR": "SCAN_NUMBER",
                 "PEPTIDE": "MODIFIED_SEQUENCE",
                 "CHARGE": "PRECURSOR_CHARGE",
+                "CALCMASS":"MASS",
+                "HYPERSCORE":"SCORE"
             }
         )
 
@@ -67,9 +69,9 @@ class Sage(SearchResults):
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         # mass of the peptide
-        df["MASS"] = df["CALCMASS"]
+        #df["MASS"] = df["CALCMASS"]
         # score of the peptide
-        df["SCORE"] = df["HYPERSCORE"]
+        #df["SCORE"] = df["HYPERSCORE"]
         # converting proforma to unimode
         print(df)
         df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
