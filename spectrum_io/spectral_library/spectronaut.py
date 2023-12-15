@@ -111,7 +111,8 @@ class Spectronaut(SpectralLibrary):
         inter_df["iRT"] = irt.tolist()
         if len(list(self.grpc_output)) > 2:
             inter_df["proteotypicity"] = proteotypicity.tolist()
-        inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()
+        inter_df["intensities"] = intensities.tolist()
+        inter_df["fragment_mz"] = fragment_mz.tolist()
         inter_df["fragment_types"] = fragment_types.tolist()
         inter_df["fragment_numbers"] = fragment_numbers.tolist()
         inter_df["fragment_charges"] = fragment_charges.tolist()
