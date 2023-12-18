@@ -2,7 +2,7 @@
 name = "spectrum_io"
 version = "0.4.0"  # <<COOKIETEMPLE_FORCE_BUMP>>
 description = "IO related functionalities for oktoberfest."
-authors = ["Mario Picciani <mario.picciani@tum.de>"]
+authors = ["Wilhelmlab at Technical University of Munich"]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://github.com/wilhelm-lab/spectrum_io"
