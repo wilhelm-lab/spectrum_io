@@ -157,6 +157,7 @@ class MSRaw:
                 file_name = file_path.stem
                 mass_analyzer = get_mass_analyzer(file_path)
                 namespace = "{http://psi.hupo.org/ms/mzml}"
+                instrument_name = data_iter.info["referenceable_param_group_list_element"][0][0].get("name")
 
                 if scanidx is None:
                     spectra = data_iter
@@ -204,6 +205,7 @@ class MSRaw:
                         mass_analyzer.get(instrument_configuration_ref, "unknown"),
                         fragmentation,
                         collision_energy,
+                        instrument_name,
                     ]
                 data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
@@ -217,6 +219,7 @@ class MSRaw:
             logger.info(f"Reading mzML file: {file_path}")
             data_iter = mzml.read(source=str(file_path), *args, **kwargs)
             file_name = file_path.stem
+            instrument_name = list(data_iter.get_by_id("commonInstrumentParams").keys())[1]
             for spec in data_iter:
                 if spec["ms level"] != 2:
                     continue  # filter out ms1 spectra if there are any
@@ -250,6 +253,7 @@ class MSRaw:
                     mass_analyzer.get(instrument_configuration_ref, "unknown"),
                     fragmentation,
                     collision_energy,
+                    instrument_name,
                 ]
             data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
