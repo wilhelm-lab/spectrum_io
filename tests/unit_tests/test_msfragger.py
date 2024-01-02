@@ -24,3 +24,13 @@ class TestMSFragger(unittest.TestCase):
         self.assertTrue("REVERSE" in df.columns)
         self.assertTrue("SEQUENCE" in df.columns)
         self.assertTrue("PEPTIDE_LENGTH" in df.columns)
+
+    def test_read_msfragger(self):
+        """Test function for reading sage results and transforming to Prosit format."""
+        msfragger_output_path = Path(__file__).parent / "data" / "psm_tmt.pepXML"
+        expected_msfragger_internal_path = Path(__file__).parent / "data" / "psm_tmt_internal.csv"
+
+        internal_search_results_df = MSFragger.read_result(msfragger_output_path, tmt_labeled="tmtpro")
+        expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
+
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)
