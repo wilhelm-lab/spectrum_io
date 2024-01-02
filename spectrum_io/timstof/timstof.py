@@ -135,7 +135,6 @@ def combine_spectra(df_msms_scans, rescoring_path, chunk_size = 1000):
 def convert_d_pkl(
     input_path: Union[Path, str],
     txt_path: Union[Path, str],
-    path_to_bruker_dll: Union[Path, str],
     output_path: Optional[Union[Path, str]] = None):
     """Converts a .d folder to pkl.
     :param input_path: path of the .d folder
@@ -144,9 +143,8 @@ def convert_d_pkl(
     :param output_path: file path of the pkl file
     :return: path to converted file as string
     """
-    df_msms_scans = load_timstof(input_path, txt_path, path_to_bruker_dll)
+    df_msms_scans = load_timstof(input_path, txt_path)
     df_combined = combine_spectra(df_msms_scans, output_path)
     # Write to pickle
     file_name = df_combined["RAW_FILE"][0]
-    df_combined.to_pickle(rescoring_path + "/" + file_name + ".pkl")
-
+    df_combined.to_pickle(output_path + "/" + file_name + ".pkl")
