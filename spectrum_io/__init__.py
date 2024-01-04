@@ -9,7 +9,7 @@ import logging.handlers
 import sys
 import time
 
-from . import file, raw
+from . import file, raw, d
 from .search_result import MaxQuant
 from .spectral_library import DLib, Spectronaut
 
