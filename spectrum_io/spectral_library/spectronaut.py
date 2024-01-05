@@ -73,7 +73,8 @@ class Spectronaut(SpectralLibrary):
                     out.write(f"{f_int},{f_mz},{f_n},{f_type},{f_charge},{f_loss}\n")
 
     def _write_header(self, out: str):
-        out.write(
-            "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,"
-            "RelativeFragmentIntensity,FragmentMz,FragmentNumber,FragmentType,FragmentCharge,FragmentLossType\n"
-        )
+        if self.mode == "w":
+            out.write(
+                "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,"
+                "RelativeFragmentIntensity,FragmentMz,FragmentNumber,FragmentType,FragmentCharge,FragmentLossType\n"
+            )
