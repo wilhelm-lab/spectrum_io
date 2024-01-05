@@ -470,7 +470,7 @@ def get_peptide_to_protein_map(
     protein_to_seq_map = dict()
     for protein_idx, (protein, seq) in enumerate(read_fasta(fasta_file, db, parse_id, special_aas=special_aas)):
         if (protein_idx + 1) % 10000 == 0:
-            logger.info("Digesting protein", protein_idx + 1)
+            logger.info(f"Digesting protein {protein_idx + 1}")
         seen_peptides = set()
         protein_to_seq_map[protein] = seq
         # for peptide in digestfast.get_digested_peptides(seq, min_len, max_len, pre, not_post, digestion,
@@ -501,7 +501,7 @@ def get_peptide_to_protein_map_from_file(peptide_to_protein_map_file, use_hash_k
     reader = get_tsv_reader(peptide_to_protein_map_file)
     for i, row in enumerate(reader):
         if (i + 1) % 1000000 == 0:
-            logger.info("Processing peptide", i + 1)
+            logger.info(f"Processing peptide  {i + 1}")
 
         peptide, proteins = row[0], row[1].split(";")
         if use_hash_key:
