@@ -51,6 +51,7 @@ class MaxQuant(SearchResults):
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "SCORE",
                 "REVERSE",
+                "PROTEINS"
             ],
             sep="\t",
         )
@@ -62,7 +63,13 @@ class MaxQuant(SearchResults):
 
         df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
         return filter_valid_prosit_sequences(df)
+    
+    @staticmethod
+    def sanity_check(proteins:pd.Series)-> pd.Series:
+        return(proteins.apply(lambda x: 'shit_protein' if pd.isna(x) else x))
 
+        
+    
     @staticmethod
     def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
         """
@@ -73,7 +80,6 @@ class MaxQuant(SearchResults):
         :return: modified df as pd.DataFrame
         """
         df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
-
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
         logger.info("Converting MaxQuant peptide sequence to internal format")
@@ -106,5 +112,7 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
+        df['PROTEINS']= MaxQuant.sanity_check(df['PROTEINS'])
+        df = df[[col for col in df.columns if col != 'PROTEINS'] + ['PROTEINS']]
 
         return df
