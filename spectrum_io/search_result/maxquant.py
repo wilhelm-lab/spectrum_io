@@ -14,6 +14,19 @@ logger = logging.getLogger(__name__)
 class MaxQuant(SearchResults):
     """Handle search results from MaxQuant."""
 
+    def __init__(self, path: Union[str, Path]):
+        """
+        Init Searchresults object.
+
+        :param path: path to file
+        """
+        if isinstance(path, str):
+            path = Path(path)
+
+        if path.is_dir():
+            path /= "msms.txt"
+        self.path = path
+
     @staticmethod
     def add_tmt_mod(mass: float, seq: str, unimod_tag: str) -> float:
         """
