@@ -9,7 +9,8 @@ import alphatims.bruker
 import alphatims.utils
 import numpy as np
 import pandas as pd
-from mgf_filter.masterSpectrum import MasterSpectrum
+
+# from .masterSpectrum import MasterSpectrum
 
 logger = logging.getLogger(__name__)
 
@@ -136,9 +137,10 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
     :return: DataFrame containing combined information from the timsTOF data and search engine metadata.
     """
     # Load the raw bruker data
-    data = alphatims.bruker.TimsTOF(d_path)
+    logger.info("Loading data...")
+    data = alphatims.bruker.TimsTOF(str(d_path))
     # Get the filename to ensure the correct data is mapped
-    file_name = os.path.splitext(os.path.basename(d_path))[0]
+    file_name = d_path.stem
     # Load the PSMs, precursor and frame information
     df_msms, df_precursors, df_pasef = _load_metadata(out_path, file_name, search_engine)
     df_precursors = df_precursors[df_precursors["SCAN_NUMBER"].isin(df_msms.SCAN_NUMBER)]
@@ -208,6 +210,7 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
             "CHARGE",
         ]
     ]
+    logger.info("Done loading data.")
     return df_msms_scans
 
 
@@ -288,15 +291,15 @@ def combine_spectra(df_msms_scans: pd.DataFrame, temp_path: Path, chunk_size: in
     return chunk_comb
 
 
-def convert_d_pkl(d_path: Path, out_path: Path, output_path: Path):
+def convert_d_pkl(d_path: Path, search_output_path: Path, output_path: Path):
     """
     Converts a .d folder to pkl.
 
     :param d_path: Path to the .d folder
-    :param out_path: Path to the output folder from the search engine
+    :param search_output_path: Path to the output folder from the search engine
     :param output_path: file path of the pkl file
     """
-    df_msms_scans = load_timstof(d_path, out_path)
+    df_msms_scans = load_timstof(d_path, search_output_path)
     df_combined = combine_spectra(df_msms_scans, output_path)
     # Write to pickle
     file_name = df_combined["RAW_FILE"][0]
