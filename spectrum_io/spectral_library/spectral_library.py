@@ -13,15 +13,15 @@ class SpectralLibrary:
         self,
         output_path: Union[str, Path],
         mode: str = "w",
-        min_intensity_threshold: Optional[float] = 0.05,
+        min_intensity_threshold: Optional[float] = 5e-4,
         chunksize: Optional[int] = None,
     ):
         """
         Initialize a SpectralLibrary obj.
 
         :param output_path: path to output file including file name
-        :param mode: Whether to append ('a') or overwrite ('2') an extisting file
-            at the provided output path ()
+        :param mode: Whether to append ('a') to or overwrite ('w') an extisting file
+            at the provided output path (if it is present).
         :param min_intensity_threshold: optional filter for low intensity peaks
         :param chunksize: optional chunksize for dlib
         """
@@ -62,6 +62,21 @@ class SpectralLibrary:
                 self._write(out, *content)
                 queue.task_done()
                 progress.value += 1
+
+    def _fragment_filter_passed(self, f_mz: float, f_int: float) -> bool:
+        """
+        Return if a fragment passes a common filter.
+
+        This function returns a boolean to determine if a fragment can exist (as defined by its mz != -1)
+        and if its (predicted) intensity is at least the minimal threshold given during instantiation of
+        the writer class.
+
+        :param f_mz: The fragment's mass to charge ratio
+        :param f_int: The fragment's (predicted) intensity
+
+        :return: boolean that determines if the fragment passes the filter
+        """
+        return f_mz != -1 and f_int >= self.min_intensity_threshold
 
     @abstractmethod
     def _write(self, out: str, data: Dict[str, np.ndarray], metadata: pd.DataFrame):

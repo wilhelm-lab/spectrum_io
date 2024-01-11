@@ -28,7 +28,6 @@ def split_annotations(annotations: np.ndarray) -> Tuple[np.ndarray, np.ndarray, 
         flags=["multi_index"],
         op_flags=[["readonly"], ["writeonly"], ["writeonly"], ["writeonly"], ["writeonly"]],
     ) as it:
-
         for annot, f_n, f_type, f_charge, f_loss in it:
             match = re.match(rb"([by])(\d+)\+(\d)(?:-(\w+))?", annot)
             if match:
@@ -66,11 +65,11 @@ class Spectronaut(SpectralLibrary):
         for f_ints, f_mzs, modseq, seq, p_charge, p_mz, irt, ce, f_ns, f_types, f_charges, f_losses in zip(
             f_intss, f_mzss, modseqs, seqs, p_charges, p_mzs, irts, ces, f_nss, f_typess, f_chargess, f_lossess
         ):
-            line_start = f"{modseq},{seq},{seq},{p_charge},{p_mz},{irt},{ce},"
+            line_start = f"{modseq},{seq},{seq},{p_charge},{p_mz:.8f},{irt:.2f},{ce},"
             for f_int, f_mz, f_n, f_type, f_charge, f_loss in zip(f_ints, f_mzs, f_ns, f_types, f_charges, f_losses):
-                if f_mz != -1:
+                if f_mz != -1 and f_int >= self.min_intensity_threshold:
                     out.write(line_start)
-                    out.write(f"{f_int},{f_mz},{f_n},{f_type},{f_charge},{f_loss}\n")
+                    out.write(f"{f_int:.4f},{f_mz:.8f},{f_n},{f_type},{f_charge},{f_loss}\n")
 
     def _write_header(self, out: str):
         if self.mode == "w":

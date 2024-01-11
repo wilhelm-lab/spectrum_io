@@ -30,8 +30,8 @@ class MSP(SpectralLibrary):
         ):
             out.write(f"Name: {stripped_peptide}/{p_charge}\nMW: {p_mz}\n")
             out.write(
-                f"Comment: Parent={p_mz} Collision_energy={ce} Mods={mods[0]} "
-                f"ModString={mods[1]}/{p_charge} iRT={irt}\n"
+                f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Mods={mods[0]} "
+                f"ModString={mods[1]}/{p_charge} iRT={irt:.2f}\n"
             )
             fragment_list = []
             for f_mz, f_int, f_annot in zip(
@@ -39,12 +39,12 @@ class MSP(SpectralLibrary):
                 f_ints,
                 f_annots,
             ):
-                if f_mz != -1:
+                if self._fragment_filter_passed(f_mz, f_int):
                     if f_annot.endswith(b"1"):
                         annot = f_annot[:-2]
                     else:
                         annot = f_annot.replace(b"+", b"^")
-                    fragment_list.append(f'{f_mz}\t{f_int}\t"{annot.decode()}/0.0ppm"\n')
+                    fragment_list.append(f'{f_mz:.8f}\t{f_int:.4f}\t"{annot.decode()}/0.0ppm"\n')
 
             out.write(f"Num peaks: {len(fragment_list)}\n")
             for line in fragment_list:
