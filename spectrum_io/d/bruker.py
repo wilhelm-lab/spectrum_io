@@ -47,6 +47,13 @@ def _chunk_merge(df1: pd.DataFrame, df2: pd.DataFrame, common_column: str, chunk
     :param chunk_size: Size of chunks used for splitting the DataFrames.
     :return: Merged pd.DataFrame containing the results of merging the input DataFrames in chunks.
     """
+    """ # TODO condition first, then merge, instead of chunk merge, then filter, then assemble
+    SELECT * FROM
+        df1.join(df2) on df1.common_column == df2.common_column
+            AND df2.SCANNUMBEGIN <= df1.SCAN <= df.SCANNUMEND
+        WHERE df2.SCANNUMBEGIN <= df1.SCAN <= df.SCANNUMEND
+    """
+
     merged_chunks = []
     # Split both DataFrames into chunks
     chunks_df1 = [df1[i : i + chunk_size] for i in range(0, len(df1), chunk_size)]
@@ -60,6 +67,8 @@ def _chunk_merge(df1: pd.DataFrame, df2: pd.DataFrame, common_column: str, chunk
                 & (merged_chunk["SCAN"] <= merged_chunk["SCANNUMEND"])
             ]
             merged_chunks.append(merged_chunk)
+            # if no_more_pairs:
+            #    break
     # Concatenate the merged chunks to get the final result
     merged_df = pd.concat(merged_chunks, ignore_index=True)
     return merged_df
@@ -151,22 +160,19 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
     scan_precursor_map = df_precursors[["SCAN_NUMBER", "PRECURSOR"]].drop_duplicates()
     df_pasef = df_pasef[df_pasef["PRECURSOR"].isin(df_precursors.PRECURSOR)]
     df_pasef = df_pasef.rename(columns={"COLLISIONENERGY": "COLLISION_ENERGY"})
+    
     # Get where each frame starts and ends
     df_pasef = df_pasef[["PRECURSOR", "FRAME", "SCANNUMBEGIN", "SCANNUMEND", "COLLISION_ENERGY"]].drop_duplicates()
+    
     # Get the frames from the raw bruker data
-    df_raw = data[: df_pasef.FRAME]
-    df_raw = data[
-        {
-            "frame_indices": list(df_pasef.FRAME),
-        }
-    ]
-    df_raw = _sanitize_columns(df_raw)
-    df_raw = pd.DataFrame(df_raw)
-    df_raw = df_raw.rename(columns={"MOBILITY": "INV_ION_MOBILITY", "RT": "RETENTION_TIME"})
-    df_raw = df_raw[["FRAME", "SCAN", "TOF", "INTENSITY", "MZ", "INV_ION_MOBILITY", "RETENTION_TIME"]]
+    data = data[df_pasef.FRAME]  # TODO only read frames to begin within , do we need the duplicates or should we filter them out?
+    data = _sanitize_columns(data)
+    data = data.rename(columns={"MOBILITY": "INV_ION_MOBILITY", "RT": "RETENTION_TIME"})
+    
+    data = data[["FRAME", "SCAN", "TOF", "INTENSITY", "MZ", "INV_ION_MOBILITY", "RETENTION_TIME"]]
     # Map scan information to the raw bruker data
-    df_raw_mapped = _chunk_merge(df1=df_raw, df2=df_pasef, common_column="FRAME")
-    df_raw_mapped = df_raw_mapped.drop_duplicates()
+    df_raw_mapped = _chunk_merge(df1=data, df2=df_pasef, common_column="FRAME")  # TODO check frame is not frame_indices
+    df_raw_mapped = df_raw_mapped.drop_duplicates()  # TODO check if necessary
     # Combine the MZ and INTENSITY information on frame-level
     df_raw_mapped_test = (
         df_raw_mapped.groupby(["PRECURSOR", "FRAME"])
@@ -194,6 +200,8 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
         )
         .reset_index()
     )
+
+    # TODO move this into the logic of oktoberfest, not need downstream 
     # Get the CHARGE, MASS_ANALYZER, RAW_FILE, and FRAGMENTATION from the msms.txt file
     df_msms_scans = pd.merge(df_scans, df_msms, on="SCAN_NUMBER")
     df_msms_scans = df_msms_scans[
