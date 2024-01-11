@@ -55,6 +55,7 @@ class Sage(SearchResults):
                 "CHARGE": "PRECURSOR_CHARGE",
                 "CALCMASS": "MASS",
                 "HYPERSCORE": "SCORE",
+                "proteins" : "PROTEINS"
             }
         )
 
@@ -68,6 +69,7 @@ class Sage(SearchResults):
         df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\[.*?\]", "", regex=True)
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
+        # grabbing the protein column 
         # mass of the peptide
         # df["MASS"] = df["CALCMASS"]
         # score of the peptide
