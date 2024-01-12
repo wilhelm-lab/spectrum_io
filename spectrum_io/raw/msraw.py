@@ -219,7 +219,11 @@ class MSRaw:
             logger.info(f"Reading mzML file: {file_path}")
             data_iter = mzml.read(source=str(file_path), *args, **kwargs)
             file_name = file_path.stem
-            instrument_name = list(data_iter.get_by_id("commonInstrumentParams").keys())[1]
+            try:
+                instrument_params = data_iter.get_by_id("commonInstrumentParams")
+            except KeyError:
+                instrument_params = data_iter.get_by_id("CommonInstrumentParams")
+            instrument_name = list(instrument_params.keys())[1]
             for spec in data_iter:
                 if spec["ms level"] != 2:
                     continue  # filter out ms1 spectra if there are any
