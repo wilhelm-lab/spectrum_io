@@ -63,7 +63,9 @@ class SpectralLibrary:
                 queue.task_done()
                 progress.value += 1
 
-    def _fragment_filter_passed(self, f_mz: float, f_int: float) -> bool:
+    def _fragment_filter_passed(
+        self, f_mz: Union[np.ndarray, float], f_int: Union[np.ndarray, float]
+    ) -> Union[np.ndarray, bool]:
         """
         Return if a fragment passes a common filter.
 
@@ -74,9 +76,9 @@ class SpectralLibrary:
         :param f_mz: The fragment's mass to charge ratio
         :param f_int: The fragment's (predicted) intensity
 
-        :return: boolean that determines if the fragment passes the filter
+        :return: boolean (array) that determines if the fragment passes the filter
         """
-        return f_mz != -1 and f_int >= self.min_intensity_threshold
+        return (f_mz != -1) & (f_int >= self.min_intensity_threshold)
 
     @abstractmethod
     def _write(self, out: str, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
