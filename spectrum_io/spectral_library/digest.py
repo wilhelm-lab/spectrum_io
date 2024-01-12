@@ -456,7 +456,7 @@ def get_peptide_to_protein_map(
     use_hash_key=False,
     special_aas=None,
     parse_id=parse_until_first_space,
-) -> Dict[str, List[str]]:
+):
     """Get peptide to protein map."""
     pre, not_post = cleavage_sites[enzyme]
 

@@ -1,7 +1,7 @@
 import os
 import re
 from itertools import chain, cycle
-from typing import Dict, Tuple
+from typing import IO, Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -17,13 +17,15 @@ class Spectronaut(SpectralLibrary):
     # Check spectronaut folder for output format.
 
     @staticmethod
-    def _assemble_fragment_string(f_int: float, f_mz: float, f_annot: str):
+    def _assemble_fragment_string(f_int: float, f_mz: float, f_annot: bytes):
         m = re.match(r"([by])(\d+)\+(\d)(?:-(\w+))?", f_annot.decode())
+        if m is None:
+            raise ValueError(f"Malformed annotation string encountered: {f_annot.decode()}")
         return (
             f"{f_int:.4f},{f_mz:.8f},{m.group(2)},{m.group(1)},{m.group(3)},{m.group(4) if m.group(4) else 'noloss'}\n"
         )
 
-    def _write(self, out: str, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         # prepare metadata
         seqs = metadata["SEQUENCE"]
         modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
@@ -47,7 +49,7 @@ class Spectronaut(SpectralLibrary):
             fragment_list = vec_assemble(f_ints[cond], f_mzs[cond], f_annots[cond])
             out.writelines(chain.from_iterable(zip(cycle(line_start), fragment_list)))
 
-    def _write_header(self, out: str):
+    def _write_header(self, out: IO):
         if self.mode == "w":
             out.write(
                 "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,"

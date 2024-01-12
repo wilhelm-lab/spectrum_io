@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import IO, Dict
 
 import numpy as np
 import pandas as pd
@@ -12,11 +12,11 @@ class MSP(SpectralLibrary):
     """Main to initialze a MSP obj."""
 
     @staticmethod
-    def _assemble_fragment_string(f_mz: float, f_int: float, f_a: float):
+    def _assemble_fragment_string(f_mz: float, f_int: float, f_a: bytes):
         annot = f_a[:-2].decode() if f_a.endswith(b"1") else f_a.replace(b"+", b"^").decode()
         return f'{f_mz:.8f}\t{f_int:.4f}\t"{annot}/0.0ppm"\n'
 
-    def _write(self, out: str, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         # prepare metadata
         stripped_peptides = metadata["SEQUENCE"]
         modss = internal_to_mod_names(metadata["MODIFIED_SEQUENCE"])
@@ -50,5 +50,5 @@ class MSP(SpectralLibrary):
             lines.extend(fragment_list)
         out.writelines(lines)
 
-    def _write_header(self, out: str):
+    def _write_header(self, out: IO):
         pass

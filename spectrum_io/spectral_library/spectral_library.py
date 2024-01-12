@@ -1,6 +1,8 @@
 from abc import abstractmethod
+from multiprocessing import Queue
+from multiprocessing.managers import ValueProxy
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import IO, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -13,7 +15,7 @@ class SpectralLibrary:
         self,
         output_path: Union[str, Path],
         mode: str = "w",
-        min_intensity_threshold: Optional[float] = 5e-4,
+        min_intensity_threshold: float = 5e-4,
         chunksize: Optional[int] = None,
     ):
         """
@@ -46,7 +48,7 @@ class SpectralLibrary:
             self._write_header(out)
             self._write(out, *args, **kwargs)
 
-    def async_write(self, queue: str, progress: int):
+    def async_write(self, queue: Queue, progress: ValueProxy):
         """
         Asynchronously write content to the output file from a queue.
 
@@ -60,7 +62,6 @@ class SpectralLibrary:
                 if content is None:
                     break
                 self._write(out, *content)
-                queue.task_done()
                 progress.value += 1
 
     def _fragment_filter_passed(
@@ -81,7 +82,7 @@ class SpectralLibrary:
         return (f_mz != -1) & (f_int >= self.min_intensity_threshold)
 
     @abstractmethod
-    def _write(self, out: str, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         """
         Internal writer function.
 
@@ -96,7 +97,7 @@ class SpectralLibrary:
         pass
 
     @abstractmethod
-    def _write_header(self, out: str):
+    def _write_header(self, out: IO):
         pass
 
     @abstractmethod
