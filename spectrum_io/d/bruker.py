@@ -127,9 +127,9 @@ def _load_metadata(
     if search_engine == "maxquant":
         return _load_maxquant_txt(out_path, file_name)
     if search_engine == "sage":
-        raise NotImplementedError("Oktoberfest does not yet supper results from SAGE.")
+        raise NotImplementedError("Oktoberfest does not yet support results from SAGE.")
     if search_engine == "msfragger":
-        raise NotImplementedError("Oktoberfest does not yet supper results from MSFragger.")
+        raise NotImplementedError("Oktoberfest does not yet support results from MSFragger.")
     raise ValueError(f"{search_engine} is not recognized.")
 
 
@@ -160,15 +160,17 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
     scan_precursor_map = df_precursors[["SCAN_NUMBER", "PRECURSOR"]].drop_duplicates()
     df_pasef = df_pasef[df_pasef["PRECURSOR"].isin(df_precursors.PRECURSOR)]
     df_pasef = df_pasef.rename(columns={"COLLISIONENERGY": "COLLISION_ENERGY"})
-    
+
     # Get where each frame starts and ends
     df_pasef = df_pasef[["PRECURSOR", "FRAME", "SCANNUMBEGIN", "SCANNUMEND", "COLLISION_ENERGY"]].drop_duplicates()
-    
+
     # Get the frames from the raw bruker data
-    data = data[df_pasef.FRAME]  # TODO only read frames to begin within , do we need the duplicates or should we filter them out?
+    data = data[
+        df_pasef.FRAME
+    ]  # TODO only read frames to begin within , do we need the duplicates or should we filter them out?
     data = _sanitize_columns(data)
     data = data.rename(columns={"MOBILITY": "INV_ION_MOBILITY", "RT": "RETENTION_TIME"})
-    
+
     data = data[["FRAME", "SCAN", "TOF", "INTENSITY", "MZ", "INV_ION_MOBILITY", "RETENTION_TIME"]]
     # Map scan information to the raw bruker data
     df_raw_mapped = _chunk_merge(df1=data, df2=df_pasef, common_column="FRAME")  # TODO check frame is not frame_indices
@@ -189,7 +191,7 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
     )
     # Combine the MZ and INTENSITY information on the summed scan-level
     df_scans = (
-        df_raw_mapped_test.merge(scan_precursor_map)
+        df_raw_mapped_test.merge(scan_precursor_map)  # TODO check if this is correct
         .groupby("SCAN_NUMBER")
         .agg(
             median_CE=("COLLISION_ENERGY", "median"),
@@ -201,7 +203,7 @@ def load_timstof(d_path: Path, out_path: Path, search_engine: str = "maxquant") 
         .reset_index()
     )
 
-    # TODO move this into the logic of oktoberfest, not need downstream 
+    # TODO move this into the logic of oktoberfest, not need downstream
     # Get the CHARGE, MASS_ANALYZER, RAW_FILE, and FRAGMENTATION from the msms.txt file
     df_msms_scans = pd.merge(df_scans, df_msms, on="SCAN_NUMBER")
     df_msms_scans = df_msms_scans[
@@ -255,7 +257,7 @@ def binning(inp: pd.DataFrame, ignore_charges: bool, rescoring_path: Path) -> pd
     return comb_ms
 
 
-def combine_spectra(df_msms_scans: pd.DataFrame, temp_path: Path, chunk_size: int = 1000) -> pd.DataFrame:
+def aggregate_timstof(df_msms_scans: pd.DataFrame, temp_path: Path, chunk_size: int = 1000) -> pd.DataFrame:
     """
     Combine spectra from the provided pd.DataFrame and perform binning on chunks.
 
@@ -299,7 +301,95 @@ def combine_spectra(df_msms_scans: pd.DataFrame, temp_path: Path, chunk_size: in
     return chunk_comb
 
 
-def convert_d_pkl(d_path: Path, search_output_path: Path, output_path: Path):
+def read_timstof(d_path, search_output_path):
+    # preparation of filter
+    df_msms, df_precursors, df_pasef = _load_maxquant_txt(mq_search_path, "AspN_F1_E1_1_4468")
+    df_precursors.columns = ["Raw file", "SCAN_NUMBER", "PRECURSOR"]
+    df_precursor_map = (
+        df_precursors.query("SCAN_NUMBER in @df_msms.SCAN_NUMBER")
+        .set_index("SCAN_NUMBER")["PRECURSOR"]
+        .str.split(";")
+        .explode()
+        .astype("int")
+    )
+
+    df_pasef = df_pasef.query("PRECURSOR in @df_precursor_map").sort_values(["FRAME", "PRECURSOR"])
+
+    df_frame_group = (
+        df_pasef[["FRAME", "PRECURSOR"]]
+        .groupby("FRAME", as_index=False)
+        .agg(
+            {
+                "PRECURSOR": tuple,
+            }
+        )
+        .groupby("PRECURSOR", as_index=False)
+        .agg({"FRAME": tuple})
+    )
+
+    # load filtered stuff
+    data = alphatims.bruker.TimsTOF(str(d_path))
+
+    raw_idx = []
+    for frames, precursors in zip(df_frame_group["FRAME"], df_frame_group["PRECURSOR"]):
+        raw_idx.extend(data[frames, :, precursors])
+
+    df = data.as_dataframe(
+        raw_idx,
+        raw_indices=False,
+        frame_indices=True,
+        scan_indices=True,
+        quad_indices=False,
+        tof_indices=False,
+        precursor_indices=True,
+        rt_values=True,
+        rt_values_min=False,
+        mobility_values=True,
+        quad_mz_values=False,
+        push_indices=False,
+        mz_values=True,
+        intensity_values=True,
+        corrected_intensity_values=False,
+        raw_indices_sorted=False,
+    )
+
+    # aggregation
+    df_combined_grouped = (
+        df.merge(df_pasef)
+        .query("SCANNUMBEGIN <= SCAN <= SCANNUMEND")  # can probably be skipped
+        .groupby(["PRECURSOR", "FRAME"], as_index=False)  # aggregate fragments per precursor in FRAME
+        .agg(
+            {
+                "INTENSITY": list,
+                "MZ": list,
+                "RETENTION_TIME": "first",
+                "COLLISIONENERGY": "first",
+                "INV_ION_MOBILITY": "first",
+            }
+        )
+        .merge(df_precursor_map.reset_index())
+        .groupby("SCAN_NUMBER", as_index=False)  # aggregate PRECURSORS for same SCAN_NUMBER
+        .agg(
+            median_CE=("COLLISIONENERGY", "median"),
+            combined_INTENSITIES=("INTENSITY", lambda x: [item for sublist in x for item in sublist]),
+            combined_MZ=("MZ", lambda x: [item for sublist in x for item in sublist]),
+            median_RETENTION_TIME=("RETENTION_TIME", "median"),
+            median_INV_ION_MOBILITY=("INV_ION_MOBILITY", "median"),
+        )
+    )
+
+    return df_combined_grouped
+
+
+def convert_d_hdf(
+    input_path: Union[Path, str],
+    output_path: Optional[Union[Path, str]] = None,
+):
+    data = alphatims.bruker.TimsTOF(str(input_path))
+    data.save_to_hdf(directory=str(output_path.parent), filename=str(output_path.name))
+
+
+def read_and_aggregate_timstof(d_path: Path, search_output_path: Path, output_path: Path):
     """
     Converts a .d folder to pkl.
 
@@ -307,8 +397,8 @@ def convert_d_pkl(d_path: Path, search_output_path: Path, output_path: Path):
     :param search_output_path: Path to the output folder from the search engine
     :param output_path: file path of the pkl file
     """
-    df_msms_scans = load_timstof(d_path, search_output_path)
-    df_combined = combine_spectra(df_msms_scans, output_path)
+    df_msms_scans = read_timstof(d_path, search_output_path)  # ready
+    df_combined = aggregate_timstof(df_msms_scans, output_path)
     # Write to pickle
     file_name = df_combined["RAW_FILE"][0]
     df_combined.to_pickle(output_path / f"{file_name}.pkl")
