@@ -23,8 +23,8 @@ class MaxQuant(SearchResults):
         if isinstance(path, str):
             path = Path(path)
 
-        if path.is_dir():
-            path /= "msms.txt"
+        if path.is_file() and path.name == "msms.txt":
+            path = path.parent
         self.path = path
 
     @staticmethod
@@ -41,18 +41,16 @@ class MaxQuant(SearchResults):
         mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
         return mass
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: path to msms.txt to read
         :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msms.txt file")
         df = pd.read_csv(
-            path,
+            self.path / "msms.txt",
             usecols=lambda x: x.upper()
             in [
                 "RAW FILE",
@@ -121,3 +119,30 @@ class MaxQuant(SearchResults):
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
         return df
+
+    def read_metadata_for_timstof(self):
+        """
+        Load information files required for correct aggregation of spectra in timsTOF experiments.
+
+        :return: dataframe containing the columns RAW_FILE, SCANNUMBER, PRECURSOR, FRAME, SCANNUMBEGIN, SCANNUMEND, CollisionEnergy
+        """
+        df_msms = pd.read_csv(self.path / "msms.txt", sep="\t", usecols=["Raw file", "Scan number"])
+        df_msms.columns = ["RAW_FILE", "SCAN_NUMBER"]
+
+        df_precursors = pd.read_csv(
+            self.path / "accumulatedMsmsScans.txt", sep="\t", usecols=["Raw file", "Scan number", "PASEF precursor IDs"]
+        )
+        df_precursors.columns = ["RAW_FILE", "SCAN_NUMBER", "PRECURSOR"]
+        df_precursors.query("SCAN_NUMBER in @df_msms.SCAN_NUMBER", inplace=True)
+        df_precursors["PRECURSOR"] = df_precursors["PRECURSOR"].str.split(";")
+        df_precursors = df_precursors.explode("PRECURSOR")
+        df_precursors["PRECURSOR"] = df_precursors["PRECURSOR"].astype("int")
+
+        df_pasef = pd.read_csv(
+            self.path / "pasefMsmsScans.txt",
+            sep="\t",
+            usecol=["Raw file", "Precursor", "Frame", "ScanNumBegin", "ScanNumEnd", "CollisionEnergy"],
+        )
+        df_pasef.columns = ["RAW_FILE", "PRECURSOR", "FRAME", "SCAN_NUM_BEGIN", "SCAN_NUM_END", "COLLISION_ENERGY"]
+
+        return df_pasef.merge(df_precursors)

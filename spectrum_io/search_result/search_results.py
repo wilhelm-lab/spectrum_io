@@ -51,7 +51,7 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self, path: Union[str, Path], tmt_labeled: str):
+    def read_result(self, tmt_labeled: str):
         """Read result."""
         raise NotImplementedError
 
@@ -72,16 +72,15 @@ class SearchResults:
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
             return out_path
 
-        df = self.read_result(self.path, tmt_labeled)
+        df = self.read_result(tmt_labeled)
         csv.write_file(df, out_path)
 
         return out_path
 
-    def read_internal(self, path: Union[str, Path]) -> pd.DataFrame:
+    def read_internal(self) -> pd.DataFrame:
         """
         Read file from path.
 
-        :param path: path to file
         :return: dataframe after reading the file
         """
-        return csv.read_file(path)
+        return csv.read_file(self.path)
