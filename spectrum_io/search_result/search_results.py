@@ -7,6 +7,7 @@ from typing import Optional, Union
 import pandas as pd
 
 from spectrum_io.file import csv
+from spectrum_fundamentals.mod_string import add_permutations
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,18 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
     # remove unsupported mods to exclude
     unsupported_mods = [r"Acetyl \(Protein N\-term\)", "ac", r"\[[0-9]+\]"]
-    exclude_mods_pattern = re.compile("|".join(unsupported_mods))
-    df = df[~df["MODIFIED_SEQUENCE"].str.contains(exclude_mods_pattern)]
+    #exclude_mods_pattern = re.compile("|".join(unsupported_mods))
+    #df = df[~df["MODIFIED_SEQUENCE"].str.contains(exclude_mods_pattern)]
     # remove non-canonical aas
     df = df[(~df["SEQUENCE"].str.contains("U|O"))]
+    
+    df['MODIFIED_SEQUENCE'] = df['MODIFIED_SEQUENCE'].apply(lambda x: x.replace('UNIMOD', 'unimod'))
+    df['MODIFIED_SEQUENCE'] = df[['MODIFIED_SEQUENCE', 'SEQUENCE']].apply(add_permutations, axis=1)
+    df = df.explode('MODIFIED_SEQUENCE', ignore_index=True)
+    df['MODIFIED_SEQUENCE'] = df['MODIFIED_SEQUENCE'].apply(lambda x: x.replace('unimod', 'UNIMOD'))
+    df['MODIFIED_SEQUENCE'] = df['MODIFIED_SEQUENCE'].apply(lambda x: x.replace('-[]', ''))
+    df['MODIFIED_SEQUENCE'] = df['MODIFIED_SEQUENCE'].apply(lambda x: x.replace('[]-', ''))
+    
     # remove precursor charges greater than 6
     df = df[df["PRECURSOR_CHARGE"] <= 6]
     logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
