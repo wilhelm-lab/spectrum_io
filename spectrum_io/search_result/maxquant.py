@@ -108,7 +108,7 @@ class MaxQuant(SearchResults):
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
         # adding protein column in the end
-        df['PROTEIN'] = df.pop('PROTEINS')
+        df['PROTEINS'] = df.pop('PROTEINS')
 
 
         return df
