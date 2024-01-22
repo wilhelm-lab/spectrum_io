@@ -77,6 +77,8 @@ class Sage(SearchResults):
         # converting proforma to unimode
         print(df)
         df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
+        # forcing protein column at the very end
+        df = df[[col for col in df.columns if col != 'PROTEINS'] + ['PROTEINS']]
 
         print(df.columns)
         return df
