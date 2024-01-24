@@ -2,7 +2,7 @@ import csv
 from math import ceil
 from typing import Callable, Optional
 
-from blist import sortedlist
+from sortedcontainers import SortedList
 
 from .masterPeak import MasterPeak
 from .peak import Peak
@@ -152,7 +152,7 @@ class MasterSpectrum:
                     get_master_peak_left_bin.add(peak)
                     self.merged += 1
                     if get_master_peak_left_bin.key() not in self.spectrum[charge]:
-                        self.spectrum[charge][get_master_peak_left_bin.key()] = sortedlist(key=lambda i: i.left)
+                        self.spectrum[charge][get_master_peak_left_bin.key()] = SortedList(key=lambda i: i.left)
                     self.spectrum[charge][get_master_peak_left_bin.key()].add(get_master_peak_left_bin)
                 else:  # +1
                     if len(self.spectrum[charge][key]) == 0:
@@ -164,7 +164,7 @@ class MasterSpectrum:
                     get_master_peak_right_bin.add(peak)
                     self.merged += 1
                     if get_master_peak_right_bin.key() not in self.spectrum[charge]:
-                        self.spectrum[charge][get_master_peak_right_bin.key()] = sortedlist(key=lambda i: i.left)
+                        self.spectrum[charge][get_master_peak_right_bin.key()] = SortedList(key=lambda i: i.left)
                     self.spectrum[charge][get_master_peak_right_bin.key()].add(get_master_peak_right_bin)
 
             else:  # idx != -1
@@ -179,7 +179,7 @@ class MasterSpectrum:
                         get_idx_master_peak.add(peak)
                         self.multimerged += 1
                         if get_idx_master_peak.key() not in self.spectrum[charge]:
-                            self.spectrum[charge][get_idx_master_peak.key()] = sortedlist(key=lambda i: i.left)
+                            self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
                         self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
                     elif should_merge_right_peak:
                         get_idx_master_peak = self.spectrum[charge][key][idx]
@@ -191,7 +191,7 @@ class MasterSpectrum:
                         get_idx_master_peak.add(peak)
                         self.multimerged += 1
                         if get_idx_master_peak.key() not in self.spectrum[charge]:
-                            self.spectrum[charge][get_idx_master_peak.key()] = sortedlist(key=lambda i: i.left)
+                            self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
                         self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
                     else:  # case idx = 0, 0, False, False
                         get_idx_master_peak = self.spectrum[charge][key][idx]
@@ -201,7 +201,7 @@ class MasterSpectrum:
                         get_idx_master_peak.add(peak)
                         self.merged += 1
                         if get_idx_master_peak.key() not in self.spectrum[charge]:
-                            self.spectrum[charge][get_idx_master_peak.key()] = sortedlist(key=lambda i: i.left)
+                            self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
                         self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
                 elif bin_to_ack == -1:  # idx != -1
                     # 0, -1, F, F
@@ -217,7 +217,7 @@ class MasterSpectrum:
                     get_idx_master_peak.add(peak)
                     self.merged += 1
                     if get_idx_master_peak.key() not in self.spectrum[charge]:
-                        self.spectrum[charge][get_idx_master_peak.key()] = sortedlist(key=lambda i: i.left)
+                        self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
                     self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
                 else:  # bin_to_ack == 1, idx !=  -1
                     get_idx_master_peak = self.spectrum[charge][key][idx]
@@ -232,10 +232,10 @@ class MasterSpectrum:
                     get_idx_master_peak.add(peak)
                     self.merged += 1
                     if get_idx_master_peak.key() not in self.spectrum[charge]:
-                        self.spectrum[charge][get_idx_master_peak.key()] = sortedlist(key=lambda i: i.left)
+                        self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
                     self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
         else:
-            self.spectrum[charge][key] = sortedlist(key=lambda i: i.left)
+            self.spectrum[charge][key] = SortedList(key=lambda i: i.left)
             self.add(peak, charge)
 
     def export_to_csv(self, path):
@@ -273,7 +273,6 @@ class MasterSpectrum:
 
     def load_from_tims(self, spectrum, ignore_charges: bool, delta_func=None):
         rel_int = _calculate_relative_intensity(spectrum["combined_INTENSITIES"])
-        charge_of_spectrum = str(spectrum["CHARGE"])
         if delta_func is None:
             delta_func = _calculate_delta_by_ppm(40)
         for m, i in zip(spectrum["combined_MZ"], rel_int):
@@ -281,4 +280,4 @@ class MasterSpectrum:
             if ignore_charges:
                 self.add(p, 0)
             else:
-                self.add(p, charge_of_spectrum)
+                raise NotImplementedError("Adding up intensities using precursor charge is not supported.")

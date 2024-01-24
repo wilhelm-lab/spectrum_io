@@ -10,7 +10,7 @@ import alphatims.utils
 import numpy as np
 import pandas as pd
 
-# from .masterSpectrum import MasterSpectrum
+from .masterSpectrum import MasterSpectrum
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +115,7 @@ def read_timstof(d_path, scan_to_precursor_map):
 
     df_frame_group = (
         scan_to_precursor_map[["FRAME", "PRECURSOR"]]
+        .drop_duplicates()
         .groupby("FRAME", as_index=False)
         .agg(
             {
@@ -126,7 +127,7 @@ def read_timstof(d_path, scan_to_precursor_map):
     )
 
     # load filtered stuff
-    data = alphatims.bruker.TimsTOF(str(d_path))
+    data = alphatims.bruker.TimsTOF(str(d_path), slice_as_dataframe=False)
 
     raw_idx = []
     for frames, precursors in zip(df_frame_group["FRAME"], df_frame_group["PRECURSOR"]):
@@ -151,24 +152,30 @@ def read_timstof(d_path, scan_to_precursor_map):
         raw_indices_sorted=False,
     )
 
+    df.columns = ["FRAME", "SCAN", "PRECURSOR", "RETENTION_TIME", "INV_ION_MOBILITY", "MZ", "INTENSITY"]
+
     # aggregation
     df_combined_grouped = (
-        df.merge(scan_to_precursor_map)
-        .query("SCANNUMBEGIN <= SCAN <= SCANNUMEND")  # can probably be skipped
+        df.merge(
+            scan_to_precursor_map[
+                ["SCAN_NUM_BEGIN", "SCAN_NUM_END", "PRECURSOR", "FRAME", "COLLISION_ENERGY"]
+            ].drop_duplicates()
+        )
+        .query("SCAN_NUM_BEGIN <= SCAN <= SCAN_NUM_END")  # can probably be skipped
         .groupby(["PRECURSOR", "FRAME"], as_index=False)  # aggregate fragments per precursor in FRAME
         .agg(
             {
                 "INTENSITY": list,
                 "MZ": list,
                 "RETENTION_TIME": "first",
-                "COLLISIONENERGY": "first",
+                "COLLISION_ENERGY": "first",
                 "INV_ION_MOBILITY": "first",
             }
         )
         .merge(scan_to_precursor_map.reset_index())
         .groupby("SCAN_NUMBER", as_index=False)  # aggregate PRECURSORS for same SCAN_NUMBER
         .agg(
-            median_CE=("COLLISIONENERGY", "median"),
+            median_CE=("COLLISION_ENERGY", "median"),
             combined_INTENSITIES=("INTENSITY", lambda x: [item for sublist in x for item in sublist]),
             combined_MZ=("MZ", lambda x: [item for sublist in x for item in sublist]),
             median_RETENTION_TIME=("RETENTION_TIME", "median"),
@@ -184,7 +191,7 @@ def convert_d_hdf(
     output_path: Optional[Union[Path, str]] = None,
 ):
     data = alphatims.bruker.TimsTOF(str(input_path))
-    data.save_to_hdf(directory=str(output_path.parent), filename=str(output_path.name))
+    data.save_as_hdf(directory=str(output_path.parent), filename=str(output_path.name))
 
 
 def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path):
@@ -194,6 +201,6 @@ def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path):
     :param source: Path to the hdf file
     :param scan_to_precursor_map: Dataframe mapping scan numbers to precursors
     """
-    raw_spectra = read_timstof(source, scan_to_precursor_map)  # ready
-    df_combined = aggregate_timstof(raw_spectra)
+    raw_spectra = read_timstof(source, scan_to_precursor_map)
+    df_combined = aggregate_timstof(raw_spectra, temp_path=Path("/tmp"))
     return df_combined

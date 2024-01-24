@@ -141,8 +141,8 @@ class MaxQuant(SearchResults):
         df_pasef = pd.read_csv(
             self.path / "pasefMsmsScans.txt",
             sep="\t",
-            usecol=["Raw file", "Precursor", "Frame", "ScanNumBegin", "ScanNumEnd", "CollisionEnergy"],
+            usecols=["Raw file", "Frame", "Precursor", "ScanNumBegin", "ScanNumEnd", "CollisionEnergy"],
         )
-        df_pasef.columns = ["RAW_FILE", "PRECURSOR", "FRAME", "SCAN_NUM_BEGIN", "SCAN_NUM_END", "COLLISION_ENERGY"]
+        df_pasef.columns = ["RAW_FILE", "FRAME", "PRECURSOR", "SCAN_NUM_BEGIN", "SCAN_NUM_END", "COLLISION_ENERGY"]
 
-        return df_pasef.merge(df_precursors)
+        return df_pasef.merge(df_precursors).sort_values(["FRAME", "PRECURSOR"])
