@@ -2,38 +2,21 @@ import logging
 import os
 import pickle
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import alphatims
 import alphatims.bruker
 import alphatims.utils
 import numpy as np
 import pandas as pd
+from tqdm.auto import tqdm
 
 from .masterSpectrum import MasterSpectrum
 
 logger = logging.getLogger(__name__)
 
 
-def _sanitize_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Sanitize DataFrame column names.
-
-    This function replaces spaces with underscores, converts column names to
-    uppercase, and removes specific suffixes ('_INDICES' and '_VALUES') from
-    column names.
-
-    :param df: pd.DataFrame whose column names need to the sanitized.
-    :return: pd.DataFrame with sanitized column names.
-    """
-    df.columns = [c.replace(" ", "_") for c in df.columns]
-    df.columns = [c.upper() for c in df.columns]
-    df.columns = [c.replace("_INDICES", "") for c in df.columns]
-    df.columns = [c.replace("_VALUES", "") for c in df.columns]
-    return df
-
-
-def binning(inp: pd.DataFrame, ignore_charges: bool, rescoring_path: Path) -> pd.DataFrame:
+def binning(mzs: List[int], intensities: List[float], ignore_charges: bool) -> Tuple[List[float], List[float]]:
     """
     Perform binning on the input MasterSpectrum.
 
@@ -41,32 +24,21 @@ def binning(inp: pd.DataFrame, ignore_charges: bool, rescoring_path: Path) -> pd
     to a temporary text file in the given rescoring path. It then reads the temporary file as a DataFrame,
     modifies the DataFrame by adding SCAN_NUMBER and dropping specified columns before returning it.
 
-    :param inp: Input data used to perform binning.
+    :param intensities: Input data used to perform binning.
+    :param mzs: Path where the temporary file will be exported.
     :param ignore_charges: indicating whether charges should be ignored during binning.
-    :param rescoring_path: Path where the temporary file will be exported.
-    :return: Modified DataFrame after binning with added SCAN_NUMBER and specified columns dropped.
+    :return: Tuple containing the sorted list of fragment mzs and associated intensities
     """
     ms = MasterSpectrum()
-    ms.load_from_tims(inp, ignore_charges)
-    ms.export_to_csv(rescoring_path / "temp.txt")
-    comb_ms = pd.read_csv(rescoring_path / "temp.txt")
-    scan = inp["SCAN_NUMBER"]
-    comb_ms["SCAN_NUMBER"] = scan
-    comb_ms = comb_ms.drop(
-        columns=[
-            "counts",
-            "left border",
-            "right border",
-            "start_mz",
-            "ms1_charge",
-            "rel_intensity_ratio",
-            "counts_ratio",
-        ]
-    )
-    return comb_ms
+    ms.load_from_tims(intensities, mzs, ignore_charges)
+
+    mzs = [mp.mz for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
+    intensities = [mp.intensity for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
+
+    return mzs, intensities
 
 
-def aggregate_timstof(raw_spectra: pd.DataFrame, temp_path: Path, chunk_size: int = 1000) -> pd.DataFrame:
+def aggregate_timstof(raw_spectra: pd.DataFrame) -> pd.DataFrame:
     """
     Combine spectra from the provided pd.DataFrame and perform binning on chunks.
 
@@ -75,44 +47,33 @@ def aggregate_timstof(raw_spectra: pd.DataFrame, temp_path: Path, chunk_size: in
     the combined and processed spectra as a pd.DataFrame.
 
     :param raw_spectra: pd.DataFrame containing spectra information.
-    :param temp_path: Path used for intermediate results during binning.
-    :param chunk_size: Size of chunks used for splitting the DataFrame.
     :return: pd.DataFrame containing combined and processed spectra.
     """
-    chunk_list = []
-    # Split both DataFrames into chunks
-    chunks = [raw_spectra[i : i + chunk_size] for i in range(0, len(raw_spectra), chunk_size)]
-    for chunk in chunks:
-        bin_result_list = []
-        for _, line in chunk.iterrows():
-            bin_result = binning(line, True, temp_path)
-            bin_result_list.append(bin_result)
-        bin_result_df = pd.concat(bin_result_list)
-        bin_result_df_collapsed = bin_result_df.groupby("SCAN_NUMBER").agg(list)
-        scans_combined = pd.merge(chunk, bin_result_df_collapsed, on="SCAN_NUMBER")
-        scans_comb = scans_combined.drop(columns=["combined_INTENSITIES", "combined_MZ"]).rename(
-            columns={"intensity": "INTENSITIES", "mz": "MZ", "median_CE": "COLLISION_ENERGY"}
-        )
-        # Convert lists into arrays
-        scans_comb["INTENSITIES"] = scans_comb["INTENSITIES"].apply(lambda x: np.array(x))
-        scans_comb["MZ"] = scans_comb["MZ"].apply(lambda x: np.array(x))
-        # Sort the MZ (and linked INTENSITIES)
-        for i in range(len(scans_comb)):
-            zipped_list = zip(scans_comb.iloc[i]["MZ"], scans_comb.iloc[i]["INTENSITIES"])
-            sorted_pair = sorted(zipped_list)
-            tuples = zip(*sorted_pair)
-            list_1, list_2 = (np.array(tuple) for tuple in tuples)
-            scans_comb.at[i, "MZ"] = list_1
-            scans_comb.at[i, "INTENSITIES"] = list_2
-        scans_comb["MZ_RANGE"] = "0"
-        chunk_list.append(scans_comb)
-    chunk_comb = pd.concat(chunk_list, ignore_index=True)
-    return chunk_comb
+    for i, (combined_intensities, combined_mzs) in tqdm(
+        enumerate(zip(raw_spectra["combined_INTENSITIES"], raw_spectra["combined_MZ"])),
+        total=len(raw_spectra),
+        desc="Aggregating spectra",
+    ):
+        mz, intensity = binning(combined_mzs, combined_intensities, True)
+        raw_spectra.at[i, "combined_INTENSITIES"] = intensity
+        raw_spectra.at[i, "combined_MZ"] = mz
+
+    return raw_spectra
 
 
-def read_timstof(d_path, scan_to_precursor_map):
+def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.DataFrame:
+    """
+    Read selected spectra from a given timstof hdf file.
+
+    This function queries a given hdf file for spectra that are provided within a scan to precursor map.
+    #TODO elaborate
+
+    :param hdf_file: Path to hdf file containing spectra
+    :param scan_to_precursor_map: Dataframe containing metadata to select spectra
+
+    :return: Dataframe containing the relevant spectra read from the hdf file
+    """
     # preparation of filter
-
     df_frame_group = (
         scan_to_precursor_map[["FRAME", "PRECURSOR"]]
         .drop_duplicates()
@@ -127,12 +88,13 @@ def read_timstof(d_path, scan_to_precursor_map):
     )
 
     # load filtered stuff
-    data = alphatims.bruker.TimsTOF(str(d_path), slice_as_dataframe=False)
+    data = alphatims.bruker.TimsTOF(str(hdf_file), slice_as_dataframe=False)
 
     raw_idx = []
     for frames, precursors in zip(df_frame_group["FRAME"], df_frame_group["PRECURSOR"]):
         raw_idx.extend(data[frames, :, precursors])
 
+    # read spectra
     df = data.as_dataframe(
         raw_idx,
         raw_indices=False,
@@ -151,7 +113,6 @@ def read_timstof(d_path, scan_to_precursor_map):
         corrected_intensity_values=False,
         raw_indices_sorted=False,
     )
-
     df.columns = ["FRAME", "SCAN", "PRECURSOR", "RETENTION_TIME", "INV_ION_MOBILITY", "MZ", "INTENSITY"]
 
     # aggregation
@@ -190,17 +151,25 @@ def convert_d_hdf(
     input_path: Union[Path, str],
     output_path: Optional[Union[Path, str]] = None,
 ):
+    """
+    Convert a bruker d folder to hdf format.
+
+    # TODO long description
+    :param input_path: Path to the d folder to be converted
+    :param output_path: Path to the desired output location of the converted hdf file
+    """
     data = alphatims.bruker.TimsTOF(str(input_path))
     data.save_as_hdf(directory=str(output_path.parent), filename=str(output_path.name))
 
 
-def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path):
+def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path) -> pd.DataFrame:
     """
     Read raw spectra from timstof hdf spectra file and aggregate to MS2 spectra.
 
     :param source: Path to the hdf file
     :param scan_to_precursor_map: Dataframe mapping scan numbers to precursors
+    :return: Dataframe containing the MS2 spectra
     """
     raw_spectra = read_timstof(source, scan_to_precursor_map)
-    df_combined = aggregate_timstof(raw_spectra, temp_path=Path("/tmp"))
+    df_combined = aggregate_timstof(raw_spectra)
     return df_combined
