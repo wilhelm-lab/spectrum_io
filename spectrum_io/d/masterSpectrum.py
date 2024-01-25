@@ -2,7 +2,7 @@ import csv
 from math import ceil
 from typing import Callable, Optional
 
-from sortedcontainers import SortedList
+from sortedcontainers import SortedDict, SortedList
 
 from .masterPeak import MasterPeak
 from .peak import Peak
@@ -129,7 +129,7 @@ class MasterSpectrum:
         """
         key = peak.key()
         if charge not in self.spectrum:
-            self.spectrum[charge] = {}
+            self.spectrum[charge] = SortedDict()
 
         if key in self.spectrum[charge]:
             idx, bin_to_ack, should_merge_left_peak, should_merge_right_peak = self.binary(
@@ -271,11 +271,11 @@ class MasterSpectrum:
                             )
                         )
 
-    def load_from_tims(self, spectrum, ignore_charges: bool, delta_func=None):
-        rel_int = _calculate_relative_intensity(spectrum["combined_INTENSITIES"])
+    def load_from_tims(self, intensities, mzs, ignore_charges: bool, delta_func=None):
+        rel_int = _calculate_relative_intensity(intensities)
         if delta_func is None:
             delta_func = _calculate_delta_by_ppm(40)
-        for m, i in zip(spectrum["combined_MZ"], rel_int):
+        for m, i in zip(mzs, rel_int):
             p = Peak(float(m), float(i), delta_func)
             if ignore_charges:
                 self.add(p, 0)
