@@ -158,8 +158,12 @@ def convert_d_hdf(
     :param input_path: Path to the d folder to be converted
     :param output_path: Path to the desired output location of the converted hdf file
     """
+    if output_path.is_file():
+        logger.info(f"Found converted file at {output_path}, skipping conversion")
+        return
+    logger.info("Converting bruker d to hdf using alphatims...")
     data = alphatims.bruker.TimsTOF(str(input_path))
-    data.save_as_hdf(directory=str(output_path.parent), filename=str(output_path.name))
+    data.save_as_hdf(directory=str(output_path.parent), file_name=str(output_path.name))
 
 
 def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path) -> pd.DataFrame:
