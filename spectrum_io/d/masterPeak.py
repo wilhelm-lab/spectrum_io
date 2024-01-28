@@ -1,4 +1,5 @@
 from math import ceil
+from typing import TypeVar
 
 from .peak import Peak
 
@@ -6,27 +7,38 @@ from .peak import Peak
 # from mgf_filter.cython.mat import ceil
 
 
+MasterPeakT = TypeVar("MasterPeakT", bound="MasterPeak")
+
+
 class MasterPeak(Peak):
-    def __init__(self, Peak):
+    """Container class for a aggregated, summed up fragment peak."""
+
+    def __init__(self, peak: Peak):
         """
-        mz, intensity, delta_function by peak
-        ratio is set to an actual value first time by comparing a spectrum to another spectrum
-        right and counts are calculated based on update func
+        Contructor for a master peak.
+
+        # TODO provide details
+
+        :param peak: a peak object # TODO provide details
         """
+        # right and counts are calculated based on update func
         self.right = 0
         self.counts = 1
         self.rel_intensity_ratio = 0
+        # ratio is set to an actual value first time by comparing a spectrum to another spectrum
         self.counts_ratio = 0
-        self.mz_origin = Peak.mz
-        super().__init__(Peak.mz, Peak.intensity, Peak.delta_function, meta=Peak.meta)
+        self.mz_origin = peak.mz
+        super().__init__(peak.mz, peak.intensity, peak.delta_function, meta=peak.meta)
         # update does not have to be called, because constructor
         # of peak calls update of MasterPeak
         # self.update()
 
-    def __eq__(self, other):
+    def __eq__(self, other: MasterPeakT) -> bool:
         """
-        reports true if both have the same member variables!
-        normally you test for the same memory address
+        Reports true if both master peaks have the same member variables!
+
+        :param other: the other master peak object to compare this object with
+        :return: whether or not the two objects are equal
         """
         if self.__dict__ == other.__dict__:
             return True
@@ -42,9 +54,12 @@ class MasterPeak(Peak):
             else:
                 return False
 
-    def __ne__(self, other):
+    def __ne__(self, other: MasterPeakT) -> bool:
         """
-        because we override rich comparison operator, we have to implement the other ones too
+        Reports true if any member variable differs between the two master peaks!
+
+        :param other: the other master peak object to compare this object with
+        :return: whether or not the two objects are equal
         """
         if self.__dict__ != other.__dict__:
             if (
@@ -58,9 +73,14 @@ class MasterPeak(Peak):
             else:
                 return True
         else:
-            return True
+            return True  # TODO check if this is really true, dicts equal means the objects should be equal
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Overrides the default str method to provide information about member variables.
+
+        :return: string representation of this object
+        """
         return (
             "mz: "
             + str(self.mz)
@@ -88,49 +108,67 @@ class MasterPeak(Peak):
         )
 
     def update(self):
-        """
-        calculates delta, left and right
-        """
+        """Calculates delta, left and right."""
         self.delta = self.delta_function(self.mz)
         self.left = self.mz - self.delta
         self.right = self.mz + self.delta
         self.ceiled_key = ceil(self.left)
 
-    def isInside(self, peak):
+    def is_inside(self, peak: Peak) -> bool:
         """
-        reports true if tested peak is inside window
+        Reports true if tested peak is inside window.
+
+        :param peak: a peak object to check
+
+        :return: whether the peak's mz is within left and right border
         """
         return (self.left < peak.mz) and (self.right > peak.mz)
 
-    def isInsideMz(self, mz):
+    def is_inside_mz(self, mz: float) -> bool:
         """
-        reports true if tested my is inside window
+        Reports true if tested mz is inside window.
+
+        :param mz: the mz to check for
+
+        :return: whether mz is within left and right border
         """
         return (self.left < mz) and (self.right > mz)
 
-    def add(self, peak):
+    def add(self, peak: Peak):
         """
-        default_counts must be overwritten
-        if more than one peak is added (multimerge)
+        Default_counts must be overwritten if more than one peak is added (multimerge).
+
+        :param peak: a peak object to be added to this master peak.
         """
         self.mz = (self.mz * self.intensity + peak.mz * peak.intensity) / (peak.intensity + self.intensity)
         self.intensity = self.intensity + peak.intensity
         self.counts += peak.counts
         self.update()
 
-    def smaller(self, peak):
+    def smaller(self, peak: Peak) -> bool:
         """
-        reports true if MasterPeak window is below tested peak
+        Report true if MasterPeak window is below tested peak  # TODO make this a magic function.
+
+        :param peak: the other peak to compare to
+        :return: wheter or not the peak is smaller to this object
         """
         return self.right < peak.mz
 
-    def greater(self, peak):
+    def greater(self, peak: Peak):
         """
-        reports true if MasterPeak window is above tested peak
+        Report true if MasterPeak window is above tested peak  # TODO make this a magic function.
+
+        :param peak: the other peak to compare to
+        :return: wheter or not the peak is greater to this object
         """
         return self.left > peak.mz
 
-    def recalculate_ratio(self, mp):
+    def recalculate_ratio(self, mp: MasterPeakT):
+        """
+        Recalculate the ratio  # TODO details.
+
+        :param mp: the other master peak object
+        """
         rel_ratio = (self.intensity / self.counts) / (mp.intensity / mp.counts)
         self.rel_intensity_ratio = rel_ratio
         rel_counts_ratio = self.counts / mp.counts

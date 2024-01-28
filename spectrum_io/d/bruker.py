@@ -1,6 +1,5 @@
 import logging
 import os
-import pickle
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
@@ -32,10 +31,10 @@ def binning(mzs: List[int], intensities: List[float], ignore_charges: bool) -> T
     ms = MasterSpectrum()
     ms.load_from_tims(intensities, mzs, ignore_charges)
 
-    mzs = [mp.mz for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
-    intensities = [mp.intensity for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
+    mzs_out = [mp.mz for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
+    intensities_out = [mp.intensity for key in ms.spectrum[0].keys() for mp in ms.spectrum[0][key]]
 
-    return mzs, intensities
+    return mzs_out, intensities_out
 
 
 def aggregate_timstof(raw_spectra: pd.DataFrame) -> pd.DataFrame:
@@ -149,7 +148,7 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
 
 def convert_d_hdf(
     input_path: Union[Path, str],
-    output_path: Optional[Union[Path, str]] = None,
+    output_path: Union[Path, str],
 ):
     """
     Convert a bruker d folder to hdf format.
@@ -158,6 +157,8 @@ def convert_d_hdf(
     :param input_path: Path to the d folder to be converted
     :param output_path: Path to the desired output location of the converted hdf file
     """
+    if isinstance(output_path, str):
+        output_path = Path(input_path)
     if output_path.is_file():
         logger.info(f"Found converted file at {output_path}, skipping conversion")
         return

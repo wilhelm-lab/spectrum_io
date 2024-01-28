@@ -1,21 +1,41 @@
 import csv
 from math import ceil
-from typing import Callable, Optional
+from typing import Callable, List, Optional
 
 from sortedcontainers import SortedDict, SortedList
 
 from .masterPeak import MasterPeak
 from .peak import Peak
 
+"""
+def merge_func(offset: int, idx: int):
+    master_peak_bordering = self.spectrum[charge][key][idx + offset]
+    get_idx_master_peak = self.spectrum[charge][key][idx]
+    # left idx -1 : idx +1  # right idx : idx+2
+    # left offset = -1 -> +2 -1 = 1
+    # right offset = 0 -> +2 +0 = 2
+    del self.spectrum[charge][key][
+        idx + offset : idx + 2 + offset
+    ]  # delete is slicing, therefore one more
+    if len(self.spectrum[charge][key]) == 0:
+        del self.spectrum[charge][key]
+    get_idx_master_peak.add(master_peak_bordering)
+    get_idx_master_peak.add(peak)
+    self.multimerged += 1
+    if get_idx_master_peak.key() not in self.spectrum[charge]:
+        self.spectrum[charge][get_idx_master_peak.key()] = SortedList(key=lambda i: i.left)
+    self.spectrum[charge][get_idx_master_peak.key()].add(get_idx_master_peak)
+"""
 
-def _calculate_delta_by_ppm(ppm):
-    def fix_ppm(mz):
+
+def _calculate_delta_by_ppm(ppm: int) -> float:
+    def fix_ppm(mz: float):
         return ppm * float(mz) / (pow(10, 6))
 
     return fix_ppm
 
 
-def _calculate_relative_intensity(a_intensity):
+def _calculate_relative_intensity(a_intensity: List[int]) -> List[float]:
     max_intensity = max(a_intensity)
     return [x / max_intensity for x in a_intensity]
 
@@ -29,30 +49,25 @@ class MasterSpectrum:
     """
 
     def __init__(self):
-        """
-        Constructor for MasterSpectrum.
-
-        :param spectrum: TODO
-        :param ignore_charges: TODO
-        :param delta_func: TODO
-        """
+        """Constructor for MasterSpectrum."""
         self.spectrum = {}
         self.merged = 0
         self.appended = 0
         self.multimerged = 0  # within one insertion 3 peaks are merged
 
-    def binary(self, peak, imin, imax, charge):
+    def binary(self, peak: Peak, imin: int, imax: int, charge: int):
         """
-        Input values:
-        peak
-        imin is minimum search position
-        imax is max search poistion
-        charge defines in which masterspectrum to search
-        Return values:
-        first argument: position of insert, -1 if can not be added to any peak
-        sc argument : add peak from left or right bin
-        rd argument : must left peak also be added (merge case)
-        4th argument: right peak also be added (think about 3 peaks and a merge between 2 and 3)
+        Binary search.
+
+        :param peak: #TODO
+        :param imin: the minimum search position
+        :param imax: the max search position
+        :param charge: defines in which masterspectrum to search
+        :return: tuple with the following members  # TODO proper documentation:
+            position of insert, -1 if can not be added to any peak
+            add peak from left or right bin
+            must left peak also be added (merge case)
+            right peak also be added (think about 3 peaks and a merge between 2 and 3)
         """
         key = peak.key()
         imid = int(ceil((imax + imin) / 2))
@@ -60,14 +75,10 @@ class MasterSpectrum:
             exist_left_bin = key - 1 in self.spectrum[charge].keys()
             exist_right_bin = key + 1 in self.spectrum[charge].keys()
 
-            if exist_left_bin:
-                if self.spectrum[charge][key - 1][-1].isInside(peak):
-                    return -1, -1, False, False
-
-            if exist_right_bin:
-                if self.spectrum[charge][key + 1][0].isInside(peak):
-                    return -1, 1, False, False
-
+            if exist_left_bin and self.spectrum[charge][key - 1][-1].is_inside(peak):
+                return -1, -1, False, False
+            if exist_right_bin and self.spectrum[charge][key + 1][0].is_inside(peak):
+                return -1, 1, False, False
             return -1, 0, False, False
 
         # search must go on
@@ -81,41 +92,30 @@ class MasterSpectrum:
             if imid == 0:
                 exist_left_bin = key - 1 in self.spectrum[charge]
                 exist_right_bin = key + 1 in self.spectrum[charge]
-                if exist_left_bin:
-                    if self.spectrum[charge][key - 1][-1].isInside(peak):
-                        return 0, -1, False, False
-                    else:
-                        return 0, 0, False, False  # peak must be added to peak in pos1 but but left bin can be ignored
-                elif exist_right_bin:
-                    if self.spectrum[charge][key + 1][0].isInside(peak):
-                        return 0, 1, False, False
-                    else:
-                        return 0, 0, False, False  # peak must be added to peak in pos1 but but left bin can be ignored
-                else:
-                    return 0, 0, False, False
+
+                if exist_left_bin and self.spectrum[charge][key - 1][-1].is_inside(peak):
+                    return 0, -1, False, False
+                elif exist_right_bin and self.spectrum[charge][key + 1][0].is_inside(peak):
+                    return 0, 1, False, False
+                return 0, 0, False, False
 
             else:  # peak is somewhere between 1 and last
                 # imid -1 exists alway
                 is_last_entry = len(self.spectrum[charge][key]) - 1 == imid
                 exists_bigger_peak = not (is_last_entry)
                 if exists_bigger_peak:
-                    if self.spectrum[charge][key][imid - 1].isInside(peak):
+                    if self.spectrum[charge][key][imid - 1].is_inside(peak):
                         return imid, 0, True, False
-                    if self.spectrum[charge][key][imid + 1].isInside(peak):
+                    if self.spectrum[charge][key][imid + 1].is_inside(peak):
                         return imid, 0, False, True
-                    else:
-                        return imid, 0, False, False
+                    return imid, 0, False, False
                 else:  # is last entry
                     exist_right_bin = key + 1 in self.spectrum[charge]
-                    if self.spectrum[charge][key][imid - 1].isInside(peak):
+                    if self.spectrum[charge][key][imid - 1].is_inside(peak):
                         return imid, 0, True, False
-                    elif exist_right_bin:
-                        if self.spectrum[charge][key + 1][0].isInside(peak):
-                            return imid, 1, False, False
-                        else:
-                            return imid, 0, False, False
-                    else:
-                        return imid, 0, False, False
+                    elif exist_right_bin and self.spectrum[charge][key + 1][0].is_inside(peak):
+                        return imid, 1, False, False
+                    return imid, 0, False, False
 
     def add(self, peak, charge: int = 0):
         """
@@ -238,40 +238,18 @@ class MasterSpectrum:
             self.spectrum[charge][key] = SortedList(key=lambda i: i.left)
             self.add(peak, charge)
 
-    def export_to_csv(self, path):
-        with open(path, "w") as csvfile:
-            writr = csv.writer(csvfile)  # , lineterminator=os.linesep)
-            writr.writerow(
-                (
-                    "mz",
-                    "intensity",
-                    "counts",
-                    "left border",
-                    "right border",
-                    "start_mz",
-                    "ms1_charge",
-                    "rel_intensity_ratio",
-                    "counts_ratio",
-                )
-            )
-            for charges in self.spectrum.keys():
-                for key in self.spectrum[charges].keys():
-                    for mp in self.spectrum[charges][key]:
-                        writr.writerow(
-                            (
-                                mp.mz,
-                                mp.intensity,
-                                mp.counts,
-                                mp.left,
-                                mp.right,
-                                mp.mz_origin,
-                                charges,
-                                mp.rel_intensity_ratio,
-                                mp.counts_ratio,
-                            )
-                        )
+    def load_from_tims(
+        self, intensities: List[int], mzs: List[float], ignore_charges: bool, delta_func: Optional[Callable] = None
+    ):
+        """
+        Load data from tims and create master spectrum.
 
-    def load_from_tims(self, intensities, mzs, ignore_charges: bool, delta_func=None):
+        :param intensities: list of intensities of peaks of individual spectra to sum
+        :param mzs: list of mzs of peaks of individual spectra to sum
+        :param ignore_charges: whether to ignore charges when summing up peaks
+        :param delta_func: a callable to calculate the mass tolerance window
+        :raises NotImplementedError: If ignore_charges is set to False
+        """
         rel_int = _calculate_relative_intensity(intensities)
         if delta_func is None:
             delta_func = _calculate_delta_by_ppm(40)
