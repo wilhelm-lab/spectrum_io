@@ -55,27 +55,30 @@ class SearchResults:
         """Read result."""
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> Path:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> pd.DataFrame:
         """
-        Generate df and save to out_path.
+        Generate df and save to out_path if provided.
 
         :param out_path: path to output
         :param tmt_labeled: tmt label as str
         :return: path to output file
         """
         if out_path is None:
-            out_path = self.path.with_suffix(".prosit")
+            # convert and return
+            return self.read_result(tmt_labeled)
+
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
         if out_path.is_file():
+            # only read converted and return
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
-            return out_path
+            return csv.read_file(out_path)
 
+        # convert, save and return
         df = self.read_result(tmt_labeled)
         csv.write_file(df, out_path)
-
-        return out_path
+        return df
 
     def read_internal(self) -> pd.DataFrame:
         """
