@@ -50,13 +50,13 @@ def aggregate_timstof(raw_spectra: pd.DataFrame) -> pd.DataFrame:
     :return: pd.DataFrame containing combined and processed spectra.
     """
     for i, (combined_intensities, combined_mzs) in tqdm(
-        enumerate(zip(raw_spectra["combined_INTENSITIES"], raw_spectra["combined_MZ"])),
+        enumerate(zip(raw_spectra["INTENSITIES"], raw_spectra["MZ"])),
         total=len(raw_spectra),
         desc="Aggregating spectra",
     ):
         mz, intensity = binning(combined_mzs, combined_intensities, True)
-        raw_spectra.at[i, "combined_INTENSITIES"] = intensity
-        raw_spectra.at[i, "combined_MZ"] = mz
+        raw_spectra.at[i, "INTENSITIES"] = intensity
+        raw_spectra.at[i, "MZ"] = mz
 
     return raw_spectra
 
@@ -113,7 +113,7 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
         corrected_intensity_values=False,
         raw_indices_sorted=False,
     )
-    df.columns = ["FRAME", "SCAN", "PRECURSOR", "RETENTION_TIME", "INV_ION_MOBILITY", "MZ", "INTENSITY"]
+    df.columns = ["FRAME", "SCAN", "PRECURSOR", "RETENTION_TIME", "INV_ION_MOBILITY", "MZ", "INTENSITIES"]
 
     # aggregation
     df_combined_grouped = (
@@ -126,7 +126,7 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
         .groupby(["PRECURSOR", "FRAME"], as_index=False)  # aggregate fragments per precursor in FRAME
         .agg(
             {
-                "INTENSITY": list,
+                "INTENSITIES": list,
                 "MZ": list,
                 "RETENTION_TIME": "first",
                 "COLLISION_ENERGY": "first",
@@ -136,10 +136,10 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
         .merge(scan_to_precursor_map.reset_index())
         .groupby("SCAN_NUMBER", as_index=False)  # aggregate PRECURSORS for same SCAN_NUMBER
         .agg(
-            median_CE=("COLLISION_ENERGY", "median"),
-            combined_INTENSITIES=("INTENSITY", lambda x: [item for sublist in x for item in sublist]),
-            combined_MZ=("MZ", lambda x: [item for sublist in x for item in sublist]),
-            median_RETENTION_TIME=("RETENTION_TIME", "median"),
+            COLLISION_ENERGY=("COLLISION_ENERGY", "median"),
+            INTENSITIES=("INTENSITIES", lambda x: [item for sublist in x for item in sublist]),
+            MZ=("MZ", lambda x: [item for sublist in x for item in sublist]),
+            RETENTION_TIME=("RETENTION_TIME", "median"),
             median_INV_ION_MOBILITY=("INV_ION_MOBILITY", "median"),
         )
     )
@@ -166,14 +166,19 @@ def convert_d_hdf(
     data.save_as_hdf(directory=str(output_path.parent), file_name=str(output_path.name))
 
 
-def read_and_aggregate_timstof(source: Path, scan_to_precursor_map: Path) -> pd.DataFrame:
+def read_and_aggregate_timstof(source: Path, tims_meta_file: Path) -> pd.DataFrame:
     """
     Read raw spectra from timstof hdf spectra file and aggregate to MS2 spectra.
 
     :param source: Path to the hdf file
-    :param scan_to_precursor_map: Dataframe mapping scan numbers to precursors
+    :param tims_meta_file: Path to metadata mapping scan numbers to precursors / frames
     :return: Dataframe containing the MS2 spectra
     """
+    scan_to_precursor_map = pd.read_csv(tims_meta_file)
     raw_spectra = read_timstof(source, scan_to_precursor_map)
     df_combined = aggregate_timstof(raw_spectra)
+    df_combined["RAW_FILE"] = source.stem
+    df_combined["MASS_ANALYZER"] = "TOF"
+    df_combined["FRAGMENTATION"] = "HCD"
+
     return df_combined
