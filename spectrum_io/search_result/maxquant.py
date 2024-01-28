@@ -120,7 +120,7 @@ class MaxQuant(SearchResults):
 
         return df
 
-    def read_metadata_for_timstof(self):
+    def generate_internal_timstof_metadata(self):
         """
         Load information files required for correct aggregation of spectra in timsTOF experiments.
 
