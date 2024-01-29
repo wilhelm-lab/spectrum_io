@@ -24,16 +24,16 @@ class MasterPeak(Peak):
         # right and counts are calculated based on update func
         self.right = 0
         self.counts = 1
-        self.rel_intensity_ratio = 0
+        self.rel_intensity_ratio = 0.0
         # ratio is set to an actual value first time by comparing a spectrum to another spectrum
-        self.counts_ratio = 0
+        self.counts_ratio = 0.0
         self.mz_origin = peak.mz
         super().__init__(peak.mz, peak.intensity, peak.delta_function, meta=peak.meta)
         # update does not have to be called, because constructor
         # of peak calls update of MasterPeak
         # self.update()
 
-    def __eq__(self, other: MasterPeakT) -> bool:
+    def __eq__(self, other: MasterPeakT) -> bool:  # type: ignore
         """
         Reports true if both master peaks have the same member variables!
 
@@ -54,7 +54,7 @@ class MasterPeak(Peak):
             else:
                 return False
 
-    def __ne__(self, other: MasterPeakT) -> bool:
+    def __ne__(self, other: MasterPeakT) -> bool:  # type: ignore
         """
         Reports true if any member variable differs between the two master peaks!
 

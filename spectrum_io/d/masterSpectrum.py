@@ -28,7 +28,7 @@ def merge_func(offset: int, idx: int):
 """
 
 
-def _calculate_delta_by_ppm(ppm: int) -> float:
+def _calculate_delta_by_ppm(ppm: int) -> Callable:
     def fix_ppm(mz: float):
         return ppm * float(mz) / (pow(10, 6))
 

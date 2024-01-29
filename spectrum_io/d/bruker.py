@@ -15,7 +15,7 @@ from .masterSpectrum import MasterSpectrum
 logger = logging.getLogger(__name__)
 
 
-def binning(mzs: List[int], intensities: List[float], ignore_charges: bool) -> Tuple[List[float], List[float]]:
+def binning(mzs: List[float], intensities: List[int], ignore_charges: bool) -> Tuple[List[float], List[float]]:
     """
     Perform binning on the input MasterSpectrum.
 
