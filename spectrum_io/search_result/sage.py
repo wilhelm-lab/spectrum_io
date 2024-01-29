@@ -14,18 +14,16 @@ logger = logging.getLogger(__name__)
 class Sage(SearchResults):
     """Handle search results from Sage."""
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str = "") -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
 
-        :param path: path to msms.tsv to read
         :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msms.tsv file")
         df = pd.read_csv(
-            path,
+            self.path,
             usecols=["filename", "scannr", "peptide", "charge", "hyperscore", "calcmass", "proteins"],
             sep="\t",
         )

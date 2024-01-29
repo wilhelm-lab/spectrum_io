@@ -1,4 +1,5 @@
 """Initialize logger."""
+
 import logging
 
 from . import csv, hdf5
