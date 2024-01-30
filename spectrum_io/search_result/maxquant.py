@@ -62,6 +62,7 @@ class MaxQuant(SearchResults):
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "SCORE",
                 "REVERSE",
+                "PROTEINS",
             ],
             sep="\t",
         )
@@ -73,7 +74,13 @@ class MaxQuant(SearchResults):
 
         df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
         return filter_valid_prosit_sequences(df)
+    # a method for replacing missing proteins
+    @staticmethod
+    def sanity_check(PROTEINS: pd.Series) -> pd.Series:
+        return PROTEINS.apply(lambda x: 'missing_protein' if pd.isna(x) else x)
 
+    
+    
     @staticmethod
     def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
         """
@@ -117,7 +124,11 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
-
+        # adding protein column in the end
+        df['PROTEINS'] = df.pop('PROTEINS')
+        # calling the static method to replace unkown proteins
+        df['PROTEINS'] = MaxQuant.sanity_check(df['PROTEINS'])
+        
         return df
 
     def generate_internal_timstof_metadata(self):
