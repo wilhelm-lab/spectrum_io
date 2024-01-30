@@ -1,4 +1,5 @@
 """Initialize spectral library."""
+
 import logging
 
 from . import digest
