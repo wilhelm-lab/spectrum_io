@@ -5,8 +5,9 @@ max-line-length = 120
 max-complexity = 10
 docstring-convention = google
 per-file-ignores =
-	tests/*:S101
+	tests/*:S101,S301,S403
 	noxfile.py:DAR101
 	spectrum_io/raw/thermo_raw.py:S603,S404
 	spectrum_io/raw/msraw.py:S405,S314
-        docs/conf.py:S404,S607,S603
+	spectrum_io/d/masterSpectrum.py:C901
+    docs/conf.py:S404,S607,S603

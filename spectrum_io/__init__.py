@@ -2,14 +2,14 @@
 
 __author__ = "Mario Picciani"
 __email__ = "mario.picciani@tum.de"
-__version__ = "0.2.0"
+__version__ = "0.4.2"
 
 import logging
 import logging.handlers
 import sys
 import time
 
-from . import file, raw
+from . import d, file, raw
 from .search_result import MaxQuant
 from .spectral_library import DLib, Spectronaut
 

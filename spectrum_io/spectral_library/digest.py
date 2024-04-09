@@ -2,10 +2,13 @@ import argparse
 import collections
 import csv
 import itertools
+import logging
 import sys
-from typing import List
+from typing import Dict, List
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 cleavage_sites = {
     "trypsinp": (["K", "R"], []),
@@ -35,16 +38,13 @@ def main(args):
             "modified_sequence,collision_energy,precursor_charge,protein,fragmentation".split(",")
         )
 
-        pre, not_post = cleavage_sites[args.enzyme]
         for peptide, proteins in get_peptide_to_protein_map(
             args.fasta,
-            # db = 'concat',
             db=args.db,
             digestion=args.digestion,
             min_len=args.min_length,
             max_len=args.max_length,
-            pre=pre,
-            not_post=not_post,
+            enzyme=args.enzyme,
             miscleavages=args.cleavages,
             methionine_cleavage=True,
             special_aas=list(args.special_aas),
@@ -55,23 +55,18 @@ def main(args):
                     writer.writerow([peptide, 30, charge, args.fragmentation])
                     writer_with_proteins.writerow([peptide, 30, charge, proteins[0], args.fragmentation])
 
-    # python digest.py --fasta /media/kusterlab/internal_projects/active/Mouse_proteome/stuff/
-    # 10090_UP000000589_UniProtKB_Mouse_CanIso_2018_03_27.fasta
-    # --peptide_protein_map ../data/fasta/10090_UP000000589_UniProtKB_Mouse_CanIso_2018_03_27.peptide_to_protein_map.txt
     if args.peptide_protein_map:
         with open(args.peptide_protein_map + ".params.txt", "w") as f:
             f.write(" ".join(sys.argv))
         writer = get_tsv_writer(args.peptide_protein_map, delimiter="\t")
 
-        pre, not_post = cleavage_sites(args.enzyme)
         for peptide, proteins in get_peptide_to_protein_map(
             args.fasta,
             db="concat",
             digestion=args.digestion,
             min_len=args.min_length,
             max_len=args.max_length,
-            pre=pre,
-            not_post=not_post,
+            enzyme=args.enzyme,
             miscleavages=args.cleavages,
             methionine_cleavage=True,
             special_aas=list(args.special_aas),
@@ -283,27 +278,25 @@ def read_fasta_maxquant(
         sys.exit("unknown db mode: %s" % db)
 
     hasspecial_aas = len(special_aas) > 0
-    name = None
-    seq: List[str] = []
     with open(file_path) as fp:
+        line = next(fp).rstrip()
+        name = parse_id(line[1:])
+        sequence_lines: List[str] = []
         for line in itertools.chain(fp, [">"]):
             line = line.rstrip()
             if line.startswith(">"):
-                if name:
-                    seq = "".join(seq)
-                    if db in ["target", "concat"]:
-                        yield (name, seq)
-
-                    if db in ["decoy", "concat"]:
-                        rev_seq = seq[::-1]
-                        if hasspecial_aas:
-                            rev_seq = swap_special_aas(rev_seq, special_aas)
-                        yield (decoy_prefix + name, rev_seq)
-
-                if len(line) > 1:
-                    name, seq = parse_id(line[1:]), []
-            else:
-                seq.append(line)
+                sequence = "".join(sequence_lines)
+                if db in ["target", "concat"]:
+                    yield name, sequence
+                if db in ["decoy", "concat"]:
+                    rev_sequence = sequence[::-1]
+                    if hasspecial_aas:
+                        rev_sequence = swap_special_aas(rev_sequence, special_aas)
+                    yield decoy_prefix + name, rev_sequence
+                name = parse_id(line[1:])
+                sequence_lines = []
+                continue
+            sequence_lines.append(line)
 
 
 read_fasta = read_fasta_maxquant
@@ -456,8 +449,7 @@ def get_peptide_to_protein_map(
     db="concat",
     min_len=6,
     max_len=52,
-    pre=None,
-    not_post=None,
+    enzyme: str = "trypsin",
     digestion="full",
     miscleavages=2,
     methionine_cleavage=True,
@@ -466,6 +458,8 @@ def get_peptide_to_protein_map(
     parse_id=parse_until_first_space,
 ):
     """Get peptide to protein map."""
+    pre, not_post = cleavage_sites[enzyme]
+
     if pre is None:
         pre = ["K", "R"]
     if not_post is None:
@@ -476,7 +470,7 @@ def get_peptide_to_protein_map(
     protein_to_seq_map = dict()
     for protein_idx, (protein, seq) in enumerate(read_fasta(fasta_file, db, parse_id, special_aas=special_aas)):
         if (protein_idx + 1) % 10000 == 0:
-            print("Digesting protein", protein_idx + 1)
+            logger.info(f"Digesting protein {protein_idx + 1}")
         seen_peptides = set()
         protein_to_seq_map[protein] = seq
         # for peptide in digestfast.get_digested_peptides(seq, min_len, max_len, pre, not_post, digestion,
@@ -484,7 +478,6 @@ def get_peptide_to_protein_map(
         for peptide in get_digested_peptides(
             seq, min_len, max_len, pre, not_post, digestion, miscleavages, methionine_cleavage
         ):
-            peptide = peptide
             if use_hash_key:
                 hash_key = peptide[:6]
             else:
@@ -502,13 +495,13 @@ def get_peptide_to_protein_map(
 def get_peptide_to_protein_map_from_file(peptide_to_protein_map_file, use_hash_key=False):
     """Get peptide to protein map from file."""
     if use_hash_key:
-        print("Hash key not supported yet, continuing without hash key...")
+        logger.warning("Hash key not supported yet, continuing without hash key...")
         use_hash_key = False
     peptide_to_protein_map = collections.defaultdict(list)
     reader = get_tsv_reader(peptide_to_protein_map_file)
     for i, row in enumerate(reader):
         if (i + 1) % 1000000 == 0:
-            print("Processing peptide", i + 1)
+            logger.info(f"Processing peptide  {i + 1}")
 
         peptide, proteins = row[0], row[1].split(";")
         if use_hash_key:
@@ -564,8 +557,7 @@ def get_ibaq_peptide_to_protein_map(args):
         digestion="full",
         min_len=max([6, args.min_length]),
         max_len=min([30, args.max_length]),
-        pre=pre,
-        not_post=not_post,
+        enzyme=args.enzyme,
         miscleavages=0,
         methionine_cleavage=False,
         special_aas=list(args.special_aas),
