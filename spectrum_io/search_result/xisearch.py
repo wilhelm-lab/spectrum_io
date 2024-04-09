@@ -43,16 +43,19 @@ class Xisearch(SearchResults):
                         "mod_pos_p2",
                         "linear",
                         "match_score"] 
-       
+        
+        # Initialize path variable
+        path = self.path
+
         if str(self.path).endswith(".txt"):
             path = self.path.with_suffix('.tsv')
-        #self.path = path
         df = pd.read_csv(path,  sep='\t', usecols= columns_to_read)
-        logger.info("Finished reading msms.csv file")
+        logger.info("Finished reading msms.tsv file")
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
         df = Xisearch.filter_valid_prosit_sequences(df)
+        df.to_csv("/cmnfs/home/m.kalhor/wilhelmlab/spectrum_io/tests/unit_tests/data/xisearch_output_internal.tsv",  index=False)
         return df
 
     def filter_xisearch_result (df: pd.DataFrame) -> pd.DataFrame:
