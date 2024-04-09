@@ -1,65 +1,58 @@
-
 import logging
 import re
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from .search_results import SearchResults
 import os
-from spectrum_io.spectral_library import digest 
 import glob
 import numpy as np
 
-#from search_results import SearchResults
 
 logger = logging.getLogger(__name__)
 
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
-    @staticmethod
-    def read_result(path: str, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
         :param path: path to msms.csv to read
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msms.csv file")
-        columns_to_read = ["Run",
-                        "Scan",
-                        "PrecursorMass",
-                        "PrecoursorCharge",
-                        "decoy",
-                        "Crosslinker",
-                        "decoy",
-                        "Protein1decoy",
-                        "BasePeptide1",
-                        "LengthPeptide1",
-                        "Link1",
-                        "Linked AminoAcid 1",
-                        "Modifications1",
-                        "ModificationPositions1",
-                        "Protein2decoy",
-                        "BasePeptide2",
-                        "LengthPeptide2",
-                        "Link2",
-                        "Linked AminoAcid 2",
-                        "Modifications2",
-                        "ModificationPositions2",
-                        "match score"] 
-
-        # I must update codes and remmove these three lines
-        path = str(path)  
-        if path.endswith(".txt"):
-            path = path[:-4] + ".csv"
         
-        df = pd.read_csv(path, usecols=columns_to_read)
+        logger.info("Reading msms.csv file")
+        columns_to_read = ["run_name",
+                        "scan_number",
+                        "precursor_mass",
+                        "precursor_charge",
+                        "crosslinker_name",
+                        "decoy_p1",
+                        "base_sequence_p1",
+                        "aa_len_p1",
+                        "link_pos_p1",
+                        "linked_aa_p1",
+                        "mods_p1",
+                        "mod_pos_p1",
+                        "decoy_p2",
+                        "base_sequence_p2",
+                        "aa_len_p2",
+                        "link_pos_p2",
+                        "linked_aa_p2",
+                        "mods_p2",
+                        "mod_pos_p2",
+                        "linear",
+                        "match_score"] 
+       
+        if str(self.path).endswith(".txt"):
+            path = self.path.with_suffix('.tsv')
+        #self.path = path
+        df = pd.read_csv(path,  sep='\t', usecols= columns_to_read)
         logger.info("Finished reading msms.csv file")
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
         df = Xisearch.filter_valid_prosit_sequences(df)
-        df.to_csv('/cmnfs/home/m.kalhor/wilhelmlab/notebooks/notebooks/xiserach_fdr/df.csv', index=False)
         return df
 
     def filter_xisearch_result (df: pd.DataFrame) -> pd.DataFrame:
@@ -68,15 +61,18 @@ class Xisearch(SearchResults):
 
         :param df: df to filter
         :return: filtered df as pd.DataFrame
-        """
-        df = df[df['Linked AminoAcid 1'].notna() & df['Linked AminoAcid 1'].str.contains('K')]
-        df = df[df['Linked AminoAcid 2'].notna() & df['Linked AminoAcid 2'].str.contains('K')]
-        df = df[df['Modifications1'].astype(str).str.strip().isin(['Mox', 'Mox;Mox', 'Mox;Mox;Mox']) | pd.isna(df['Modifications1'])]
-        df = df[df['Modifications2'].astype(str).str.strip().isin(['Mox', 'Mox;Mox', 'Mox;Mox;Mox']) | pd.isna(df['Modifications2'])]
-
+        """ 
+        df = df[df['linear'] != True]
+        df = df[df['linked_aa_p1'].notna() & df['linked_aa_p1'].str.contains('K')]
+        df = df[df['linked_aa_p2'].notna() & df['linked_aa_p2'].str.contains('K')]
+        df = df[~df['mods_p1'].str.contains('dsso-hyd', na=False)]
+        df = df[~df['mods_p2'].str.contains('dsso-hyd', na=False)]
+        valid_modifications = ['cm', 'ox', pd.NA]
+        df = df[df['mods_p1'].apply(lambda x: any(mod in str(x).split(';') if pd.notnull(x) else mod is pd.NA for mod in valid_modifications))]
+        df = df[df['mods_p2'].apply(lambda x: any(mod in str(x).split(';') if pd.notnull(x) else mod is pd.NA for mod in valid_modifications))]
+        
         return df
-
-
+    
     def add_mod_sequence(seq_a: str,
                          seq_b: str,
                          mod_a: str,
@@ -86,6 +82,7 @@ class Xisearch(SearchResults):
                          mod_a_positions: str,
                          mod_b_positions: str
                          ):
+        
         """
         Function adds modification in peptide sequence for xl-prosit 
         
@@ -100,47 +97,57 @@ class Xisearch(SearchResults):
         :mod_b_positions: position of all modifications of peptide b
         :return: modified sequence a and b
         """
+        
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
         mod_a_positions = str(mod_a_positions)
         mod_b_positions = str(mod_b_positions)
-        #print(mod_a_positions)
-        #print(mod_a)
+        
 
         if mod_a_positions not in ["nan", "null"]:
             if ";" in mod_a_positions:
                 split_pos_mod_a = [int(num) for num in mod_a_positions.split(";")]
                 split_mod_a = [str(mod) for mod in mod_a.split(";")]
                 for index, pos_a in enumerate(split_pos_mod_a):
-                    if split_mod_a[index] == "Mox":
+                    if split_mod_a[index] == "ox":
                         modification = "M[UNIMOD:35]"
-                        pos_mod_a = int(pos_a)
-                        split_seq_a[pos_mod_a-1] = modification
+                    if split_mod_a[index] == "cm":
+                        modification = "C[UNIMOD:4]"
+                    pos_mod_a = int(pos_a)
+                    split_seq_a[pos_mod_a-1] = modification
             else:
-                split_seq_a[int(mod_a_positions)-1] = "M[UNIMOD:35]"
+                if mod_a == "ox" :
+                    modification = "M[UNIMOD:35]"
+                if mod_a == "cm" :
+                    modification = "C[UNIMOD:4]"
+                try:
+                    mod_a_positions_float = float(mod_a_positions)
+                    split_seq_a[int(mod_a_positions_float)-1] = modification
+                except ValueError:
+                    print(f"Error occurred with mod_a_positions value: {mod_a_positions}")
 
         if mod_b_positions not in ["nan", "null"]:
             if ";" in mod_b_positions:
                 split_pos_mod_b = [int(num) for num in mod_b_positions.split(";")]
                 split_mod_b = [str(mod) for mod in mod_b.split(";")]
                 for index, pos_b in enumerate(split_pos_mod_b):
-                    if split_mod_b[index] == "Mox":
+                    if split_mod_b[index] == "ox":
                         modification = "M[UNIMOD:35]"
-                        pos_mod_b = int(pos_b)
-                        split_seq_b[pos_mod_b-1] = modification
+                    if split_mod_b[index] == "cm":
+                        modification = "C[UNIMOD:4]"
+                    pos_mod_b = int(pos_b)
+                    split_seq_b[pos_mod_b-1] = modification
             else:
-                split_seq_b[int(mod_b_positions)-1] = "M[UNIMOD:35]"
-                
-    
-        if "C" in split_seq_a:
-            c_index_pep_a = split_seq_a.index('C')
-            split_seq_a[c_index_pep_a] = 'C[UNIMOD:4]'
-
-        if "C" in split_seq_b:
-            c_index_pep_b = split_seq_b.index('C')
-            split_seq_b[c_index_pep_b] = 'C[UNIMOD:4]'
-        
-           
+                if mod_b == "ox" :
+                    modification = "M[UNIMOD:35]"
+                if mod_b == "cm" :
+                    modification = "C[UNIMOD:4]"
+                try:
+                    mod_b_positions_float = float(mod_b_positions)
+                    split_seq_b[int(mod_b_positions_float)-1] = modification
+                except ValueError:
+                    print(f"Error occurred with mod_a_positions value: {mod_b_positions}")
+                  
         split_seq_a[int(crosslinker_position_a)-1] = "K[UNIMOD:1896]"
         split_seq_b[int(crosslinker_position_b)-1] = "K[UNIMOD:1896]"
 
@@ -149,35 +156,36 @@ class Xisearch(SearchResults):
 
         return seq_mod_a, seq_mod_b
 
-
     @staticmethod
     def update_columns_for_prosit(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Update columns of df to work with Prosit.
+        Update columns of df to work with xl-prosit.
 
         :param df: df to modify
         :return: modified df as pd.DataFrame
         """
-        df.rename(columns={"Run": "RAW_FILE", 
-                           "PrecursorMass": "MASS", #Experimental Mass of crosslinked peptides
-                           "PrecoursorCharge": "PRECURSOR_CHARGE",
-                           "Crosslinker": "CROSSLINKER_TYPE",
-                           "match score":"SCORE",
-                           "decoy": "REVERSE",
-                           "Scan": "SCAN_NUMBER",
-                           "BasePeptide1": "SEQUENCE_A",
-                           "BasePeptide2": "SEQUENCE_B",
-                           "Modifications1": "Modifications_A",
-                           "Modifications2": "Modifications_B",
-                           "Link1": "CROSSLINKER_POSITION_A",
-                           "Link2": "CROSSLINKER_POSITION_B",
-                           "LengthPeptide1": "PEPTIDE_LENGTH_A",
-                           "LengthPeptide2": "PEPTIDE_LENGTH_B"},
-                             inplace=True)
-        
+
+        df['decoy'] = df['decoy_p1'] | df['decoy_p2']
+        df["RAW_FILE"] = df["run_name" ]
+        df["MASS"] = df["precursor_mass"]
+        df["PRECURSOR_CHARGE"] = df["precursor_charge"]
+        df["CROSSLINKER_TYPE"] = df["crosslinker_name"]
+        df["SCORE"] = df["match_score"]
+        df["REVERSE"] = df["decoy"]
+        df["SCAN_NUMBER"] = df["scan_number"]
+        df["SEQUENCE_A"] = df["base_sequence_p1"]
+        df["SEQUENCE_B"] = df["base_sequence_p2"]
+        df["Modifications_A"] = df["mods_p1"]
+        df["Modifications_B"] = df["mods_p2"]
+        df["CROSSLINKER_POSITION_A"] = df["link_pos_p1"]
+        df["CROSSLINKER_POSITION_B"] = df["link_pos_p2"]
+        df["ModificationPositions1"] = df["mod_pos_p1"]
+        df["ModificationPositions2"] = df["mod_pos_p2"]
+        df["PEPTIDE_LENGTH_A"] = df["aa_len_p1"]
+        df["PEPTIDE_LENGTH_B"] = df["aa_len_p2"]
         logger.info("Converting xisearch peptide sequence to internal format")
 
-                                    
+        df['RAW_FILE'] = df['RAW_FILE'].str.replace('.raw', '')                          
         df['Modifications_A'] = df['Modifications_A'].astype('str') 
         df['Modifications_B'] = df['Modifications_B'].astype('str')
         
@@ -216,8 +224,3 @@ class Xisearch(SearchResults):
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
         return df
-
-
-
-
-
