@@ -153,7 +153,7 @@ class Xisearch(SearchResults):
         """
         mod_a_positions = str(mod_a_positions)  # Ensure it's a string
         mod_b_positions = str(mod_b_positions)  # Ensure it's a string
-        
+
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
 
