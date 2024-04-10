@@ -17,19 +17,11 @@ logger = logging.getLogger(__name__)
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
-    def __init__(self, path: Union[str, Path]):
-        """
-        Init Searchresults object.
-
-        :param path: path to file
-        """
-        self.path = Path(path)
-
     def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
-        :param path: path to msms.csv to read
+        :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msms.csv file")
@@ -57,20 +49,16 @@ class Xisearch(SearchResults):
             "match_score",
         ]
 
-        # Initialize path variable
-        path = self.path
-
-        if str(self.path).endswith(".txt"):
-            path = self.path.with_suffix(".tsv")
-        df = pd.read_csv(path, sep="\t", usecols=columns_to_read)
+        df = pd.read_csv(self.path, sep="\t", usecols=columns_to_read)
         logger.info("Finished reading msms.tsv file")
         # Standardize column names
-        df = Xisearch.filter_xisearch_result(self, df)
-        df = Xisearch.update_columns_for_prosit(self, df)
+        df = Xisearch.filter_xisearch_result(df)
+        df = Xisearch.update_columns_for_prosit(df)
         df = Xisearch.filter_valid_prosit_sequences(df)
         return df
 
-    def filter_xisearch_result(self, df: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def filter_xisearch_result(df: pd.DataFrame) -> pd.DataFrame:
         """
         Remove unsupported modifications and keep only k-k as linked amino acid .
 
@@ -100,7 +88,8 @@ class Xisearch(SearchResults):
 
         return df
 
-    def apply_modifications(self, split_seq: list, mods: str, mod_positions: str):
+    @staticmethod
+    def apply_modifications(split_seq: list, mods: str, mod_positions: str):
         """
         Apply modifications to the peptide sequence.
 
@@ -127,8 +116,8 @@ class Xisearch(SearchResults):
                 except (IndexError, ValueError):
                     print(f"Error occurred with mod_positions value: {mod_positions}")
 
+    @staticmethod
     def add_mod_sequence(
-        self,
         seq_a: str,
         seq_b: str,
         mod_a: str,
@@ -157,8 +146,8 @@ class Xisearch(SearchResults):
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
 
-        self.apply_modifications(split_seq_a, mod_a, mod_a_positions)
-        self.apply_modifications(split_seq_b, mod_b, mod_b_positions)
+        Xisearch.apply_modifications(split_seq_a, mod_a, mod_a_positions)
+        Xisearch.apply_modifications(split_seq_b, mod_b, mod_b_positions)
 
         split_seq_a[int(crosslinker_position_a) - 1] = "K[UNIMOD:1896]"
         split_seq_b[int(crosslinker_position_b) - 1] = "K[UNIMOD:1896]"
@@ -169,7 +158,7 @@ class Xisearch(SearchResults):
         return seq_mod_a, seq_mod_b
 
     @staticmethod
-    def update_columns_for_prosit(self, df: pd.DataFrame) -> pd.DataFrame:
+    def update_columns_for_prosit(df: pd.DataFrame) -> pd.DataFrame:
         """
         Update columns of df to work with xl-prosit.
 
@@ -205,7 +194,6 @@ class Xisearch(SearchResults):
 
         df[["MODIFIED_SEQUENCE_A", "MODIFIED_SEQUENCE_B"]] = df.apply(
             lambda row: Xisearch.add_mod_sequence(
-                self,
                 row["SEQUENCE_A"],
                 row["SEQUENCE_B"],
                 row["Modifications_A"],
