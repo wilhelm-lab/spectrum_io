@@ -77,7 +77,6 @@ class Xisearch(SearchResults):
         :param df: df to filter
         :return: filtered df as pd.DataFrame
         """
-        # df = df[df["linear"] != True]
         df = df[~df["linear"]]
         df = df[df["linked_aa_p1"].notna() & df["linked_aa_p1"].str.contains("K")]
         df = df[df["linked_aa_p2"].notna() & df["linked_aa_p2"].str.contains("K")]
@@ -152,6 +151,9 @@ class Xisearch(SearchResults):
         :param mod_b_positions: position of all modifications of peptide b
         :return: modified sequence a and b
         """
+        mod_a_positions = str(mod_a_positions)  # Ensure it's a string
+        mod_b_positions = str(mod_b_positions)  # Ensure it's a string
+        
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
 
