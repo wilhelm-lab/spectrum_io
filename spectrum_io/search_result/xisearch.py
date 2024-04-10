@@ -2,6 +2,8 @@ import glob
 import logging
 import os
 import re
+from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -15,6 +17,14 @@ logger = logging.getLogger(__name__)
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
+    def __init__(self, path: Union[str, Path]):
+        """
+        Init Searchresults object.
+
+        :param path: path to file
+        """
+        self.path = Path(path)
+
     def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -22,7 +32,6 @@ class Xisearch(SearchResults):
         :param path: path to msms.csv to read
         :return: pd.DataFrame with the formatted data
         """
-
         logger.info("Reading msms.csv file")
         columns_to_read = [
             "run_name",
@@ -56,23 +65,20 @@ class Xisearch(SearchResults):
         df = pd.read_csv(path, sep="\t", usecols=columns_to_read)
         logger.info("Finished reading msms.tsv file")
         # Standardize column names
-        df = Xisearch.filter_xisearch_result(df)
-        df = Xisearch.update_columns_for_prosit(df)
+        df = Xisearch.filter_xisearch_result(self, df)
+        df = Xisearch.update_columns_for_prosit(self, df)
         df = Xisearch.filter_valid_prosit_sequences(df)
-        df.to_csv(
-            "/cmnfs/home/m.kalhor/wilhelmlab/spectrum_io/tests/unit_tests/data/xisearch_output_internal.tsv",
-            index=False,
-        )
         return df
 
-    def filter_xisearch_result(df: pd.DataFrame) -> pd.DataFrame:
+    def filter_xisearch_result(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        remove unsupported modifications and keep only k-k as linked amino acid .
+        Remove unsupported modifications and keep only k-k as linked amino acid .
 
         :param df: df to filter
         :return: filtered df as pd.DataFrame
         """
-        df = df[df["linear"] != True]
+        # df = df[df["linear"] != True]
+        df = df[~df["linear"]]
         df = df[df["linked_aa_p1"].notna() & df["linked_aa_p1"].str.contains("K")]
         df = df[df["linked_aa_p2"].notna() & df["linked_aa_p2"].str.contains("K")]
         df = df[~df["mods_p1"].str.contains("dsso-hyd", na=False)]
@@ -96,6 +102,7 @@ class Xisearch(SearchResults):
         return df
 
     def add_mod_sequence(
+        self,
         seq_a: str,
         seq_b: str,
         mod_a: str,
@@ -106,7 +113,7 @@ class Xisearch(SearchResults):
         mod_b_positions: str,
     ):
         """
-        Function adds modification in peptide sequence for xl-prosit
+        Function adds modification in peptide sequence for xl-prosit.
 
         :seq_a: unmodified peptide a
         :seq_b: unmodified peptide b
@@ -119,7 +126,6 @@ class Xisearch(SearchResults):
         :mod_b_positions: position of all modifications of peptide b
         :return: modified sequence a and b
         """
-
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
         mod_a_positions = str(mod_a_positions)
@@ -178,14 +184,13 @@ class Xisearch(SearchResults):
         return seq_mod_a, seq_mod_b
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame) -> pd.DataFrame:
+    def update_columns_for_prosit(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Update columns of df to work with xl-prosit.
 
         :param df: df to modify
         :return: modified df as pd.DataFrame
         """
-
         df["decoy"] = df["decoy_p1"] | df["decoy_p2"]
         df["RAW_FILE"] = df["run_name"]
         df["MASS"] = df["precursor_mass"]
@@ -215,6 +220,7 @@ class Xisearch(SearchResults):
 
         df[["MODIFIED_SEQUENCE_A", "MODIFIED_SEQUENCE_B"]] = df.apply(
             lambda row: Xisearch.add_mod_sequence(
+                self,
                 row["SEQUENCE_A"],
                 row["SEQUENCE_B"],
                 row["Modifications_A"],
