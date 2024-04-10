@@ -109,8 +109,8 @@ class Xisearch(SearchResults):
         mod_b: str,
         crosslinker_position_a: int,
         crosslinker_position_b: int,
-        mod_a_positions: str,
-        mod_b_positions: str,
+        mod_a_positions: Union[str, float],
+        mod_b_positions: Union[str, float],
     ):
         """
         Function adds modification in peptide sequence for xl-prosit.
@@ -174,7 +174,7 @@ class Xisearch(SearchResults):
                     split_seq_b[int(mod_b_positions_float) - 1] = modification
                 except ValueError:
                     print(f"Error occurred with mod_a_positions value: {mod_b_positions}")
-
+        
         split_seq_a[int(crosslinker_position_a) - 1] = "K[UNIMOD:1896]"
         split_seq_b[int(crosslinker_position_b) - 1] = "K[UNIMOD:1896]"
 

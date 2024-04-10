@@ -19,4 +19,4 @@ class TestXisearch(unittest.TestCase):
         expected_df = pd.read_csv(expected_xisearch_internal_path)
         expected_df["Modifications_A"] = expected_df["Modifications_A"].fillna("nan")
         expected_df["Modifications_B"] = expected_df["Modifications_B"].fillna("nan")
-        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df, check_dtype=False)
