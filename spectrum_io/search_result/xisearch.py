@@ -17,14 +17,34 @@ logger = logging.getLogger(__name__)
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
+    def __init__(self, xl: str, *args, **kwargs):
+        """
+        Init XISearchResults object.
+
+        :param xl: type of crosslinker used. Can be 'DSSO' or 'DSVO'.
+        :param args: additional positional arguments forwarded to SearchResults constructor.
+        :param kwargs: additional keyword arguments forwarded to SearchResults constructor.
+        :raises ValueError: if the type of crosslinker is unknown.
+        """
+        if xl.lower() in ["dsso", "dsvo"]:
+            self.xl = xl.lower()
+        else:
+            raise ValueError(f"Unknown crosslinker type provided: {xl}. Only 'DSSO' and 'DSVO' are supported.")
+
+        super().__init__(*args, **kwargs)
+
     def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
+        :raises NotImplementedError: if a tmt label is provided
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msms.csv file")
+        if tmt_labeled != "":
+            raise NotImplementedError("TMT is not supported for XIsearch")
+
+        logger.info("Reading search results file...")
         columns_to_read = [
             "run_name",
             "scan_number",
@@ -50,7 +70,7 @@ class Xisearch(SearchResults):
         ]
 
         df = pd.read_csv(self.path, sep="\t", usecols=columns_to_read)
-        logger.info("Finished reading msms.tsv file")
+        logger.info("Finished reading search results file.")
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
@@ -183,7 +203,7 @@ class Xisearch(SearchResults):
         df["ModificationPositions2"] = df["mod_pos_p2"]
         df["PEPTIDE_LENGTH_A"] = df["aa_len_p1"]
         df["PEPTIDE_LENGTH_B"] = df["aa_len_p2"]
-        logger.info("Converting xisearch peptide sequence to internal format")
+        logger.info("Converting XIsearch peptide sequence to internal format...")
 
         df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "")
         df["Modifications_A"] = df["Modifications_A"].astype("str")
