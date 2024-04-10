@@ -1,1 +1,1 @@
-/cmnfs/home/m.kalhor/wilhelmlab/spectrum_io/.nox/typeguard-3-9/bin/pytest --typeguard-packages=spectrum_io
+/cmnfs/home/m.kalhor/miniconda3/envs/oktoberfest/bin/pytest

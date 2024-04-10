@@ -101,6 +101,33 @@ class Xisearch(SearchResults):
 
         return df
 
+    def apply_modifications(self, split_seq: list, mods: str, mod_positions: str):
+        """
+        Apply modifications to the peptide sequence.
+
+        :param split_seq: List containing the sequence characters
+        :param mods: String containing modifications
+        :param mod_positions: String containing positions of modifications
+        """
+        mod_positions = str(mod_positions)
+
+        if mod_positions in ["nan", "null"]:
+            return
+
+        split_mod = mods.split(";")
+        for idx, mod in enumerate(split_mod):
+            modification = ""
+            if mod == "ox":
+                modification = "M[UNIMOD:35]"
+            elif mod == "cm":
+                modification = "C[UNIMOD:4]"
+            if modification:
+                try:
+                    pos_mod = int(mod_positions.split(";")[idx])
+                    split_seq[pos_mod - 1] = modification
+                except (IndexError, ValueError):
+                    print(f"Error occurred with mod_positions value: {mod_positions}")
+
     def add_mod_sequence(
         self,
         seq_a: str,
@@ -115,66 +142,22 @@ class Xisearch(SearchResults):
         """
         Function adds modification in peptide sequence for xl-prosit.
 
-        :seq_a: unmodified peptide a
-        :seq_b: unmodified peptide b
-        :mod_a: all modifications of pep a
-        :mod_b: all modifications of pep b
-        :crosslinker_position_a: crosslinker position of peptide a
-        :crosslinker_position_b: crosslinker position of peptide b
-        :crosslinker_type: crosslinker tpe eg. DSSO, DSBU
-        :mod_a_positions: position of all modifications of peptide a
-        :mod_b_positions: position of all modifications of peptide b
+        :param seq_a: unmodified peptide a
+        :param seq_b: unmodified peptide b
+        :param mod_a: all modifications of pep a
+        :param mod_b: all modifications of pep b
+        :param crosslinker_position_a: crosslinker position of peptide a
+        :param crosslinker_position_b: crosslinker position of peptide b
+        :param mod_a_positions: position of all modifications of peptide a
+        :param mod_b_positions: position of all modifications of peptide b
         :return: modified sequence a and b
         """
         split_seq_a = [x for x in seq_a]
         split_seq_b = [x for x in seq_b]
-        mod_a_positions = str(mod_a_positions)
-        mod_b_positions = str(mod_b_positions)
 
-        if mod_a_positions not in ["nan", "null"]:
-            if ";" in mod_a_positions:
-                split_pos_mod_a = [int(num) for num in mod_a_positions.split(";")]
-                split_mod_a = [str(mod) for mod in mod_a.split(";")]
-                for index, pos_a in enumerate(split_pos_mod_a):
-                    if split_mod_a[index] == "ox":
-                        modification = "M[UNIMOD:35]"
-                    if split_mod_a[index] == "cm":
-                        modification = "C[UNIMOD:4]"
-                    pos_mod_a = int(pos_a)
-                    split_seq_a[pos_mod_a - 1] = modification
-            else:
-                if mod_a == "ox":
-                    modification = "M[UNIMOD:35]"
-                if mod_a == "cm":
-                    modification = "C[UNIMOD:4]"
-                try:
-                    mod_a_positions_float = float(mod_a_positions)
-                    split_seq_a[int(mod_a_positions_float) - 1] = modification
-                except ValueError:
-                    print(f"Error occurred with mod_a_positions value: {mod_a_positions}")
+        self.apply_modifications(split_seq_a, mod_a, mod_a_positions)
+        self.apply_modifications(split_seq_b, mod_b, mod_b_positions)
 
-        if mod_b_positions not in ["nan", "null"]:
-            if ";" in mod_b_positions:
-                split_pos_mod_b = [int(num) for num in mod_b_positions.split(";")]
-                split_mod_b = [str(mod) for mod in mod_b.split(";")]
-                for index, pos_b in enumerate(split_pos_mod_b):
-                    if split_mod_b[index] == "ox":
-                        modification = "M[UNIMOD:35]"
-                    if split_mod_b[index] == "cm":
-                        modification = "C[UNIMOD:4]"
-                    pos_mod_b = int(pos_b)
-                    split_seq_b[pos_mod_b - 1] = modification
-            else:
-                if mod_b == "ox":
-                    modification = "M[UNIMOD:35]"
-                if mod_b == "cm":
-                    modification = "C[UNIMOD:4]"
-                try:
-                    mod_b_positions_float = float(mod_b_positions)
-                    split_seq_b[int(mod_b_positions_float) - 1] = modification
-                except ValueError:
-                    print(f"Error occurred with mod_a_positions value: {mod_b_positions}")
-        
         split_seq_a[int(crosslinker_position_a) - 1] = "K[UNIMOD:1896]"
         split_seq_b[int(crosslinker_position_b) - 1] = "K[UNIMOD:1896]"
 
