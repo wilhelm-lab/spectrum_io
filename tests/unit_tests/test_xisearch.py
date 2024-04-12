@@ -14,9 +14,7 @@ class TestXisearch(unittest.TestCase):
         """Test function for reading Xisearch results and transforming to Prosit format."""
         expected_xisearch_internal_path = Path(__file__).parent / "data" / "xisearch_output_internal.tsv"
 
-        internal_search_results_df = Xisearch(
-            path=Path(__file__).parent / "data" / "xisearch_output.tsv"
-        ).read_result()
+        internal_search_results_df = Xisearch(path=Path(__file__).parent / "data" / "xisearch_output.tsv").read_result()
         internal_search_results_df.reset_index(drop=True, inplace=True)
         expected_df = pd.read_csv(expected_xisearch_internal_path)
         expected_df["Modifications_A"] = expected_df["Modifications_A"].fillna("nan")

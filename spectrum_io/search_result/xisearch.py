@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
+
     def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -127,16 +128,24 @@ class Xisearch(SearchResults):
         df["CROSSLINKER_POSITION_A"] = df["CROSSLINKER_POSITION_A"].astype("int")
         df["CROSSLINKER_POSITION_B"] = df["CROSSLINKER_POSITION_B"].astype("int")
 
-        df[["MODIFIED_SEQUENCE_A", "MODIFIED_SEQUENCE_B"]] = df.apply(
+        df["MODIFIED_SEQUENCE_A"] = df.apply(
             lambda row: xisearch_to_internal(
                 row["CROSSLINKER_TYPE"],
                 row["SEQUENCE_A"],
-                row["SEQUENCE_B"],
                 row["Modifications_A"],
-                row["Modifications_B"],
                 row["CROSSLINKER_POSITION_A"],
-                row["CROSSLINKER_POSITION_B"],
                 row["ModificationPositions1"],
+            ),
+            axis=1,
+            result_type="expand",
+        )
+
+        df["MODIFIED_SEQUENCE_B"] = df.apply(
+            lambda row: xisearch_to_internal(
+                row["CROSSLINKER_TYPE"],
+                row["SEQUENCE_B"],
+                row["Modifications_B"],
+                row["CROSSLINKER_POSITION_B"],
                 row["ModificationPositions2"],
             ),
             axis=1,
