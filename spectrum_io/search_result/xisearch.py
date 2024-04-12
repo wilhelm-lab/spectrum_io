@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
+
     def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -93,57 +94,6 @@ class Xisearch(SearchResults):
         return df
 
     @staticmethod
-    def add_mod_sequence(
-        xl: str,
-        seq_a: str,
-        seq_b: str,
-        mod_a: str,
-        mod_b: str,
-        crosslinker_position_a: int,
-        crosslinker_position_b: int,
-        mod_a_positions: Union[str, float],
-        mod_b_positions: Union[str, float],
-    ):
-        """
-        Function adds modification in peptide sequence for xl-prosit.
-        
-        :param xl: type of crosslinker used. Can be 'DSSO' or 'DSBU'.
-        :param seq_a: unmodified peptide a
-        :param seq_b: unmodified peptide b
-        :param mod_a: all modifications of pep a
-        :param mod_b: all modifications of pep b
-        :param crosslinker_position_a: crosslinker position of peptide a
-        :param crosslinker_position_b: crosslinker position of peptide b
-        :param mod_a_positions: position of all modifications of peptide a
-        :param mod_b_positions: position of all modifications of peptide b
-        :return: modified sequence a and b
-        """
-        # Check the crosslinker type and apply modification accordingly
-        if xl.lower() == "dsso":
-            modification = "K[UNIMOD:1896]"
-        elif xl.lower() == "dsbu":
-            modification = "K[UNIMOD:1884]"
-        else:
-            raise ValueError(f"Unknown crosslinker type provided: {xl}. Only 'DSSO' and 'DSBU' are supported.")
-
-        mod_a_positions = str(mod_a_positions)  # Ensure it's a string
-        mod_b_positions = str(mod_b_positions)  # Ensure it's a string
-
-        split_seq_a = [x for x in seq_a]
-        split_seq_b = [x for x in seq_b]
-        xisearch_to_internal(split_seq_a, mod_a, mod_a_positions)
-        xisearch_to_internal(split_seq_b, mod_b, mod_b_positions)
-
-       
-
-        split_seq_a[int(crosslinker_position_a) - 1] = modification
-        split_seq_b[int(crosslinker_position_b) - 1] = modification
-        seq_mod_a = "".join(split_seq_a)
-        seq_mod_b = "".join(split_seq_b)
-
-        return seq_mod_a, seq_mod_b
-
-    @staticmethod
     def update_columns_for_prosit(df: pd.DataFrame) -> pd.DataFrame:
         """
         Update columns of df to work with xl-prosit.
@@ -178,16 +128,24 @@ class Xisearch(SearchResults):
         df["CROSSLINKER_POSITION_A"] = df["CROSSLINKER_POSITION_A"].astype("int")
         df["CROSSLINKER_POSITION_B"] = df["CROSSLINKER_POSITION_B"].astype("int")
 
-        df[["MODIFIED_SEQUENCE_A", "MODIFIED_SEQUENCE_B"]] = df.apply(
-            lambda row: Xisearch.add_mod_sequence(
+        df["MODIFIED_SEQUENCE_A"] = df.apply(
+            lambda row: xisearch_to_internal(
                 row["CROSSLINKER_TYPE"],
                 row["SEQUENCE_A"],
-                row["SEQUENCE_B"],
                 row["Modifications_A"],
-                row["Modifications_B"],
                 row["CROSSLINKER_POSITION_A"],
-                row["CROSSLINKER_POSITION_B"],
                 row["ModificationPositions1"],
+            ),
+            axis=1,
+            result_type="expand",
+        )
+
+        df["MODIFIED_SEQUENCE_B"] = df.apply(
+            lambda row: xisearch_to_internal(
+                row["CROSSLINKER_TYPE"],
+                row["SEQUENCE_B"],
+                row["Modifications_B"],
+                row["CROSSLINKER_POSITION_B"],
                 row["ModificationPositions2"],
             ),
             axis=1,
