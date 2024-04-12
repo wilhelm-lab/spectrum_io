@@ -11,6 +11,12 @@ class TestDigest(unittest.TestCase):
 
     def test_main(self):
         """Test digest."""
+        prosit_input = Path(__file__).parent / "data/prosit_input.csv"
+        prosit_input_with_proteins = Path(__file__).parent / "data/prosit_input_with_proteins.csv"
+
+        fasta = Path(__file__).parent / "data/fasta.fasta"
+        pep_prot_map = Path(__file__).parent / "data/peptide_protein_map.tsv"
+        pep_prot_params = Path(__file__).parent / "data/peptide_protein_map.tsv.params.txt"
         args = [
             "--enzyme",
             "trypsinp",
@@ -19,11 +25,16 @@ class TestDigest(unittest.TestCase):
             "--fragmentation",
             "CID",
             "--prosit_input",
-            str(Path(__file__).parent / "data/prosit_input.csv"),
+            str(prosit_input),
             "--fasta",
-            str(Path(__file__).parent / "data/fasta.fasta"),
+            str(fasta),
             "--peptide_protein_map",
-            str(Path(__file__).parent / "data/peptide_protein_map.tsv"),
+            str(pep_prot_map),
         ]
 
         digest.main(args)
+
+        prosit_input.unlink()
+        pep_prot_map.unlink()
+        pep_prot_params.unlink()
+        prosit_input_with_proteins.unlink()
