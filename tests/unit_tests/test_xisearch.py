@@ -16,7 +16,17 @@ class TestXisearch(unittest.TestCase):
 
         internal_search_results_df = Xisearch(path=Path(__file__).parent / "data" / "xisearch_output.tsv").read_result()
         internal_search_results_df.reset_index(drop=True, inplace=True)
-        expected_df = pd.read_csv(expected_xisearch_internal_path)
-        expected_df["Modifications_A"] = expected_df["Modifications_A"].fillna("nan")
-        expected_df["Modifications_B"] = expected_df["Modifications_B"].fillna("nan")
-        pd.testing.assert_frame_equal(internal_search_results_df, expected_df, check_dtype=False)
+
+        converters = {
+            "Modifications_A": str,
+            "Modifications_B": str,
+            "ModificationPositions1": str,
+            "ModificationPositions2": str,
+            "mods_p1": str,
+            "mods_p2": str,
+            "mod_pos_p1": str,
+            "mod_pos_p2": str,
+        }
+
+        expected_df = pd.read_csv(expected_xisearch_internal_path, converters=converters)
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)

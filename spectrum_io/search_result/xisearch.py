@@ -54,7 +54,9 @@ class Xisearch(SearchResults):
             "match_score",
         ]
 
-        df = pd.read_csv(self.path, sep="\t", usecols=columns_to_read)
+        converters = {"mods_p1": str, "mods_p2": str, "mod_pos_p1": str, "mod_pos_p2": str}
+
+        df = pd.read_csv(self.path, sep="\t", usecols=columns_to_read, converters=converters)
         logger.info("Finished reading search results file.")
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
@@ -75,21 +77,6 @@ class Xisearch(SearchResults):
         df = df[df["linked_aa_p2"].notna() & df["linked_aa_p2"].str.contains("K")]
         df = df[~df["mods_p1"].str.contains("dsso-hyd", na=False)]
         df = df[~df["mods_p2"].str.contains("dsso-hyd", na=False)]
-        valid_modifications = ["cm", "ox", pd.NA]
-        df = df[
-            df["mods_p1"].apply(
-                lambda x: any(
-                    mod in str(x).split(";") if pd.notnull(x) else mod is pd.NA for mod in valid_modifications
-                )
-            )
-        ]
-        df = df[
-            df["mods_p2"].apply(
-                lambda x: any(
-                    mod in str(x).split(";") if pd.notnull(x) else mod is pd.NA for mod in valid_modifications
-                )
-            )
-        ]
 
         return df
 
@@ -122,19 +109,14 @@ class Xisearch(SearchResults):
         logger.info("Converting XIsearch peptide sequence to internal format...")
 
         df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "")
-        df["Modifications_A"] = df["Modifications_A"].astype("str")
-        df["Modifications_B"] = df["Modifications_B"].astype("str")
-
-        df["CROSSLINKER_POSITION_A"] = df["CROSSLINKER_POSITION_A"].astype("int")
-        df["CROSSLINKER_POSITION_B"] = df["CROSSLINKER_POSITION_B"].astype("int")
 
         df["MODIFIED_SEQUENCE_A"] = df.apply(
             lambda row: xisearch_to_internal(
-                row["CROSSLINKER_TYPE"],
-                row["SEQUENCE_A"],
-                row["Modifications_A"],
-                row["CROSSLINKER_POSITION_A"],
-                row["ModificationPositions1"],
+                xl=row["CROSSLINKER_TYPE"],
+                seq=row["SEQUENCE_A"],
+                mod=row["Modifications_A"],
+                crosslinker_position=row["CROSSLINKER_POSITION_A"],
+                mod_positions=row["ModificationPositions1"],
             ),
             axis=1,
             result_type="expand",
@@ -142,11 +124,11 @@ class Xisearch(SearchResults):
 
         df["MODIFIED_SEQUENCE_B"] = df.apply(
             lambda row: xisearch_to_internal(
-                row["CROSSLINKER_TYPE"],
-                row["SEQUENCE_B"],
-                row["Modifications_B"],
-                row["CROSSLINKER_POSITION_B"],
-                row["ModificationPositions2"],
+                xl=row["CROSSLINKER_TYPE"],
+                seq=row["SEQUENCE_B"],
+                mod=row["Modifications_B"],
+                crosslinker_position=row["CROSSLINKER_POSITION_B"],
+                mod_positions=row["ModificationPositions2"],
             ),
             axis=1,
             result_type="expand",
@@ -168,8 +150,8 @@ class Xisearch(SearchResults):
         df = df[df["PEPTIDE_LENGTH_A"] >= 6]
         df = df[(df["PEPTIDE_LENGTH_B"] <= 30)]
         df = df[df["PEPTIDE_LENGTH_B"] >= 6]
-        df = df[(~df["SEQUENCE_A"].str.contains("U"))]
-        df = df[(~df["SEQUENCE_B"].str.contains("U"))]
+        df = df[(~df["SEQUENCE_A"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
+        df = df[(~df["SEQUENCE_B"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
         df = df[df["PRECURSOR_CHARGE"] <= 6]
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
 
