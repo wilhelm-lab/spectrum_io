@@ -23,6 +23,7 @@ class MSP(SpectralLibrary):
         p_charges = metadata["PRECURSOR_CHARGE"]
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
         ces = metadata["COLLISION_ENERGY"]
+        pr_ids = metadata["PROTEINS"]
 
         # prepare spectra
         irts = data["irt"][:, 0]  # should create a 1D view of the (n_peptides, 1) shaped array
@@ -33,12 +34,12 @@ class MSP(SpectralLibrary):
         lines = []
         vec_assemble = np.vectorize(MSP._assemble_fragment_string)
 
-        for stripped_peptide, p_charge, p_mz, ce, mods, irt, f_mzs, f_ints, f_annots in zip(
-            stripped_peptides, p_charges, p_mzs, ces, modss, irts, f_mzss, f_intss, f_annotss
+        for stripped_peptide, p_charge, p_mz, ce, pr_id, mods, irt, f_mzs, f_ints, f_annots in zip(
+            stripped_peptides, p_charges, p_mzs, ces, pr_ids, modss, irts, f_mzss, f_intss, f_annotss
         ):
             lines.append(f"Name: {stripped_peptide}/{p_charge}\nMW: {p_mz}\n")
             lines.append(
-                f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Mods={mods[0]} "
+                f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Pritein_ids={pr_id} Mods={mods[0]} "
                 f"ModString={mods[1]}/{p_charge} iRT={irt:.2f}\n"
             )
 
