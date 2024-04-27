@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.search_result package &mdash; spectrum_io 0.4.2 documentation</title>
+  <title>spectrum_io.search_result package &mdash; spectrum_io 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/custom_cookietemple.css?v=057798b9" />
@@ -16,7 +16,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ddf8ff60"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=79807b79"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.4.2
+                0.4.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,18 +62,32 @@
 <li class="toctree-l4"><a class="reference internal" href="spectrum_io.spectral_library.html">spectrum_io.spectral_library package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="spectrum_io.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectrum_io.html#module-spectrum_io">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="spectrum_io.file.html">spectrum_io.file package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spectrum_io.raw.html">spectrum_io.raw package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">spectrum_io.search_result package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-search-result-mascot-module">spectrum_io.search_result.mascot module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-search-result-maxquant-module">spectrum_io.search_result.maxquant module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-search-result-msfragger-module">spectrum_io.search_result.msfragger module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-search-result-search-results-module">spectrum_io.search_result.search_results module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.mascot">spectrum_io.search_result.mascot module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.mascot.Mascot"><code class="docutils literal notranslate"><span class="pre">Mascot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.maxquant">spectrum_io.search_result.maxquant module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.maxquant.MaxQuant"><code class="docutils literal notranslate"><span class="pre">MaxQuant</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.msfragger">spectrum_io.search_result.msfragger module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.msfragger.MSFragger"><code class="docutils literal notranslate"><span class="pre">MSFragger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.msfragger.update_columns_for_prosit"><code class="docutils literal notranslate"><span class="pre">update_columns_for_prosit()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result.search_results">spectrum_io.search_result.search_results module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.search_results.SearchResults"><code class="docutils literal notranslate"><span class="pre">SearchResults</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.search_result.search_results.filter_valid_prosit_sequences"><code class="docutils literal notranslate"><span class="pre">filter_valid_prosit_sequences()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.search_result">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="spectrum_io.spectral_library.html">spectrum_io.spectral_library package</a></li>
@@ -116,20 +130,297 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="spectrum-io-search-result-mascot-module">
-<h2>spectrum_io.search_result.mascot module<a class="headerlink" href="#spectrum-io-search-result-mascot-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.search_result.mascot">
+<span id="spectrum-io-search-result-mascot-module"></span><h2>spectrum_io.search_result.mascot module<a class="headerlink" href="#module-spectrum_io.search_result.mascot" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.search_result.mascot.Mascot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.mascot.</span></span><span class="sig-name descname"><span class="pre">Mascot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/mascot.py#L15-L102"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.mascot.Mascot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spectrum_io.search_result.search_results.SearchResults" title="spectrum_io.search_result.search_results.SearchResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchResults</span></code></a></p>
+<p>Handle search results from Mascot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.mascot.Mascot.fake_msms">
+<span class="sig-name descname"><span class="pre">fake_msms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.mascot.Mascot.fake_msms" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.mascot.Mascot.orig_res">
+<span class="sig-name descname"><span class="pre">orig_res</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.mascot.Mascot.orig_res" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.mascot.Mascot.read_result">
+<span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/mascot.py#L18-L102"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.mascot.Mascot.read_result" title="Permalink to this definition"></a></dt>
+<dd><p>Function to read a mascot msf file and perform some basic formatting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame with the formatted data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="spectrum-io-search-result-maxquant-module">
-<h2>spectrum_io.search_result.maxquant module<a class="headerlink" href="#spectrum-io-search-result-maxquant-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.search_result.maxquant">
+<span id="spectrum-io-search-result-maxquant-module"></span><h2>spectrum_io.search_result.maxquant module<a class="headerlink" href="#module-spectrum_io.search_result.maxquant" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.maxquant.</span></span><span class="sig-name descname"><span class="pre">MaxQuant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/maxquant.py#L14-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spectrum_io.search_result.search_results.SearchResults" title="spectrum_io.search_result.search_results.SearchResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchResults</span></code></a></p>
+<p>Handle search results from MaxQuant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.add_tmt_mod">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_tmt_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unimod_tag</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/maxquant.py#L30-L42"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.add_tmt_mod" title="Permalink to this definition"></a></dt>
+<dd><p>Add tmt modification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> (<em>float</em>) – mass without tmt modification</p></li>
+<li><p><strong>seq</strong> (<em>str</em>) – sequence of the peptide</p></li>
+<li><p><strong>unimod_tag</strong> (<em>str</em>) – UNIMOD tag for the modification</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mass as float</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.fake_msms">
+<span class="sig-name descname"><span class="pre">fake_msms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.fake_msms" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.generate_internal_timstof_metadata">
+<span class="sig-name descname"><span class="pre">generate_internal_timstof_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/maxquant.py#L123-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.generate_internal_timstof_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Load information files required for correct aggregation of spectra in timsTOF experiments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataframe containing the columns RAW_FILE, SCANNUMBER, PRECURSOR, FRAME, SCANNUMBEGIN, SCANNUMEND, CollisionEnergy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.orig_res">
+<span class="sig-name descname"><span class="pre">orig_res</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.orig_res" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.read_result">
+<span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/maxquant.py#L44-L75"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.read_result" title="Permalink to this definition"></a></dt>
+<dd><p>Function to read a msms txt and perform some basic formatting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame with the formatted data</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.maxquant.MaxQuant.update_columns_for_prosit">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_columns_for_prosit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/maxquant.py#L77-L121"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.maxquant.MaxQuant.update_columns_for_prosit" title="Permalink to this definition"></a></dt>
+<dd><p>Update columns of df to work with Prosit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – df to modify</p></li>
+<li><p><strong>tmt_labeled</strong> (<em>str</em>) – True if tmt labeled</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>modified df as pd.DataFrame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="spectrum-io-search-result-msfragger-module">
-<h2>spectrum_io.search_result.msfragger module<a class="headerlink" href="#spectrum-io-search-result-msfragger-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.search_result.msfragger">
+<span id="spectrum-io-search-result-msfragger-module"></span><h2>spectrum_io.search_result.msfragger module<a class="headerlink" href="#module-spectrum_io.search_result.msfragger" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">MSFragger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L16-L41"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spectrum_io.search_result.search_results.SearchResults" title="spectrum_io.search_result.search_results.SearchResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchResults</span></code></a></p>
+<p>Handle search results from MSFragger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger.fake_msms">
+<span class="sig-name descname"><span class="pre">fake_msms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.fake_msms" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger.orig_res">
+<span class="sig-name descname"><span class="pre">orig_res</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.orig_res" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.MSFragger.read_result">
+<span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L19-L41"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.MSFragger.read_result" title="Permalink to this definition"></a></dt>
+<dd><p>Function to read a msms txt and perform some basic formatting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – in case the given path is neither a file, nor a directory.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame with the formatted data</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.search_result.msfragger.update_columns_for_prosit">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.msfragger.</span></span><span class="sig-name descname"><span class="pre">update_columns_for_prosit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/msfragger.py#L44-L91"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.msfragger.update_columns_for_prosit" title="Permalink to this definition"></a></dt>
+<dd><p>Update columns of df to work with Prosit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – df to modify</p></li>
+<li><p><strong>tmt_labeled</strong> (<em>str</em>) – True if tmt labeled</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>modified df as pd.DataFrame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="spectrum-io-search-result-search-results-module">
-<h2>spectrum_io.search_result.search_results module<a class="headerlink" href="#spectrum-io-search-result-search-results-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.search_result.search_results">
+<span id="spectrum-io-search-result-search-results-module"></span><h2>spectrum_io.search_result.search_results module<a class="headerlink" href="#module-spectrum_io.search_result.search_results" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.search_results.</span></span><span class="sig-name descname"><span class="pre">SearchResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/search_results.py#L37-L93"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Handle search results from different software.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults.fake_msms">
+<span class="sig-name descname"><span class="pre">fake_msms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults.fake_msms" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults.generate_internal">
+<span class="sig-name descname"><span class="pre">generate_internal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/search_results.py#L62-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults.generate_internal" title="Permalink to this definition"></a></dt>
+<dd><p>Generate df and save to out_path if provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out_path</strong> (<em>str</em><em> | </em><em>Path</em><em> | </em><em>None</em>) – path to output</p></li>
+<li><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>path to output file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults.orig_res">
+<span class="sig-name descname"><span class="pre">orig_res</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults.orig_res" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults.read_internal">
+<span class="sig-name descname"><span class="pre">read_internal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/search_results.py#L87-L93"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults.read_internal" title="Permalink to this definition"></a></dt>
+<dd><p>Read file from path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataframe after reading the file</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.SearchResults.read_result">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmt_labeled</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/search_results.py#L53-L60"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.search_results.SearchResults.read_result" title="Permalink to this definition"></a></dt>
+<dd><p>Read result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmt_labeled</strong> (<em>str</em>) – tmt label as str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.search_result.search_results.filter_valid_prosit_sequences">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.search_result.search_results.</span></span><span class="sig-name descname"><span class="pre">filter_valid_prosit_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/search_result/search_results.py#L14-L34"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.search_result.search_results.filter_valid_prosit_sequences" title="Permalink to this definition"></a></dt>
+<dd><p>Filter valid Prosit sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – df to filter</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>df after filtering out unsupported peptides</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.search_result">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-spectrum_io.search_result" title="Permalink to this heading"></a></h2>
+<p>Initialize seach result.</p>
 </section>
 </section>
 

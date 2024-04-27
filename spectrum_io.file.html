@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>spectrum_io.file package &mdash; spectrum_io 0.4.2 documentation</title>
+  <title>spectrum_io.file package &mdash; spectrum_io 0.4.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/custom_cookietemple.css?v=057798b9" />
@@ -16,7 +16,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=ddf8ff60"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=79807b79"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="_static/js/theme.js"></script>
@@ -38,7 +38,7 @@
             spectrum_io
           </a>
               <div class="version">
-                0.4.2
+                0.4.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -62,14 +62,24 @@
 <li class="toctree-l4"><a class="reference internal" href="spectrum_io.spectral_library.html">spectrum_io.spectral_library package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="spectrum_io.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spectrum_io.html#module-spectrum_io">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">spectrum_io.file package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-file-csv-module">spectrum_io.file.csv module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#spectrum-io-file-hdf5-module">spectrum_io.file.hdf5 module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.file.csv">spectrum_io.file.csv module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.csv.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.csv.write_file"><code class="docutils literal notranslate"><span class="pre">write_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.file.hdf5">spectrum_io.file.hdf5 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.hdf5.read_file"><code class="docutils literal notranslate"><span class="pre">read_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.hdf5.thread_this"><code class="docutils literal notranslate"><span class="pre">thread_this()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.hdf5.write_dataset"><code class="docutils literal notranslate"><span class="pre">write_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spectrum_io.file.hdf5.write_file"><code class="docutils literal notranslate"><span class="pre">write_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-spectrum_io.file">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="spectrum_io.raw.html">spectrum_io.raw package</a></li>
@@ -114,14 +124,104 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="spectrum-io-file-csv-module">
-<h2>spectrum_io.file.csv module<a class="headerlink" href="#spectrum-io-file-csv-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.file.csv">
+<span id="spectrum-io-file-csv-module"></span><h2>spectrum_io.file.csv module<a class="headerlink" href="#module-spectrum_io.file.csv" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.csv.read_file">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.csv.</span></span><span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/csv.py#L7-L15"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.csv.read_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read csv file and return df with contents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – path to file to read</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>df with contents as pd.DataFrame</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.csv.write_file">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.csv.</span></span><span class="sig-name descname"><span class="pre">write_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/csv.py#L18-L25"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.csv.write_file" title="Permalink to this definition"></a></dt>
+<dd><p>Write dataframe to csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – df with contents as pd.DataFrame</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – path to file to write</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="spectrum-io-file-hdf5-module">
-<h2>spectrum_io.file.hdf5 module<a class="headerlink" href="#spectrum-io-file-hdf5-module" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.file.hdf5">
+<span id="spectrum-io-file-hdf5-module"></span><h2>spectrum_io.file.hdf5 module<a class="headerlink" href="#module-spectrum_io.file.hdf5" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.hdf5.read_file">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.hdf5.</span></span><span class="sig-name descname"><span class="pre">read_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/hdf5.py#L19-L46"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.hdf5.read_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read hdf5 file and return dataframe with contents.</p>
+<p>With possibility to partial load for memory issues.
+:param path: The path to the hdf5 file to read
+:param key: The key of the dataset/group of interest
+:return: a pandas DataFrame with contents</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> | </em><em>Path</em>) – </p></li>
+<li><p><strong>key</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.hdf5.thread_this">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.hdf5.</span></span><span class="sig-name descname"><span class="pre">thread_this</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/hdf5.py#L49-L57"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.hdf5.thread_this" title="Permalink to this definition"></a></dt>
+<dd><p>Function for threading.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.hdf5.write_dataset">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.hdf5.</span></span><span class="sig-name descname"><span class="pre">write_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'w'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/hdf5.py#L89-L142"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.hdf5.write_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Writes or appends dataset to an hdf5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>DataFrame</em><em> | </em><em>spmatrix</em>) – The data to store. Can be a pandas DataFrame or a scipy Sparsematrix</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – The path to store the file to</p></li>
+<li><p><strong>dataset_name</strong> (<em>str</em>) – The key in the hdf5 file under which to store the data</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – The method when writing the data. Use ‘a’ to append to an existing file or ‘w’ to overwrite</p></li>
+<li><p><strong>compression</strong> (<em>str</em><em> | </em><em>bool</em><em> | </em><em>None</em>) – Optional, the method for compressing data. Check pandas.DataFrame.to_hdf docs for supported
+compression methods in case of providing a pandas DataFrame and h5py.Dataset docs in case of providing
+a sparse matrix. If providing False, no compression is applied; if providing True, defaults to ‘zlib’
+in case of providing a pandas DataFrame and ‘gzip’ if providing a sparse matrix.
+standard compression depending on the data type given. Default: True</p></li>
+<li><p><strong>column_names</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional, additional column column_names. Ignored if providing a pandas DataFrame. Default: None</p></li>
+<li><p><strong>index</strong> (<em>List</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Optional, additional index. Ignored if providing a pandas DataFrame. Default: None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – if data_set has an unexpected type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spectrum_io.file.hdf5.write_file">
+<span class="sig-prename descclassname"><span class="pre">spectrum_io.file.hdf5.</span></span><span class="sig-name descname"><span class="pre">write_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/wilhelm-lab/spectrum_io/blob/development/spectrum_io/file/hdf5.py#L52-L55"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#spectrum_io.file.hdf5.write_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="module-spectrum_io.file">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-spectrum_io.file" title="Permalink to this heading"></a></h2>
+<p>Initialize logger.</p>
 </section>
 </section>
 
