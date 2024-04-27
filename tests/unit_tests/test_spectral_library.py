@@ -86,7 +86,7 @@ class TestDLib:
             {
                 "PrecursorMz": [124.407276467, 1617.057276467],
                 "PrecursorCharge": [1, 2],
-                "PeptideModSeq": ["AAAC[+57.02146]CC[+57.02146]CKR", "AAACILKKR"],
+                "PeptideModSeq": ["AAAC[+57.021464]CC[+57.021464]CKR", "AAACILKKR"],
                 "PeptideSeq": ["AAACCCCKR", "AAACILKKR"],
                 "Copies": 1,
                 "RTInSeconds": [982.12, 382.12],
