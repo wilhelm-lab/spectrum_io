@@ -82,6 +82,8 @@ class TestDLib:
         df_p2p = pd.read_sql_query("SELECT * from peptidetoprotein", con)
         df_meta = pd.read_sql_query("SELECT * from metadata", con)
 
+        con.close()
+
         df_expected_entries = pd.DataFrame(
             {
                 "PrecursorMz": [124.407276467, 1617.057276467],
