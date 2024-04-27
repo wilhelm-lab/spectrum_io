@@ -60,8 +60,9 @@ class Sage(SearchResults):
         df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
         # creating a column of decoys and targets
         df["REVERSE"] = df["LABEL"] < 0
+        df.drop(columns=["LABEL"], inplace=True)
         # removing modification to create the unmodified sequences
-        df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\[.*?\]", "", regex=True)
+        df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\-|\[.*?\]", "", regex=True)
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         # mass of the peptide
