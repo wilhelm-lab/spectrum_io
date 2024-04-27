@@ -1,16 +1,17 @@
+import sqlite3
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from spectrum_io.spectral_library import MSP, Spectronaut
+from spectrum_io.spectral_library import MSP, DLib, Spectronaut
 
 
 class TestMSP:
     """Class to test msp."""
 
-    def test_write(self, spectra_input, data, metadata):
+    def test_write(self, data, metadata):
         """Test write to file."""
         out_file = Path(__file__).parent / "test.msp"
         msp_lib = MSP(out_file)
@@ -43,7 +44,7 @@ class TestMSP:
 class TestSpectronaut:
     """Class to test msp."""
 
-    def test_write(self, spectra_input, data, metadata):
+    def test_write(self, data, metadata):
         """Test write to file."""
         out_file = Path(__file__).parent / "test.csv"
         msp_lib = Spectronaut(out_file)
@@ -68,16 +69,59 @@ class TestSpectronaut:
         out_file.unlink()
 
 
-@pytest.fixture
-def spectra_input():
-    """Test spectra input."""
-    spectra_input = pd.DataFrame()
-    spectra_input["MODIFIED_SEQUENCE_SPEC"] = ["AAACCCC", "AAACILK"]
-    spectra_input["MODIFIED_SEQUENCE"] = ["AAAC[UNIMOD:4]CC[UNIMOD:4]CKR", "AAACILKKR"]
-    spectra_input["MASS"] = [123.4, 3232.1]
-    spectra_input["COLLISION_ENERGY"] = [10.0, 20.0]
-    spectra_input["PRECURSOR_CHARGE"] = [1, 2]
-    return spectra_input
+class TestDLib:
+    """Class to test DLib."""
+
+    def test_write(self, data, metadata):
+        """Test write to dlib library file."""
+        out_file = Path(__file__).parent / "test.dlib"
+        dlib = DLib(out_file)
+        dlib.write(data, metadata)
+        con = sqlite3.connect(out_file)
+        df_entries = pd.read_sql_query("SELECT * from entries", con)
+        df_p2p = pd.read_sql_query("SELECT * from peptidetoprotein", con)
+        df_meta = pd.read_sql_query("SELECT * from metadata", con)
+
+        df_expected_entries = pd.DataFrame(
+            {
+                "PrecursorMz": [124.407276467, 1617.057276467],
+                "PrecursorCharge": [1, 2],
+                "PeptideModSeq": ["AAAC[+57.02146]CC[+57.02146]CKR", "AAACILKKR"],
+                "PeptideSeq": ["AAACCCCKR", "AAACILKKR"],
+                "Copies": 1,
+                "RTInSeconds": [982.12, 382.12],
+                "Score": 0.0,
+                "MassEncodedLength": [16, 24],
+                "MassArray": [
+                    b"x\x9c\xb3\xbfl\x0c\x06\xf6/g\x82\xc0,\x003\x01\x07\x04",
+                    b"x\x9c\xb3\xbfl\x0c\x06\xf67g\x82\xc0,\xfb\x07\x0c`\x00\x00rI\x08\x13",
+                ],
+                "IntensityEncodedLength": [8, 12],
+                "IntensityArray": [
+                    b"x\x9csZ\xc0\xc0\xe0\x08\xc4\x00\t\\\x01\xc4",
+                    b"x\x9c\xb3=s\xe6\xacS\x01\x03\x83\x93\x07\x03\x03\x00!\xd9\x03\xdf",
+                ],
+                "CorrelationEncodedLength": None,
+                "CorrelationArray": None,
+                "RTInSecondsStart": None,
+                "RTInSecondsStop": None,
+                "MedianChromatogramEncodedLength": None,
+                "MedianChromatogramArray": None,
+                "SourceFile": "Oktoberfest",
+            }
+        )
+
+        df_expected_p2p = pd.DataFrame(
+            {"PeptideSeq": ["AAACCCCKR", "AAACILKKR"], "isDecoy": 0, "ProteinAccession": "UNKNOWN"}
+        )
+
+        df_expected_meta = pd.DataFrame({"Key": ["version", "staleProteinMapping"], "Value": ["0.1.14", "true"]})
+
+        pd.testing.assert_frame_equal(df_expected_p2p, df_p2p)
+        pd.testing.assert_frame_equal(df_expected_entries, df_entries)
+        pd.testing.assert_frame_equal(df_expected_meta, df_meta)
+
+        out_file.unlink()
 
 
 @pytest.fixture
