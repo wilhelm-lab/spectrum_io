@@ -114,6 +114,9 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
     )
     df.columns = ["FRAME", "SCAN", "PRECURSOR", "RETENTION_TIME", "INV_ION_MOBILITY", "MZ", "INTENSITIES"]
 
+    # converting RETENTION TIME from seconds to minutes
+    df["RETENTION_TIME"] = df["RETENTION_TIME"].div(60)
+
     # aggregation
     df_combined_grouped = (
         df.merge(
