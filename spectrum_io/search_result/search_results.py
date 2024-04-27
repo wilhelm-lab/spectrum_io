@@ -52,7 +52,11 @@ class SearchResults:
 
     @abstractmethod
     def read_result(self, tmt_labeled: str):
-        """Read result."""
+        """Read result.
+
+        :param tmt_labeled: tmt label as str
+
+        """
         raise NotImplementedError
 
     def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> pd.DataFrame:
