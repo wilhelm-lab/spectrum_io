@@ -51,6 +51,9 @@ class Sage(SearchResults):
                 "SCANNR": "SCAN_NUMBER",
                 "PEPTIDE": "MODIFIED_SEQUENCE",
                 "CHARGE": "PRECURSOR_CHARGE",
+                "CALCMASS": "MASS",
+                "HYPERSCORE": "SCORE",
+                "LABEL": "REVERSE",
             }
         )
 
@@ -59,17 +62,12 @@ class Sage(SearchResults):
         # extracting only the scan number
         df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
         # creating a column of decoys and targets
-        df["REVERSE"] = df["LABEL"] < 0
-        df.drop(columns=["LABEL"], inplace=True)
+        df["REVERSE"] = df["REVERSE"] < 0
         # removing modification to create the unmodified sequences
         df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\-|\[.*?\]", "", regex=True)
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
-        # mass of the peptide
-        df["MASS"] = df["CALCMASS"]
-        # score of the peptide
-        df["SCORE"] = df["HYPERSCORE"]
-        # converting proforma to unimode
+        # converting sage to unimod
         df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
 
         return df
