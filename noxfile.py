@@ -108,6 +108,7 @@ def precommit(session: Session) -> None:
         "flake8",
         "flake8-bandit",
         "flake8-bugbear",
+        "darglint",
         "flake8-docstrings",
         "flake8-rst-docstrings",
         "isort",

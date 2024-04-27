@@ -2,6 +2,7 @@ from abc import abstractmethod
 from multiprocessing import Queue
 from multiprocessing.managers import ValueProxy
 from pathlib import Path
+from sqlite3 import Connection
 from typing import IO, Dict, Optional, Union
 
 import numpy as np
@@ -44,9 +45,12 @@ class SpectralLibrary:
         :param args: Positional arguments to be passed to the internal _write method.
         :param kwargs: Keyword arguments to be passed to the internal _write method.
         """
-        with open(self.out_path, self.mode) as out:
-            self._write_header(out)
+        with self._get_handle() as out:
+            self._initialize(out)
             self._write(out, *args, **kwargs)
+
+    def _get_handle(self):
+        return open(self.out_path, self.mode)
 
     def async_write(self, queue: Queue, progress: ValueProxy):
         """
@@ -55,8 +59,8 @@ class SpectralLibrary:
         :param queue: A queue from which content will be retrieved for writing.
         :param progress: An integer value representing the progress of the writing process.
         """
-        with open(self.out_path, self.mode) as out:
-            self._write_header(out)
+        with self._get_handle() as out:
+            self._initialize(out)
             while True:
                 content = queue.get()
                 if content is None:
@@ -82,7 +86,7 @@ class SpectralLibrary:
         return (f_mz != -1) & (f_int >= self.min_intensity_threshold)
 
     @abstractmethod
-    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         """
         Internal writer function.
 
@@ -97,10 +101,5 @@ class SpectralLibrary:
         pass
 
     @abstractmethod
-    def _write_header(self, out: IO):
-        pass
-
-    @abstractmethod
-    def prepare_spectrum(self):
-        """Prepare spectrum."""
+    def _initialize(self, out: Union[IO, Connection]):
         pass

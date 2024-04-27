@@ -1,4 +1,5 @@
-from typing import IO, Dict
+from sqlite3 import Connection
+from typing import IO, Dict, Union
 
 import numpy as np
 import pandas as pd
@@ -16,8 +17,10 @@ class MSP(SpectralLibrary):
         annot = f_a[:-2].decode() if f_a.endswith(b"1") else f_a.replace(b"+", b"^").decode()
         return f'{f_mz:.8f}\t{f_int:.4f}\t"{annot}/0.0ppm"\n'
 
-    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         # prepare metadata
+        if isinstance(out, Connection):
+            raise TypeError("Not supported. Use DLib if you want to write a database file.")
         stripped_peptides = metadata["SEQUENCE"]
         modss = internal_to_mod_names(metadata["MODIFIED_SEQUENCE"])
         p_charges = metadata["PRECURSOR_CHARGE"]
@@ -51,5 +54,5 @@ class MSP(SpectralLibrary):
             lines.extend(fragment_list)
         out.writelines(lines)
 
-    def _write_header(self, out: IO):
+    def _initialize(self, out: Union[IO, Connection]):
         pass

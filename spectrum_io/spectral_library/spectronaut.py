@@ -1,7 +1,8 @@
 import os
 import re
 from itertools import chain, cycle
-from typing import IO, Dict, Tuple
+from sqlite3 import Connection
+from typing import IO, Dict, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -25,8 +26,10 @@ class Spectronaut(SpectralLibrary):
             f"{f_int:.4f},{f_mz:.8f},{m.group(2)},{m.group(1)},{m.group(3)},{m.group(4) if m.group(4) else 'noloss'}\n"
         )
 
-    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame):
         # prepare metadata
+        if isinstance(out, Connection):
+            raise TypeError("Not supported. Use DLib if you want to write a database file.")
         seqs = metadata["SEQUENCE"]
         modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
         p_charges = metadata["PRECURSOR_CHARGE"]
@@ -50,7 +53,9 @@ class Spectronaut(SpectralLibrary):
             fragment_list = vec_assemble(f_ints[cond], f_mzs[cond], f_annots[cond])
             out.writelines(chain.from_iterable(zip(cycle(line_start), fragment_list)))
 
-    def _write_header(self, out: IO):
+    def _initialize(self, out: Union[IO, Connection]):
+        if isinstance(out, Connection):
+            raise TypeError("Not supported. Use DLib if you want to write a database file.")
         if self.mode == "w":
             out.write(
                 "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,ProteinIds,"
