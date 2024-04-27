@@ -15,17 +15,15 @@ logger = logging.getLogger(__name__)
 class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
-        :param path: path to msms.txt to read
         :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading mascot msf file")
-        connection = sqlite3.connect(path)
+        connection = sqlite3.connect(self.path)
         # cursor = connection.cursor()
         # cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         df = pd.read_sql("SELECT * FROM MSnSpectrumInfo", connection)[

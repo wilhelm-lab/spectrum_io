@@ -1,4 +1,7 @@
 import os
+import re
+from itertools import chain, cycle
+from typing import IO, Dict, Tuple
 
 import numpy as np
 import pandas as pd
@@ -13,107 +16,42 @@ class Spectronaut(SpectralLibrary):
 
     # Check spectronaut folder for output format.
 
-    def write(self):
-        """
-        Writing method.
-
-        Splits intermediate dataframe into chunks of 10k lines, explodes them,
-        and filters for relevant peaks before storing it in self.out_path.
-        """
-        n = 7000  # split df into chunks of size n
-        initial = not os.path.isfile(self.out_path)
-        for _, segment in self.spectra_output.groupby(np.arange(len(self.spectra_output)) // n):
-            segment = segment.explode(
-                ["intensities", "fragment_mz", "fragment_types", "fragment_numbers", "fragment_charges"]
-            )
-            segment = segment[segment["intensities"] > 0]  # set to >= if 0 should be kept
-            segment.rename(
-                columns={
-                    "intensities": "RelativeIntensity",
-                    "fragment_mz": "FragmentMz",
-                    "fragment_types": "FragmentType",
-                    "fragment_numbers": "FragmentNumber",
-                    "fragment_charges": "FragmentCharge",
-                },
-                inplace=True,
-            )
-            segment["FragmentLossType"] = "noloss"
-            if len(list(self.grpc_output)) > 2:
-                segment = segment[
-                    [
-                        "RelativeIntensity",
-                        "FragmentMz",
-                        "ModifiedPeptide",
-                        "LabeledPeptide",
-                        "StrippedPeptide",
-                        "PrecursorCharge",
-                        "PrecursorMz",
-                        "iRT",
-                        "proteotypicity",
-                        "FragmentNumber",
-                        "FragmentType",
-                        "FragmentCharge",
-                        "FragmentLossType",
-                    ]
-                ]
-            else:
-                segment = segment[
-                    [
-                        "RelativeIntensity",
-                        "FragmentMz",
-                        "ModifiedPeptide",
-                        "LabeledPeptide",
-                        "StrippedPeptide",
-                        "PrecursorCharge",
-                        "PrecursorMz",
-                        "iRT",
-                        "FragmentNumber",
-                        "FragmentType",
-                        "FragmentCharge",
-                        "FragmentLossType",
-                    ]
-                ]
-            segment.to_csv(self.out_path, mode="a", header=initial, index=False)
-
-    def prepare_spectrum(self):
-        """Converts grpc output and metadata dataframe into spectronaut format."""
-        intensities = self.grpc_output[list(self.grpc_output)[0]]["intensity"]
-        fragment_mz = self.grpc_output[list(self.grpc_output)[0]]["fragmentmz"]
-        annotation = self.grpc_output[list(self.grpc_output)[0]]["annotation"]
-        fragment_types = annotation["type"]
-        fragment_numbers = annotation["number"]
-        fragment_charges = annotation["charge"]
-        irt = self.grpc_output[list(self.grpc_output)[1]]
-        irt = irt.flatten()
-        if len(list(self.grpc_output)) > 2:
-            proteotypicity = self.grpc_output[list(self.grpc_output)[2]]
-            proteotypicity = proteotypicity.flatten()
-        modified_sequences_spec = internal_to_spectronaut(
-            self.spectra_input["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_")
+    @staticmethod
+    def _assemble_fragment_string(f_int: float, f_mz: float, f_annot: bytes):
+        m = re.match(r"([by])(\d+)\+(\d)(?:-(\w+))?", f_annot.decode())
+        if m is None:
+            raise ValueError(f"Malformed annotation string encountered: {f_annot.decode()}")
+        return (
+            f"{f_int:.4f},{f_mz:.8f},{m.group(2)},{m.group(1)},{m.group(3)},{m.group(4) if m.group(4) else 'noloss'}\n"
         )
-        modified_sequences = self.spectra_input["MODIFIED_SEQUENCE"]
 
-        labelled_sequences = internal_without_mods(modified_sequences)
-        stripped_peptide = internal_without_mods(modified_sequences)
-        charges = self.spectra_input["PRECURSOR_CHARGE"]
-        precursor_masses = self.spectra_input["MASS"]
-        precursor_mz = (precursor_masses + (charges * PARTICLE_MASSES["PROTON"])) / charges
+    def _write(self, out: IO, data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+        # prepare metadata
+        seqs = metadata["SEQUENCE"]
+        modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
+        p_charges = metadata["PRECURSOR_CHARGE"]
+        p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
+        ces = metadata["COLLISION_ENERGY"]
 
-        inter_df = pd.DataFrame(
-            data={
-                "ModifiedPeptide": modified_sequences_spec,
-                "LabeledPeptide": labelled_sequences,
-                "StrippedPeptide": stripped_peptide,
-                "PrecursorCharge": charges,
-                "PrecursorMz": precursor_mz,
-            }
-        )
-        inter_df["iRT"] = irt.tolist()
-        if len(list(self.grpc_output)) > 2:
-            inter_df["proteotypicity"] = proteotypicity.tolist()
-        inter_df["intensities"], inter_df["fragment_mz"] = intensities.tolist(), fragment_mz.tolist()
-        inter_df["fragment_types"] = fragment_types.tolist()
-        inter_df["fragment_numbers"] = fragment_numbers.tolist()
-        inter_df["fragment_charges"] = fragment_charges.tolist()
+        # prepare spectra
+        irts = data["irt"][:, 0]  # should create a 1D view of the (n_peptides, 1) shaped array
+        f_mzss = data["mz"]
+        f_intss = data["intensities"]
+        f_annotss = data["annotation"].astype("S", copy=False)
 
-        self.spectra_output = inter_df
+        vec_assemble = np.vectorize(Spectronaut._assemble_fragment_string)
+
+        for f_ints, f_mzs, modseq, seq, p_charge, p_mz, irt, ce, f_annots in zip(
+            f_intss, f_mzss, modseqs, seqs, p_charges, p_mzs, irts, ces, f_annotss
+        ):
+            cond = self._fragment_filter_passed(f_mzs, f_ints)
+            line_start = [f"{modseq},{seq},{seq},{p_charge},{p_mz:.8f},{irt:.2f},{ce},"]
+            fragment_list = vec_assemble(f_ints[cond], f_mzs[cond], f_annots[cond])
+            out.writelines(chain.from_iterable(zip(cycle(line_start), fragment_list)))
+
+    def _write_header(self, out: IO):
+        if self.mode == "w":
+            out.write(
+                "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,"
+                "RelativeFragmentIntensity,FragmentMz,FragmentNumber,FragmentType,FragmentCharge,FragmentLossType\n"
+            )

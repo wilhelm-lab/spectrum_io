@@ -16,25 +16,20 @@ logger = logging.getLogger(__name__)
 class MSFragger(SearchResults):
     """Handle search results from MSFragger."""
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: path to pepXML folder or single pepXML file to read
         :param tmt_labeled: tmt label as str
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
-        if isinstance(path, str):
-            path = Path(path)
-
-        if path.is_file():
-            file_list = [path]
-        elif path.is_dir():
-            file_list = list(path.rglob("*.pepXML"))
+        if self.path.is_file():
+            file_list = [self.path]
+        elif self.path.is_dir():
+            file_list = list(self.path.rglob("*.pepXML"))
         else:
-            raise FileNotFoundError(f"{path} could not be found.")
+            raise FileNotFoundError(f"{self.path} could not be found.")
 
         ms_frag_results = []
         for pep_xml_file in tqdm(file_list):
