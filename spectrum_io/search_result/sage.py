@@ -21,13 +21,13 @@ class Sage(SearchResults):
         :param tmt_labeled: tmt label as str
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msms.tsv file")
+        logger.info(f"Reading {self.path}")
         df = pd.read_csv(
             self.path,
-            usecols=["filename", "scannr", "peptide", "charge", "hyperscore", "calcmass", "proteins"],
+            usecols=["filename", "scannr", "peptide", "charge", "hyperscore", "calcmass", "label", "proteins"],
             sep="\t",
         )
-        logger.info("Finished reading msms.tsv file")
+        logger.info(f"Finished reading {self.path}")
 
         # Standardize column names
         df.columns = df.columns.str.upper()
@@ -59,7 +59,7 @@ class Sage(SearchResults):
         # extracting only the scan number
         df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
         # creating a column of decoys and targets
-        df["REVERSE"] = df["PROTEINS"].str.startswith("rev_")
+        df["REVERSE"] = df["LABEL"] < 0
         # removing modification to create the unmodified sequences
         df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\[.*?\]", "", regex=True)
         # length of the peptide
