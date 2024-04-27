@@ -71,8 +71,6 @@ class Sage(SearchResults):
         # score of the peptide
         # df["SCORE"] = df["HYPERSCORE"]
         # converting proforma to unimode
-        print(df)
         df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
 
-        print(df.columns)
         return df
