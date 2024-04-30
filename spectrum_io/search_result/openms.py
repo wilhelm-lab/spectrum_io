@@ -1,10 +1,12 @@
 import pandas as pd
+import logging
 
 from pyopenms import IdXMLFile
-from spectrum_fundamentals.mod_string import openms_to_internal
+from spectrum_fundamentals.mod_string import openms_to_internal, internal_without_mods
 from tqdm import tqdm
-from spectrum_io.search_result.search_results import SearchResults, filter_valid_prosit_sequences
+from .search_results import SearchResults, filter_valid_prosit_sequences
 
+logger = logging.getLogger(__name__)
 
 def strToFloat(df):
   for col in df:
@@ -97,6 +99,8 @@ class OpenMS(SearchResults):
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
+        logger.info("Reading OpenMS idXML file")
+
         if self.path.is_file():
             file_list = [self.path]
         elif self.path.is_dir():
@@ -110,6 +114,8 @@ class OpenMS(SearchResults):
             openms_results.append(readAndProcessIdXML(str(openms_file)))
         
         df = pd.concat(openms_results)
+
+        logger.info("Finished reading OpenMS idXML file.")
 
         df = update_columns_for_prosit(df, tmt_labeled)
             
