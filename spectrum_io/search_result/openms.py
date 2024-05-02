@@ -136,6 +136,7 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
         df["MODIFIED_SEQUENCE"] = openms_to_internal(df["Peptide"].to_list())
 
     df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
+    df["REVERSE"] = ~df["Label"]
 
     df.rename(
         columns={
@@ -143,10 +144,9 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
             "ExpMass": "MASS",
             "peplen": "PEPTIDE_LENGTH",
             "charge": "PRECURSOR_CHARGE",
-            "Label": "REVERSE",
             "ScanNr": "SCAN_NUMBER",
             "Score": "SCORE",
-            "PSMId": "SCAN_EVENT_NUMBER" # not fixed 
+            "PSMId": "SCAN_EVENT_NUMBER" 
         },
         inplace=True,
     )
