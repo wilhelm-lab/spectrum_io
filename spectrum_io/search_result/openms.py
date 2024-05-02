@@ -46,7 +46,7 @@ def readAndProcessIdXML(input_file, top=1):
       else:
           label = 0
 
-      sequence = h.getSequence().toString() ##4
+      sequence = h.getSequence().toString() 
 
       if len(meta_value_keys) == 0: # fill meta value keys on first run
         h.getKeys(meta_value_keys)
@@ -72,13 +72,13 @@ def readAndProcessIdXML(input_file, top=1):
 
   convert_dict = {'SpecId': str,
                   'PSMId': int,
-                  'Label': int,
                   'Score': float,
                   'ScanNr': int,
                   'peplen': int                
                }
   
   df = df.astype(convert_dict)
+  df['Label'] = df['Label'].astype(bool)
 
   for prot_id in prot_ids:
      raw_file = (prot_id.getMetaValue("spectra_data"))[0].decode('utf-8').split('/')[-1].split('.')[0]
@@ -131,7 +131,7 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
     :return: modified df as pd.DataFrame
     """
     if tmt_labeled != "":
-        print("not implemented TMT modifications")
+        logger.debug("not implemented TMT modifications")
     else:
         df["MODIFIED_SEQUENCE"] = openms_to_internal(df["Peptide"].to_list())
 
