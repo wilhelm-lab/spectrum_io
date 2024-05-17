@@ -20,7 +20,7 @@ DLIB_COL_NAMES = [
     "PeptideSeq",
     "RTInSeconds",
     "PrecursorMz",
-    "ProteinIds"
+    "ProteinIds",
 ]
 
 
