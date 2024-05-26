@@ -29,7 +29,7 @@ h5py = "^3.1.0"
 pymzml = "^2.5.0"
 pyteomics = "^4.3.3"
 lxml= '^4.5.2'
-spectrum-fundamentals = ">=0.5.2,<0.6.0"
+spectrum-fundamentals = ">=0.5.4,<0.6.0"
 alphatims = "^1.0.8"
 sortedcontainers = "^2.4.0"
 
