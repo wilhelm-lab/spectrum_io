@@ -184,5 +184,6 @@ def read_and_aggregate_timstof(source: Path, tims_meta_file: Path) -> pd.DataFra
     df_combined["RAW_FILE"] = source.stem
     df_combined["MASS_ANALYZER"] = "TOF"
     df_combined["FRAGMENTATION"] = "HCD"
+    df_combined["INSTRUMENT_TYPES"] = "TIMSTOF"
 
     return df_combined
