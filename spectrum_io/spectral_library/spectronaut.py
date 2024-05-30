@@ -49,7 +49,7 @@ class Spectronaut(SpectralLibrary):
             f_intss, f_mzss, modseqs, seqs, p_charges, p_mzs, irts, ces, pr_ids, f_annotss
         ):
             cond = self._fragment_filter_passed(f_mzs, f_ints)
-            line_start = [f"{modseq},{seq},{seq},{p_charge},{p_mz:.8f},{irt:.2f},{ce},{pr_id}"]
+            line_start = [f"{modseq},{seq},{seq},{p_charge},{p_mz:.8f},{irt:.2f},{ce},{pr_id},"]
             fragment_list = vec_assemble(f_ints[cond], f_mzs[cond], f_annots[cond])
             out.writelines(chain.from_iterable(zip(cycle(line_start), fragment_list)))
 

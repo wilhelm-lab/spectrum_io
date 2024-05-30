@@ -42,7 +42,7 @@ class MSP(SpectralLibrary):
         ):
             lines.append(f"Name: {stripped_peptide}/{p_charge}\nMW: {p_mz}\n")
             lines.append(
-                f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Pritein_ids={pr_id} Mods={mods[0]} "
+                f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Protein_ids={pr_id} Mods={mods[0]} "
                 f"ModString={mods[1]}/{p_charge} iRT={irt:.2f}\n"
             )
 

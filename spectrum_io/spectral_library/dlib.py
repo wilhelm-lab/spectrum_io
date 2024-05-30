@@ -20,7 +20,6 @@ DLIB_COL_NAMES = [
     "PeptideSeq",
     "RTInSeconds",
     "PrecursorMz",
-    "ProteinIds",
 ]
 
 
@@ -103,8 +102,7 @@ class DLib(SpectralLibrary):
                 RTInSecondsStop REAL,
                 MedianChromatogramEncodedLength INTEGER,
                 MedianChromatogramArray BLOB,
-                SourceFile TEXT NOT NULL DEFAULT 'Oktoberfest',
-                ProteinIds TEXT NOT NULL
+                SourceFile TEXT NOT NULL DEFAULT 'Oktoberfest'
             )
         """
         sql_create_p2p = """
@@ -148,9 +146,9 @@ class DLib(SpectralLibrary):
 
         masked_values = self._calculate_masked_values(f_mzss, f_intss)
 
-        data_list = [*masked_values, p_charges, mass_mod_sequences, seqs, irts, p_mzs, pr_ids]
+        data_list = [*masked_values, p_charges, mass_mod_sequences, seqs, irts, p_mzs]
         entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
-        p2p = pd.DataFrame({"PeptideSeq": seqs})
+        p2p = pd.DataFrame({"PeptideSeq": seqs, "ProteinAccession": pr_ids})
 
         out.execute("BEGIN")
 
