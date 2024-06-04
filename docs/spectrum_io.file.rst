@@ -20,6 +20,14 @@ spectrum\_io.file.hdf5 module
    :undoc-members:
    :show-inheritance:
 
+spectrum\_io.file.parquet module
+-----------------------------
+
+.. automodule:: spectrum_io.file.parquet
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
