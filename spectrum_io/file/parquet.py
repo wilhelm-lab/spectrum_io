@@ -39,26 +39,27 @@ def read_partition(path: Pathlike, dataset_name: str) -> pd.DataFrame:
     try:
         dataset = pq.ParquetDataset(path, filters=[("dataset", "=", dataset_name)])
         df = dataset.read().to_pandas().drop("dataset", axis=1)
-    except pa.lib.ArrowNotImplementedError as e:
+    except pa.lib.ArrowNotImplementedError as e1:
         if dataset_name.isdigit():
             try:
                 logger.warning("Failed to read from partition using string of integer as key, trying with int...")
                 dataset = pq.ParquetDataset(path, filters=[("dataset", "=", int(dataset_name))])
                 df = dataset.read().to_pandas().drop("dataset", axis=1)
-            except pa.lib.ArrowNotImplementedError as e:
-                logger.exception(e)
+            except pa.lib.ArrowNotImplementedError as e2:
+                logger.exception(e2)
         else:
-            logger.exception(e)
+            logger.exception(e1)
 
     return df
 
 
 def write_file(data: Dataset, path: Pathlike) -> None:
-    """
-    Writes a single DataFrame or matrix to a Parquet file.
+    """Writes a single DataFrame or matrix to a Parquet file.
 
     :param data: Data to store
     :param path: Path to write the Parquet file to
+
+    :raises NotImplementedError: if anything else but a Pandas DataFrame is used as the dataset
     """
     if isinstance(data, pd.DataFrame):
         data.to_parquet(path)
@@ -72,7 +73,10 @@ def write_partition(datasets: list[Dataset], path: Pathlike, dataset_names: list
 
     :param datasets: Datasets to write
     :param path: Root path to write the partitioned dataset to
-    :param dataset_names: Names to assign to the datasets for retrieval. Careful: If all of these are strings of ints, Parquet will convert them to raw integers!
+    :param dataset_names: Names to assign to the datasets for retrieval. Careful: If all of these are strings of ints,
+        Parquet will convert them to raw integers!
+
+    :raises NotImplementedError: if anything else but a Pandas DataFrame is used as the dataset
     """
     if all(isinstance(x, pd.DataFrame) for x in datasets):
         df = pd.concat([dataset.assign(dataset=name) for dataset, name in zip(datasets, dataset_names)])
@@ -80,6 +84,8 @@ def write_partition(datasets: list[Dataset], path: Pathlike, dataset_names: list
     else:
         raise NotImplementedError
 
+    if isinstance(path, str):
+        path = Path(path)
     path.mkdir(exist_ok=True)
 
     pq.write_to_dataset(
