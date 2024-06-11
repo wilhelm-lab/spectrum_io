@@ -6,9 +6,9 @@ max-complexity = 10
 docstring-convention = google
 per-file-ignores =
 	tests/*:S101,S301,S403
-    tests/unit_tests/test_parquet.py:DAR101
+    tests/unit_tests/test_parquet.py:B908,DAR101
 	noxfile.py:DAR101
 	spectrum_io/raw/thermo_raw.py:S603,S404
-	spectrum_io/raw/msraw.py:S405,S314
+	spectrum_io/raw/msraw.py:B026,S405,S314
 	spectrum_io/d/masterSpectrum.py:C901
     docs/conf.py:S404,S607,S603
