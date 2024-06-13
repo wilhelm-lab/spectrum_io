@@ -1,3 +1,5 @@
+import sys
+from contextlib import nullcontext
 from pathlib import Path
 
 import pandas as pd
@@ -5,10 +7,10 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 import scipy
-from typeguard import suppress_type_checks
+if "typeguard" in sys.modules:
+    from typeguard import suppress_type_checks
 
 from spectrum_io.file import parquet
-
 
 class TestParquet:
     """Test class to check Parquet file I/O."""
@@ -54,17 +56,19 @@ class TestParquet:
 
     def test_write_not_implemented(self, raw_data, tmpdir):
         """Check whether write_file() raises a NotImplementedError if provided with an unsupported object."""
-        with pytest.raises(NotImplementedError), suppress_type_checks():
-            output_path = Path(tmpdir / "table.parquet")
-            df = pd.DataFrame(raw_data).to_numpy()
-            parquet.write_file(df, output_path)
+        with pytest.raises(NotImplementedError):
+            with (suppress_type_checks() if "typeguard" in sys.modules else nullcontext()):
+                output_path = Path(tmpdir / "table.parquet")
+                df = pd.DataFrame(raw_data).to_numpy()
+                parquet.write_file(df, output_path)
 
     def test_read_write_partition_not_implemented(self, raw_data, tmpdir):
         """Check whether write_partition() raises a NotImplementedError if provided with an unsupported object."""
-        with pytest.raises(NotImplementedError), suppress_type_checks():
-            output_path = Path(tmpdir / "partition")
-            df = pd.DataFrame(raw_data).to_numpy()
-            parquet.write_partition([df, df], output_path, ["dataset_1", "dataset_2"])
+        with pytest.raises(NotImplementedError):
+            with (suppress_type_checks() if "typeguard" in sys.modules else nullcontext()):
+                output_path = Path(tmpdir / "partition")
+                df = pd.DataFrame(raw_data).to_numpy()
+                parquet.write_partition([df, df], output_path, ["dataset_1", "dataset_2"])
 
 
 @pytest.fixture
