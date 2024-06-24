@@ -12,14 +12,13 @@ packages = [
     { include = "spectrum_io" },
 ]
 classifiers = [
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
 ]
 
 
 [tool.poetry.dependencies]
-python = ">=3.8.0,<3.11.0"
+python = ">=3.9.0,<3.11.0"
 click = ">=8.0.0"
 rich = ">=10.3.0"
 PyYAML = ">=5.4.1"
@@ -64,6 +63,9 @@ pyupgrade = ">=2.31.0"
 
 [tool.poetry.scripts]
 spectrum_io = "spectrum_io.__main__:main"
+
+[tool.poetry.group.dev.dependencies]
+sphinx-autodoc-typehints = "^2.2.2"
 
 [tool.black]
 line-length = 120
