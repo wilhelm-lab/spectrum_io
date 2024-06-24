@@ -22,8 +22,8 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     # retain only peptides that fall within [7, 30] length supported by Prosit
     df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
     # remove unsupported mods to exclude
-    unsupported_mods = ["Acetyl (Protein N-term)", "ac"]
-    exclude_mods_pattern = re.compile("|".join(map(re.escape, unsupported_mods)))
+    unsupported_mods = [r"Acetyl \(Protein N\-term\)", "ac", r"\[[0-9]+\]", r"\+"]
+    exclude_mods_pattern = re.compile("|".join(unsupported_mods))
     df = df[~df["MODIFIED_SEQUENCE"].str.contains(exclude_mods_pattern)]
     # remove non-canonical aas
     df = df[(~df["SEQUENCE"].str.contains("U|O"))]
@@ -51,37 +51,43 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self, path: Union[str, Path], tmt_labeled: str):
-        """Read result."""
+    def read_result(self, tmt_labeled: str):
+        """Read result.
+
+        :param tmt_labeled: tmt label as str
+
+        """
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> Path:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> pd.DataFrame:
         """
-        Generate df and save to out_path.
+        Generate df and save to out_path if provided.
 
         :param out_path: path to output
         :param tmt_labeled: tmt label as str
         :return: path to output file
         """
         if out_path is None:
-            out_path = self.path.with_suffix(".prosit")
+            # convert and return
+            return self.read_result(tmt_labeled)
+
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
         if out_path.is_file():
+            # only read converted and return
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
-            return out_path
+            return csv.read_file(out_path)
 
-        df = self.read_result(self.path, tmt_labeled)
+        # convert, save and return
+        df = self.read_result(tmt_labeled)
         csv.write_file(df, out_path)
+        return df
 
-        return out_path
-
-    def read_internal(self, path: Union[str, Path]) -> pd.DataFrame:
+    def read_internal(self) -> pd.DataFrame:
         """
         Read file from path.
 
-        :param path: path to file
         :return: dataframe after reading the file
         """
-        return csv.read_file(path)
+        return csv.read_file(self.path)

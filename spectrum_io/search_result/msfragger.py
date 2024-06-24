@@ -4,7 +4,9 @@ from typing import Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods
+from pyteomics import pepxml
+from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_to_internal
+from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -14,87 +16,76 @@ logger = logging.getLogger(__name__)
 class MSFragger(SearchResults):
     """Handle search results from MSFragger."""
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: path to msms.txt to read
         :param tmt_labeled: tmt label as str
+        :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading msfragger xlsx file")
-        df = pd.read_excel(
-            path,
-            usecols=lambda x: x.upper()
-            in [
-                "SCANID",
-                "PEPTIDE SEQUENCE",
-                "PRECURSOR CHARGE",
-                "PRECURSOR NEUTRAL MASS (DA)",
-                "HYPERSCORE",
-                "PROTEIN",
-                "VARIABLE MODIFICATIONS DETECTED (STARTS WITH M, SEPARATED BY |, FORMATED AS POSITION,MASS)",
-            ],
-        )
-        logger.info("Finished reading msfragger xlsx file")
+        if self.path.is_file():
+            file_list = [self.path]
+        elif self.path.is_dir():
+            file_list = list(self.path.rglob("*.pepXML"))
+        else:
+            raise FileNotFoundError(f"{self.path} could not be found.")
 
-        df.rename(
-            columns={
-                "ScanID": "SCAN NUMBER",
-                "Peptide Sequence": "MODIFIED SEQUENCE",
-                "Precursor neutral mass (Da)": "MASS",
-                "Hyperscore": "SCORE",
-                "Variable modifications detected (starts with M, separated by |, formated as position,mass)": "MODIFICATIONS",
-            },
-            inplace=True,
-        )
+        ms_frag_results = []
+        for pep_xml_file in tqdm(file_list):
+            ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
-        # Standardize column names
-        df.columns = df.columns.str.upper()
-        df.columns = df.columns.str.replace(" ", "_")
+        df = pd.concat(ms_frag_results)
 
-        df = MSFragger.update_columns_for_prosit(df, tmt_labeled)
+        df = update_columns_for_prosit(df, tmt_labeled)
         return filter_valid_prosit_sequences(df)
 
-    @staticmethod
-    def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
-        """
-        Update columns of df to work with Prosit.
 
-        :param df: df to modify
-        :param tmt_labeled: True if tmt labeled
-        :return: modified df as pd.DataFrame
-        """
-        df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
+    """
+    Update columns of df to work with Prosit.
 
-        df["REVERSE"] = df["PROTEIN"].str.contains("Reverse")
-        # df["RAW_FILE"] = df.iloc[0]["PROTEIN"]
-        df["RAW_FILE"] = "01625b_GA6-TUM_first_pool_41_01_01-DDA-1h-R2"
-        logger.info("Converting MSFragger  peptide sequence to internal format")
+    :param df: df to modify
+    :param tmt_labeled: True if tmt labeled
+    :return: modified df as pd.DataFrame
+    """
+    df["REVERSE"] = df["protein"].apply(lambda x: "rev" in str(x))
+    df["RAW_FILE"] = df["spectrum"].apply(lambda x: x.split(".")[0])
+    df["MASS"] = df["precursor_neutral_mass"]
+    df["PEPTIDE_LENGTH"] = df["peptide"].apply(lambda x: len(x))
 
-        mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}
-        sequences = []
-        for _, row in df.iterrows():
-            modifications = row["MODIFICATIONS"].split("|")[1:]
-            if len(modifications) == 0:
-                sequences.append(row["MODIFIED_SEQUENCE"])
-            else:
-                sequence = row["MODIFIED_SEQUENCE"]
-                skip = 0
-                for mod in modifications:
-                    pos, mass = mod.split("$")
-                    sequence = (
-                        sequence[: int(pos) + 1 + skip]
-                        + mod_masses_reverse[round(float(mass), 3)]
-                        + sequence[int(pos) + 1 + skip :]
-                    )
-                    skip = skip + len(mod_masses_reverse[round(float(mass), 3)])
-                sequences.append(sequence)
+    if tmt_labeled != "":
+        unimod_tag = c.TMT_MODS[tmt_labeled]
+        logger.info("Adding TMT fixed modifications")
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(
+            df["modified_peptide"].to_list(),
+            fixed_mods={"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"},
+        )
+    else:
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list())
 
-        df["MODIFIED_SEQUENCE"] = sequences
-
-        df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-        df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
-
-        return df
+    df.rename(
+        columns={
+            "assumed_charge": "PRECURSOR_CHARGE",
+            "index": "SCAN_EVENT_NUMBER",
+            "peptide": "SEQUENCE",
+            "start_scan": "SCAN_NUMBER",
+            "hyperscore": "SCORE",
+        },
+        inplace=True,
+    )
+    df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
+    return df[
+        [
+            "RAW_FILE",
+            "SCAN_NUMBER",
+            "MODIFIED_SEQUENCE",
+            "PRECURSOR_CHARGE",
+            "SCAN_EVENT_NUMBER",
+            "MASS",
+            "SCORE",
+            "REVERSE",
+            "SEQUENCE",
+            "PEPTIDE_LENGTH",
+        ]
+    ]

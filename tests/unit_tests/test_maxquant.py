@@ -62,8 +62,8 @@ class TestUpdateColumns:
         :param maxquant_df: maxquant df as pd.DataFrame
         """
         prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="tmt")
-        assert prosit_df["MODIFIED_SEQUENCE"][0] == "[UNIMOD:737]DS[UNIMOD:21]DS[UNIMOD:21]WDADAFSVEDPVRK[UNIMOD:737]"
-        assert prosit_df["MODIFIED_SEQUENCE"][3] == "[UNIMOD:737]SS[UNIMOD:21]PTPES[UNIMOD:21]PTMLTK[UNIMOD:737]"
+        assert prosit_df["MODIFIED_SEQUENCE"][0] == "[UNIMOD:737]-DS[UNIMOD:21]DS[UNIMOD:21]WDADAFSVEDPVRK[UNIMOD:737]"
+        assert prosit_df["MODIFIED_SEQUENCE"][3] == "[UNIMOD:737]-SS[UNIMOD:21]PTPES[UNIMOD:21]PTMLTK[UNIMOD:737]"
 
         assert prosit_df["MASS"][0] == 1.0 + 2 * 229.162932
         assert prosit_df["MASS"][3] == 2.0 + 2 * 229.162932
@@ -76,9 +76,9 @@ class TestUpdateColumns:
         """
         prosit_df = mq.MaxQuant.update_columns_for_prosit(maxquant_df, tmt_labeled="tmt_msa")
         assert (
-            prosit_df["MODIFIED_SEQUENCE_MSA"][0] == "[UNIMOD:737]DS[UNIMOD:23]DS[UNIMOD:23]WDADAFSVEDPVRK[UNIMOD:737]"
+            prosit_df["MODIFIED_SEQUENCE_MSA"][0] == "[UNIMOD:737]-DS[UNIMOD:23]DS[UNIMOD:23]WDADAFSVEDPVRK[UNIMOD:737]"
         )
-        assert prosit_df["MODIFIED_SEQUENCE_MSA"][3] == "[UNIMOD:737]SS[UNIMOD:23]PTPES[UNIMOD:23]PTMLTK[UNIMOD:737]"
+        assert prosit_df["MODIFIED_SEQUENCE_MSA"][3] == "[UNIMOD:737]-SS[UNIMOD:23]PTPES[UNIMOD:23]PTMLTK[UNIMOD:737]"
 
     def test_filter_valid_prosit_sequences(self, invalid_df: pd.DataFrame):
         """Test filter_valid_prosit_sequences."""
