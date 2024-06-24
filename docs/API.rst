@@ -1,11 +1,41 @@
+.. module:: spectrum_io
+
+.. automodule:: spectrum_io
+   :noindex:
+
 API
 ===
 
-.. toctree::
-   :maxdepth: 4
+Import SpectrumIO using
 
-   spectrum_io
-   spectrum_io.file
-   spectrum_io.raw
-   spectrum_io.search_result
-   spectrum_io.spectral_library
+.. code-block:: python
+
+   import spectrum_io as specio
+
+File conversions
+----------------
+
+.. module:: spectrum_io.d
+
+.. currentmodule:: spectrum_io
+
+Todo: add functions for bruker d conversions here
+
+.. autosummary::
+   :toctree: api/d
+
+.. module:: spectrum_io.raw
+
+.. currentmodule:: spectrum_io
+
+Todo: add functions for thermoraw here
+
+Modstring conversions
+---------------------
+
+Todo
+----
+
+other modules
+
+
