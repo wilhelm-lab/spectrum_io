@@ -1,3 +1,4 @@
+import shutil
 import sys
 from contextlib import nullcontext
 from pathlib import Path
@@ -22,6 +23,7 @@ class TestParquet:
         output_path = Path(tmpdir / "table.parquet")
         pq.write_table(pa.Table.from_pydict(raw_data), output_path)
         df = parquet.read_file(output_path)
+        output_path.unlink()
         pd.testing.assert_frame_equal(df, pd.DataFrame(raw_data))
 
     def test_write_file(self, raw_data, tmpdir):
@@ -30,6 +32,7 @@ class TestParquet:
         df = pd.DataFrame(raw_data)
         parquet.write_file(df, output_path)
         pd.testing.assert_frame_equal(df, pd.read_parquet(output_path))
+        output_path.unlink()
 
     def test_read_write_partition(self, raw_data, tmpdir):
         """Check whether data is unmodified after being written to and then read from a partitioned dataset."""
@@ -37,6 +40,7 @@ class TestParquet:
         df = pd.DataFrame(raw_data)
         parquet.write_partition([df, df], output_path, ["dataset_1", "dataset_2"])
         read_df = parquet.read_partition(output_path, "dataset_1")
+        shutil.rmtree(output_path)
         pd.testing.assert_frame_equal(read_df, df)
 
     def test_read_write_partition_integer_key(self, raw_data, tmpdir):
@@ -45,6 +49,7 @@ class TestParquet:
         df = pd.DataFrame(raw_data)
         parquet.write_partition([df, df], output_path, ["1", "2"])
         read_df = parquet.read_partition(output_path, "1")
+        shutil.rmtree(output_path)
         pd.testing.assert_frame_equal(read_df, df)
 
     def test_modify_partition(self, raw_data, tmpdir):
@@ -54,6 +59,7 @@ class TestParquet:
         parquet.write_partition([df, df], output_path, ["1", "2"])
         parquet.write_partition([df, df, df], output_path, ["1", "2", "3"])
         read_df = parquet.read_partition(output_path, "2")
+        shutil.rmtree(output_path)
         pd.testing.assert_frame_equal(read_df, df)
 
     def test_write_not_implemented(self, raw_data, tmpdir):
@@ -63,6 +69,7 @@ class TestParquet:
                 output_path = Path(tmpdir / "table.parquet")
                 df = pd.DataFrame(raw_data).to_numpy()
                 parquet.write_file(df, output_path)
+                output_path.unlink()
 
     def test_read_write_partition_not_implemented(self, raw_data, tmpdir):
         """Check whether write_partition() raises a NotImplementedError if provided with an unsupported object."""
@@ -71,6 +78,7 @@ class TestParquet:
                 output_path = Path(tmpdir / "partition")
                 df = pd.DataFrame(raw_data).to_numpy()
                 parquet.write_partition([df, df], output_path, ["dataset_1", "dataset_2"])
+                output_path.unlink()
 
 
 @pytest.fixture
