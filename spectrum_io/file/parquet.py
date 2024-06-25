@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 import pandas as pd
 import pyarrow as pa
@@ -67,7 +67,7 @@ def write_file(data: Dataset, path: Pathlike) -> None:
         raise NotImplementedError
 
 
-def write_partition(datasets: list[Dataset], path: Pathlike, dataset_names: list[str]) -> None:
+def write_partition(datasets: List[Dataset], path: Pathlike, dataset_names: List[str]) -> None:
     """
     Write several datasets to a Parquet dataset as a directory containing subdirectories partinioned by dataset name.
 
