@@ -217,7 +217,7 @@ class MSRaw:
         for file_path in file_list:
             mass_analyzer = get_mass_analyzer(file_path)
             logger.info(f"Reading mzML file: {file_path}")
-            data_iter = mzml.read(source=str(file_path), *args, **kwargs)
+            data_iter = mzml.read(str(file_path), *args, **kwargs)
             file_name = file_path.stem
             try:
                 instrument_params = data_iter.get_by_id("commonInstrumentParams")
