@@ -85,7 +85,7 @@ def main(args):
 
 def valid_prosit_peptide(peptide: str) -> bool:
     """Check if peptide is valid."""
-    return len(peptide) <= 30 and "U" not in peptide and "X" not in peptide
+    return len(peptide) <= 30 and "U" not in peptide and "X" not in peptide and "*" not in peptide
 
 
 def parse_args(call):

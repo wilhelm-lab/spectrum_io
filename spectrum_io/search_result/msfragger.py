@@ -49,6 +49,8 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
     :param tmt_labeled: True if tmt labeled
     :return: modified df as pd.DataFrame
     """
+    df["PROTEINS"] = df["protein"]
+    df["PROTEINS"].fillna("UNKNOWN", inplace=True)
     df["REVERSE"] = df["protein"].apply(lambda x: "rev" in str(x))
     df["RAW_FILE"] = df["spectrum"].apply(lambda x: x.split(".")[0])
     df["MASS"] = df["precursor_neutral_mass"]
@@ -75,6 +77,8 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
         inplace=True,
     )
     df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
+    df["PROTEINS"] = df["PROTEINS"].apply(lambda x: ";".join(x))
+
     return df[
         [
             "RAW_FILE",
@@ -87,5 +91,6 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
             "REVERSE",
             "SEQUENCE",
             "PEPTIDE_LENGTH",
+            "PROTEINS",
         ]
     ]

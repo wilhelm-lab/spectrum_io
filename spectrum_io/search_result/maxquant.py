@@ -62,6 +62,7 @@ class MaxQuant(SearchResults):
                 "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "SCORE",
                 "REVERSE",
+                "PROTEINS",
             ],
             sep="\t",
         )
@@ -117,6 +118,7 @@ class MaxQuant(SearchResults):
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
+        df["PROTEINS"].fillna("UNKNOWN", inplace=True)
 
         return df
 

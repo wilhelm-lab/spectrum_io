@@ -23,14 +23,15 @@ class TestMSP:
         anticipated_content = (
             "Name: AAACCCCKR/1\n"
             "MW: 124.407276467\n"
-            "Comment: Parent=124.40727647 Collision_energy=10.0 Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl "
+            "Comment: Parent=124.40727647 Collision_energy=10.0 "
+            "Protein_ids=ProteinA Mods=2/3,C,Carbamidomethyl/5,C,Carbamidomethyl "
             "ModString=AAACCCCKR//Carbamidomethyl@C3; Carbamidomethyl@C5/1 iRT=982.12\n"
             "Num peaks: 2\n"
             '0.80000000	0.2000	"b1/0.0ppm"\n'
             '0.30000000	0.8000	"b2^2/0.0ppm"\n'
             "Name: AAACILKKR/2\n"
             "MW: 1617.057276467\n"
-            "Comment: Parent=1617.05727647 Collision_energy=20.0 Mods=0 ModString=AAACILKKR///2 iRT=382.12\n"
+            "Comment: Parent=1617.05727647 Collision_energy=20.0 Protein_ids=ProteinB Mods=0 ModString=AAACILKKR///2 iRT=382.12\n"
             "Num peaks: 3\n"
             '0.50000000	0.5000	"b1/0.0ppm"\n'
             '0.40000000	0.6000	"y2^2/0.0ppm"\n'
@@ -54,15 +55,15 @@ class TestSpectronaut:
 
         file_content = file_content.replace("\r", "")  # explicitly remove to work for windows
         anticipated_content = (
-            "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,"
+            "ModifiedPeptide,LabeledPeptide,StrippedPeptide,PrecursorCharge,PrecursorMz,iRT,CollisionEnergy,ProteinIds,"
             "RelativeFragmentIntensity,FragmentMz,FragmentNumber,FragmentType,FragmentCharge,FragmentLossType\n"
             "_AAAC[Carbamidomethyl (C)]CC[Carbamidomethyl (C)]CKR_,AAACCCCKR,AAACCCCKR,1,124.40727647,982.12,"
-            "10.0,0.2000,0.80000000,1,b,1,noloss\n"
+            "10.0,ProteinA,0.2000,0.80000000,1,b,1,noloss\n"
             "_AAAC[Carbamidomethyl (C)]CC[Carbamidomethyl (C)]CKR_,AAACCCCKR,AAACCCCKR,1,124.40727647,982.12,"
-            "10.0,0.8000,0.30000000,2,b,2,noloss\n"
-            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,0.5000,0.50000000,1,b,1,noloss\n"
-            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,0.6000,0.40000000,2,y,2,noloss\n"
-            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,0.0010,0.30000000,2,b,2,noloss\n"
+            "10.0,ProteinA,0.8000,0.30000000,2,b,2,noloss\n"
+            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,ProteinB,0.5000,0.50000000,1,b,1,noloss\n"
+            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,ProteinB,0.6000,0.40000000,2,y,2,noloss\n"
+            "_AAACILKKR_,AAACILKKR,AAACILKKR,2,1617.05727647,382.12,20.0,ProteinB,0.0010,0.30000000,2,b,2,noloss\n"
         )
         assert file_content == anticipated_content
 
@@ -114,7 +115,7 @@ class TestDLib:
         )
 
         df_expected_p2p = pd.DataFrame(
-            {"PeptideSeq": ["AAACCCCKR", "AAACILKKR"], "isDecoy": 0, "ProteinAccession": "UNKNOWN"}
+            {"PeptideSeq": ["AAACCCCKR", "AAACILKKR"], "isDecoy": 0, "ProteinAccession": ["ProteinA", "ProteinB"]}
         )
 
         df_expected_meta = pd.DataFrame({"Key": ["version", "staleProteinMapping"], "Value": ["0.1.14", "true"]})
@@ -147,5 +148,6 @@ def metadata():
             "PRECURSOR_CHARGE": [1, 2],
             "MASS": [123.4, 3232.1],
             "COLLISION_ENERGY": [10.0, 20.0],
+            "PROTEINS": ["ProteinA", "ProteinB"],
         }
     )

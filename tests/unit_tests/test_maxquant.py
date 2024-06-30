@@ -41,6 +41,9 @@ class TestUpdateColumns:
         assert prosit_df["PEPTIDE_LENGTH"][0] == 18
         assert prosit_df["PEPTIDE_LENGTH"][3] == 13
 
+        assert prosit_df["PROTEINS"][0] == "P12345"
+        assert prosit_df["PROTEINS"][3] == "Q67890"
+
     def test_update_columns_silac(self, maxquant_df: pd.DataFrame):
         """
         Test column update silac.
@@ -95,12 +98,12 @@ class TestUpdateColumns:
 @pytest.fixture
 def maxquant_df():
     """Create dataframes from strings: https://towardsdatascience.com/67b0c2b71e6a."""
-    df_string = """              MODIFIED_SEQUENCE; REVERSE; MASS;
-_DS(Phospho (STY))DS(Phospho (STY))WDADAFSVEDPVRK_;        ;  1.0;
-_DS(Phospho (STY))DS(Phospho (STY))WDADAFSVEDPVRK_;        ;  1.0;
-_DS(Phospho (STY))DSWDADAFS(Phospho (STY))VEDPVRK_;        ;  1.0;
-     _SS(Phospho (STY))PTPES(Phospho (STY))PTMLTK_;       +;  2.0;
-     _SS(Phospho (STY))PTPES(Phospho (STY))PTMLTK_;       +;  2.0;"""
+    df_string = """              MODIFIED_SEQUENCE; REVERSE; MASS; PROTEINS;
+_DS(Phospho (STY))DS(Phospho (STY))WDADAFSVEDPVRK_;        ;  1.0; P12345;
+_DS(Phospho (STY))DS(Phospho (STY))WDADAFSVEDPVRK_;        ;  1.0; P12345;
+_DS(Phospho (STY))DSWDADAFS(Phospho (STY))VEDPVRK_;        ;  1.0; P12345;
+     _SS(Phospho (STY))PTPES(Phospho (STY))PTMLTK_;       +;  2.0; Q67890;
+     _SS(Phospho (STY))PTPES(Phospho (STY))PTMLTK_;       +;  2.0; Q67890;"""
     df = pd.read_csv(io.StringIO(df_string), delimiter=";", skipinitialspace=True)
     df["Charge"] = 2
     return df

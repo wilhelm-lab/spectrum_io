@@ -136,6 +136,8 @@ class DLib(SpectralLibrary):
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
         # ces = metadata["COLLISION_ENERGY"]
 
+        pr_ids = metadata["PROTEINS"]
+
         # prepare spectra
         irts = data["irt"][:, 0]  # should create a 1D view of the (n_peptides, 1) shaped array
         f_mzss = data["mz"]
@@ -146,7 +148,7 @@ class DLib(SpectralLibrary):
 
         data_list = [*masked_values, p_charges, mass_mod_sequences, seqs, irts, p_mzs]
         entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
-        p2p = pd.DataFrame({"PeptideSeq": seqs})
+        p2p = pd.DataFrame({"PeptideSeq": seqs, "ProteinAccession": pr_ids})
 
         out.execute("BEGIN")
 
