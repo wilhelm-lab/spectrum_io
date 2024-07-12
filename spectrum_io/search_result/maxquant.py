@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict, Tuple
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -41,7 +41,8 @@ class MaxQuant(SearchResults):
         mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
         return mass
 
-    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, 
+                    custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
@@ -72,11 +73,12 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
-        df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
+        df = MaxQuant.update_columns_for_prosit(df, tmt_labeled, custom_stat_mods, custom_var_mods)
         return filter_valid_prosit_sequences(df)
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
+    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, 
+                                  custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Update columns of df to work with Prosit.
 
@@ -94,8 +96,8 @@ class MaxQuant(SearchResults):
             logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(
                 df["MODIFIED_SEQUENCE"].to_numpy(),
-                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"},
-            )
+                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"}, 
+                stat_custom_mods=custom_stat_mods, var_custom_mods=custom_var_mods)
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
             if "msa" in tmt_labeled:
                 logger.info("Replacing phospho by dehydration for Phospho-MSA")
@@ -106,16 +108,19 @@ class MaxQuant(SearchResults):
             logger.info("Adding SILAC fixed modifications")
             df.loc[df["LABELING_STATE"] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
                 df[df["LABELING_STATE"] == 1]["MODIFIED_SEQUENCE"].to_numpy(),
-                fixed_mods={"C": "C[UNIMOD:4]", "K": "K[UNIMOD:259]", "R": "R[UNIMOD:267]"},
+                fixed_mods={"C": "C[UNIMOD:4]", "K": "K[UNIMOD:259]", "R": "R[UNIMOD:267]"}, stat_custom_mods=custom_stat_mods, 
+                var_custom_mods=custom_var_mods
             )
             df.loc[df["LABELING_STATE"] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df[df["LABELING_STATE"] != 1]["MODIFIED_SEQUENCE"].to_numpy()
+                df[df["LABELING_STATE"] != 1]["MODIFIED_SEQUENCE"].to_numpy(), stat_custom_mods=custom_stat_mods, 
+                var_custom_mods=custom_var_mods
             )
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:259]"), axis=1)
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:267]"), axis=1)
             df.drop(columns=["LABELING_STATE"], inplace=True)
         else:
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
+            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), stat_custom_mods=custom_stat_mods, 
+                                                           var_custom_mods=custom_var_mods)
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
         df["PROTEINS"].fillna("UNKNOWN", inplace=True)

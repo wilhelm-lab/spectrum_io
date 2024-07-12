@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict, Tuple
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 class MSFragger(SearchResults):
     """Handle search results from MSFragger."""
 
-    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, 
+                    custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
@@ -37,11 +38,12 @@ class MSFragger(SearchResults):
 
         df = pd.concat(ms_frag_results)
 
-        df = update_columns_for_prosit(df, tmt_labeled)
+        df = update_columns_for_prosit(df, tmt_labeled, custom_stat_mods=custom_stat_mods, custom_var_mods=custom_var_mods)
         return filter_valid_prosit_sequences(df)
 
 
-def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
+def update_columns_for_prosit(df, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, 
+                                  custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
     """
     Update columns of df to work with Prosit.
 
@@ -61,10 +63,11 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
         logger.info("Adding TMT fixed modifications")
         df["MODIFIED_SEQUENCE"] = msfragger_to_internal(
             df["modified_peptide"].to_list(),
-            fixed_mods={"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"},
-        )
+            fixed_mods={"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"}, stat_custom_mods=custom_stat_mods, 
+            var_custom_mods=custom_var_mods)
     else:
-        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list())
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list(), stat_custom_mods=custom_stat_mods, 
+                                                        var_custom_mods=custom_var_mods)
 
     df.rename(
         columns={

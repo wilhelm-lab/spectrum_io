@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict, Tuple
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class Sage(SearchResults):
     """Handle search results from Sage."""
 
-    def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str = "", custom_mods: Dict[str, str] = None) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
 
@@ -33,11 +33,11 @@ class Sage(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
-        df = Sage.update_columns_for_prosit(df, tmt_labeled)
+        df = Sage.update_columns_for_prosit(df, tmt_labeled, custom_mods)
         return filter_valid_prosit_sequences(df)
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
+    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Update columns of df to work with Prosit.
 
@@ -68,7 +68,7 @@ class Sage(SearchResults):
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         # converting sage to unimod
-        df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
+        df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"], stat_custom_mods=custom_stat_mods, var_custom_mods=custom_var_mods)
         df["PROTEINS"].fillna("UNKNOWN", inplace=True)
 
         return df

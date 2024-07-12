@@ -2,7 +2,7 @@ import logging
 import re
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Tuple
 
 import pandas as pd
 
@@ -51,7 +51,7 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self, tmt_labeled: str):
+    def read_result(self, tmt_labeled: str, custom_mods: Dict[str, str]):
         """Read result.
 
         :param tmt_labeled: tmt label as str
@@ -59,7 +59,7 @@ class SearchResults:
         """
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None) -> pd.DataFrame:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None, custom_stat_mods: Dict[str, Tuple[str, float]] = None, custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
 
@@ -69,7 +69,7 @@ class SearchResults:
         """
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_labeled)
+            return self.read_result(tmt_labeled, custom_stat_mods, custom_var_mods)
 
         if isinstance(out_path, str):
             out_path = Path(out_path)
@@ -77,10 +77,11 @@ class SearchResults:
         if out_path.is_file():
             # only read converted and return
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
+            #TODO: internal_to_unimod
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_labeled)
+        df = self.read_result(tmt_labeled, custom_stat_mods, custom_var_mods)
         csv.write_file(df, out_path)
         return df
 

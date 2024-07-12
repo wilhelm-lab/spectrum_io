@@ -1,7 +1,8 @@
 import logging
+import re
 import sqlite3
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Tuple
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -15,7 +16,8 @@ logger = logging.getLogger(__name__)
 class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
-    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, 
+                    custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
@@ -76,13 +78,60 @@ class Mascot(SearchResults):
         ).agg({"MODIFICATIONS": "|".join})
         mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}
 
+
+        def custom_regex_escape(key: str) -> str:
+            """
+            Subfunction to escape only normal brackets in the modstring.
+
+            :param key: The match to escape
+            :return: match with escaped special characters
+            """
+            for k, v in {"[": r"\[", "]": r"\]", "(": r"\(", ")": r"\)"}.items():
+                key = key.replace(k, v)
+            return key
+        
+        def find_replacement(match: re.Match, seq: str) -> str:
+            """
+        Subfunction to find the corresponding substitution for a match.
+
+        :param match: an re.Match object found by re.sub
+        :return: substitution string for the given match
+        """
+            key = match.string[match.start() : match.end()]
+            if custom_var_mods is not None and key in custom_var_mods.keys():
+                assert isinstance(custom_mods[key][0], str), f"Provided illegal custom mod format, expected dict-values are (str, float), recieved {(type(custom_mods[key][0]).__name__), (type(custom_mods[key][1]).__name__)}."
+                end = match.span()[1]
+                if end < len(seq) and (seq[end] == "[" or seq[end]== "("):
+                    return key
+                if not custom_mods[key][0].startswith(key):
+                        return key + custom_mods[key][0]
+                return custom_mods[key][0]
+            elif custom_stat_mods is not None and key in custom_stat_mods.keys():
+                assert isinstance(custom_mods[key][0], str), f"Provided illegal custom mod format, expected dict-values are (str, float), recieved {(type(replacements[key][0]).__name__), (type(replacements[key][1]).__name__)}."
+                return custom_mods[key][0]
+            return custom_mods[key]
+        
+
+        custom_mods = {}
+
+        if custom_var_mods is not None:
+            custom_mods.update(custom_var_mods)
+        if custom_stat_mods is not None:
+            custom_mods.update(custom_stat_mods)
+
+        if custom_mods:
+            regex = re.compile("|".join(map(custom_regex_escape, custom_mods.keys())))
+
         sequences = []
         for _, row in df.iterrows():
             modifications = row["MODIFICATIONS"].split("|")
+            sequence = row["SEQUENCE"]
+            if custom_mods:
+                sequence = regex.sub(lambda match: find_replacement(match, sequence), sequence) 
+
             if len(modifications) == 0:
-                sequences.append(row["SEQUENCE"])
-            else:
-                sequence = row["SEQUENCE"]
+                sequences.append(sequence)
+            else:                 
                 skip = 0
                 for mod in modifications:
                     pos, mass = mod.split("$")
