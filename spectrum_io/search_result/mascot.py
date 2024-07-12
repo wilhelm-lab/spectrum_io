@@ -98,7 +98,7 @@ class Mascot(SearchResults):
         :return: substitution string for the given match
         """
             key = match.string[match.start() : match.end()]
-            if custom_var_mods is not None and key in custom_var_mods.keys():
+            if custom_stat_mods is not None and key in custom_stat_mods.keys():
                 assert isinstance(custom_mods[key][0], str), f"Provided illegal custom mod format, expected dict-values are (str, float), 
                 recieved {(type(custom_mods[key][0]).__name__), (type(custom_mods[key][1]).__name__)}."
                 end = match.span()[1]
@@ -107,7 +107,7 @@ class Mascot(SearchResults):
                 if not custom_mods[key][0].startswith(key):
                         return key + custom_mods[key][0]
                 return custom_mods[key][0]
-            elif custom_stat_mods is not None and key in custom_stat_mods.keys():
+            elif custom_var_mods is not None and key in custom_var_mods.keys():
                 assert isinstance(custom_mods[key][0], str), f"Provided illegal custom mod format, expected dict-values are (str, float), 
                 recieved {(type(custom_mods[key][0]).__name__), (type(custom_mods[key][1]).__name__)}."
                 return custom_mods[key][0]
