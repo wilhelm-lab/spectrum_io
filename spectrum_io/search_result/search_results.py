@@ -3,6 +3,7 @@ import re
 from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Union, Dict, Tuple
+from spectrum_fundamentals.constants import update_custom_mods
 
 import pandas as pd
 
@@ -51,25 +52,35 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self, tmt_labeled: str, custom_mods: Dict[str, str]):
+    def read_result(self, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
+                    var_mods: Optional[Dict[str, str]] = None):
         """Read result.
 
         :param tmt_labeled: tmt label as str
+        :param var_mods: variable modifications with custom identifier and respecitve internal equivalent 
+        :param stat_mods: static modifications with custom identifier and respecitve internal equivalent
 
         """
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None, custom_stat_mods: Dict[str, Tuple[str, float]] = None, custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
+    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None, custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
 
         :param out_path: path to output
         :param tmt_labeled: tmt label as str
+        :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
         :return: path to output file
         """
+        stat_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
+        var_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
+
+        mod_masses = [(value[0], float(value[1])) for value in stat_mods.values()+var_mods.values()]
+        update_custom_mods(mods=mod_masses)
+
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_labeled, custom_stat_mods, custom_var_mods)
+            return self.read_result(tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
 
         if isinstance(out_path, str):
             out_path = Path(out_path)
@@ -81,7 +92,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_labeled, custom_stat_mods, custom_var_mods)
+        df = self.read_result(tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
         csv.write_file(df, out_path)
         return df
 

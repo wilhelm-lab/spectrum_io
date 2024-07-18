@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
-from typing import Union, Dict, Tuple
+from typing import Optional, Union, Dict, Tuple
 
 import pandas as pd
-import spectrum_fundamentals.constants as c
+from spectrum_fundamentals.constants import MOD_MASSES_SAGE
 from spectrum_fundamentals.mod_string import sage_to_internal
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
@@ -14,11 +14,14 @@ logger = logging.getLogger(__name__)
 class Sage(SearchResults):
     """Handle search results from Sage."""
 
-    def read_result(self, tmt_labeled: str = "", custom_mods: Dict[str, str] = None) -> pd.DataFrame:
+    def read_result(self, tmt_labeled: str = "", stat_mods: Optional[Dict[str, str]] = None, 
+                    var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
+        :param var_mods: Variable modifications with custom identifiers and their respective internal equivalents
+        :param stat_mods: Static modifications with custom identifiers and their respective internal equivalents
         :return: pd.DataFrame with the formatted data
         """
         logger.info(f"Reading {self.path}")
@@ -33,16 +36,19 @@ class Sage(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
-        df = Sage.update_columns_for_prosit(df, tmt_labeled, custom_mods)
+        df = Sage.update_columns_for_prosit(df, tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
         return filter_valid_prosit_sequences(df)
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, custom_stat_mods: Dict[str, Tuple[str, float]] = None, custom_var_mods: Dict[str, Tuple[str, float]] = None) -> pd.DataFrame:
+    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
+                                  var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
         """
         Update columns of df to work with Prosit.
 
         :param df: df to modify
         :param tmt_labeled: True if tmt labeled, ignored
+        :param var_mods: Variable modifications with custom identifiers and their respective internal equivalents
+        :param stat_mods: Static modifications with custom identifiers and their respective internal equivalents
         :return: modified df as pd.DataFrame
         """
         df = df.rename(
@@ -56,6 +62,7 @@ class Sage(SearchResults):
                 "LABEL": "REVERSE",
             }
         )
+        mods = {**(MOD_MASSES_SAGE), **(stat_mods or {}), **(var_mods or {})}
 
         # removing .mzML
         df["RAW_FILE"] = df["RAW_FILE"].str.replace(r"\.mz[M|m][l|L]", "", regex=True)
@@ -68,7 +75,7 @@ class Sage(SearchResults):
         # length of the peptide
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         # converting sage to unimod
-        df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"], stat_custom_mods=custom_stat_mods, var_custom_mods=custom_var_mods)
+        df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"], mods=mods)
         df["PROTEINS"].fillna("UNKNOWN", inplace=True)
 
         return df
