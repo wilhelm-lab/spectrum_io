@@ -17,3 +17,13 @@ class TestSage(unittest.TestCase):
         )
         expected_df = pd.read_csv(expected_sage_internal_path)
         pd.testing.assert_frame_equal(internal_search_results_df, expected_df)
+
+    def test_read_sage_custom(self):
+        """Test function for reading sage results with custom mods and transforming to Prosit format ."""
+        stat_mods = {"15.9948": "[UNIMOD:35]"}
+        expected_sage_internal_path = Path.cwd() / "data" / "sage_output_internal_mods.csv"
+        internal_search_results_df = (
+            Sage(Path.cwd() / "data" / "sage_output_mods.tsv").read_result(stat_mods=stat_mods).reset_index(drop=True)
+        )
+        expected_df = pd.read_csv(expected_sage_internal_path)
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)

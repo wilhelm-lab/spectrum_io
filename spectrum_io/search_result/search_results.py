@@ -70,13 +70,11 @@ class SearchResults:
         :param out_path: path to output
         :param tmt_labeled: tmt label as str
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
+        :raises AssertionError: if custom modification with illegal mass was provided
         :return: path to output file
         """
         stat_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
         var_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
-
-        mod_masses = [(value[0], float(value[1])) for value in stat_mods.values()+var_mods.values()]
-        update_custom_mods(mods=mod_masses)
 
         if out_path is None:
             # convert and return
