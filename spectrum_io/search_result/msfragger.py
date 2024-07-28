@@ -5,7 +5,7 @@ from typing import Optional, Union, Dict, Tuple
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_or_custom_to_internal
+from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_to_internal
 from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
 from tqdm import tqdm
 
@@ -69,13 +69,13 @@ def update_columns_for_prosit(df, tmt_labeled: str, stat_mods: Optional[Dict[str
         unimod_tag = c.TMT_MODS[tmt_labeled]
         logger.info("Adding TMT fixed modifications")
         mods = {**{"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"}, **mods}
-        df["MODIFIED_SEQUENCE"] = msfragger_or_custom_to_internal(
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(
             df["modified_peptide"].to_list(), mods=mods)
     else:
         #By default, i.e. if nothing is supplied to fixed_mods, carbamidomethylation on cystein will be included
         # in the fixed modifications. If you want to have no fixed modifictions at all, supply fixed_mods={}
         mods = {**{"C": "C[UNIMOD:4]"}, **mods}
-        df["MODIFIED_SEQUENCE"] = msfragger_or_custom_to_internal(df["modified_peptide"].to_list(), mods=mods)
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list(), mods=mods)
 
     df.rename(
         columns={

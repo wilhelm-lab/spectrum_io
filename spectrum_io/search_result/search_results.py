@@ -3,7 +3,6 @@ import re
 from abc import abstractmethod
 from pathlib import Path
 from typing import Optional, Union, Dict, Tuple
-from spectrum_fundamentals.constants import update_custom_mods
 
 import pandas as pd
 
