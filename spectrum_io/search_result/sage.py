@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Optional, Union, Dict, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 from spectrum_fundamentals.constants import MOD_MASSES_SAGE
@@ -14,14 +14,16 @@ logger = logging.getLogger(__name__)
 class Sage(SearchResults):
     """Handle search results from Sage."""
 
-    def read_result(self, tmt_labeled: str = "", stat_mods: Optional[Dict[str, str]] = None, 
-                    var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_labeled: str = "",
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
-        :param var_mods: Variable modifications with custom identifiers and their respective internal equivalents
-        :param stat_mods: Static modifications with custom identifiers and their respective internal equivalents
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :return: pd.DataFrame with the formatted data
         """
         logger.info(f"Reading {self.path}")
@@ -36,12 +38,23 @@ class Sage(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
+        stat_mods: Dict[str, str] = {}
+        var_mods: Dict[str, str] = {}
+
+        if custom_mods is not None:
+            stat_mods = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
+            var_mods = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
+
         df = Sage.update_columns_for_prosit(df, tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
         return filter_valid_prosit_sequences(df)
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                                  var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def update_columns_for_prosit(
+        df: pd.DataFrame,
+        tmt_labeled: str,
+        stat_mods: Optional[Dict[str, str]] = None,
+        var_mods: Optional[Dict[str, str]] = None,
+    ) -> pd.DataFrame:
         """
         Update columns of df to work with Prosit.
 

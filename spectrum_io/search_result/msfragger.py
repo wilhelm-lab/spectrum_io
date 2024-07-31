@@ -1,12 +1,12 @@
 import logging
 from pathlib import Path
-from typing import Optional, Union, Dict, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_to_internal
 from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
+from spectrum_fundamentals.mod_string import internal_without_mods, msfragger_to_internal
 from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
@@ -17,14 +17,17 @@ logger = logging.getLogger(__name__)
 class MSFragger(SearchResults):
     """Handle search results from MSFragger."""
 
-    def read_result(self, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                    var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_labeled: str,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
-        :param var_mods: dict with custom variable identifier and respecitve internal equivalent 
-        :param stat_mods: dict with custom static identifier and respecitve internal equivalent:raises FileNotFoundError: in case the given path is neither a file, nor a directory.
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
         if self.path.is_file():
@@ -40,18 +43,26 @@ class MSFragger(SearchResults):
 
         df = pd.concat(ms_frag_results)
 
+        stat_mods: Dict[str, str] = {}
+        var_mods: Dict[str, str] = {}
+
+        if custom_mods is not None:
+            stat_mods = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
+            var_mods = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
+
         df = update_columns_for_prosit(df, tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
         return filter_valid_prosit_sequences(df)
 
 
-def update_columns_for_prosit(df, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                              var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+def update_columns_for_prosit(
+    df, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, var_mods: Optional[Dict[str, str]] = None
+) -> pd.DataFrame:
     """
     Update columns of df to work with Prosit.
 
     :param df: df to modify
     :param tmt_labeled: True if tmt labeled
-    :param var_mods: dict with custom variable identifier and respecitve internal equivalent 
+    :param var_mods: dict with custom variable identifier and respecitve internal equivalent
     :param stat_mods: dict with custom static identifier and respecitve internal equivalent
     :return: modified df as pd.DataFrame
     """
@@ -64,15 +75,13 @@ def update_columns_for_prosit(df, tmt_labeled: str, stat_mods: Optional[Dict[str
 
     mods = {**(MSFRAGGER_VAR_MODS), **(stat_mods or {}), **(var_mods or {})}
 
-
     if tmt_labeled != "":
         unimod_tag = c.TMT_MODS[tmt_labeled]
         logger.info("Adding TMT fixed modifications")
         mods = {**{"C": "C[UNIMOD:4]", r"n[\d+]": f"{unimod_tag}-", "K": f"K{unimod_tag}"}, **mods}
-        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(
-            df["modified_peptide"].to_list(), mods=mods)
+        df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list(), mods=mods)
     else:
-        #By default, i.e. if nothing is supplied to fixed_mods, carbamidomethylation on cystein will be included
+        # By default, i.e. if nothing is supplied to fixed_mods, carbamidomethylation on cystein will be included
         # in the fixed modifications. If you want to have no fixed modifictions at all, supply fixed_mods={}
         mods = {**{"C": "C[UNIMOD:4]"}, **mods}
         df["MODIFIED_SEQUENCE"] = msfragger_to_internal(df["modified_peptide"].to_list(), mods=mods)

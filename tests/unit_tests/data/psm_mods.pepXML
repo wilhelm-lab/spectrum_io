@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="pepXML_std.xsl"?>
+<msms_pipeline_analysis date="2023-11-02T08:17:10" xmlns="http://regis-web.systemsbiology.net/pepXML" summary_xml="E:\piero_giansanti\R0096-01\Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.pepXML" xsi:schemaLocation="http://sashimi.sourceforge.net/schema_revision/pepXML/pepXML_v122.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<msms_run_summary base_name="E:\piero_giansanti\R0096-01\Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01" raw_data_type="mzML" comment="This pepXML was from calibrated spectra." raw_data="mzML">
+<sample_enzyme name="trypsin_r">
+<specificity cut="R" no_cut="P" sense="C"/>
+</sample_enzyme>
+<search_summary base_name="E:\piero_giansanti\R0096-01\Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01" precursor_mass_type="monoisotopic" search_engine="X! Tandem" search_engine_version="MSFragger-3.8" fragment_mass_type="monoisotopic" search_id="1">
+<search_database local_path="E:\piero_giansanti\R0096-01\2023-11-01-decoys-contam-UniProt_Mouse_UP00000589_wISO_072021.fasta.fas" type="AA"/>
+<enzymatic_search_constraint enzyme="default" min_number_termini="3" max_num_internal_cleavages="2"/>
+<aminoacid_modification aminoacid="C" massdiff="57.02146" mass="160.03065" variable="N"/>
+<aminoacid_modification aminoacid="K" massdiff="304.20715" mass="432.30212" variable="N"/>
+<terminal_modification massdiff="304.20715" protein_terminus="N" mass="305.21497" terminus="N" variable="N"/>
+<aminoacid_modification aminoacid="M" massdiff="15.9949" mass="147.0354" variable="Y"/>
+<parameter name="# MSFragger.build" value="MSFragger-3.8"/>
+<parameter name="database_name" value="E:\piero_giansanti\R0096-01\2023-11-01-decoys-contam-UniProt_Mouse_UP00000589_wISO_072021.fasta.fas"/>
+<parameter name="decoy_prefix" value="rev_"/>
+<parameter name="num_threads" value="40"/>
+<parameter name="precursor_mass_lower" value="-20.0"/>
+<parameter name="precursor_mass_upper" value="20.0"/>
+<parameter name="precursor_mass_units" value="1"/>
+<parameter name="precursor_true_tolerance" value="20.0"/>
+<parameter name="data_type" value="0"/>
+<parameter name="precursor_true_units" value="1"/>
+<parameter name="fragment_mass_tolerance" value="20.0"/>
+<parameter name="fragment_mass_units" value="1"/>
+<parameter name="calibrate_mass" value="2"/>
+<parameter name="use_all_mods_in_first_search" value="1"/>
+<parameter name="write_calibrated_mzml" value="0"/>
+<parameter name="write_uncalibrated_mgf" value="0"/>
+<parameter name="write_mzbin_all" value="0"/>
+<parameter name="isotope_error" value="-1/0/1/2/3"/>
+<parameter name="mass_offsets" value="0.0"/>
+<parameter name="labile_search_mode" value="OFF"/>
+<parameter name="restrict_deltamass_to" value="all"/>
+<parameter name="precursor_mass_mode" value="SELECTED"/>
+<parameter name="intensity_transform" value="0"/>
+<parameter name="activation_types" value="all"/>
+<parameter name="group_variable" value="0"/>
+<parameter name="require_precursor" value="1"/>
+<parameter name="reuse_dia_fragment_peaks" value="0"/>
+<parameter name="remove_precursor_peak" value="1"/>
+<parameter name="remove_precursor_range" value="-1.500000,1.500000"/>
+<parameter name="localize_delta_mass" value="0"/>
+<parameter name="delta_mass_exclude_ranges" value="(-1.5,3.5)"/>
+<parameter name="fragment_ion_series" value="b,y"/>
+<parameter name="ion_series_definitions" value=""/>
+<parameter name="search_enzyme_name" value="trypsin_r"/>
+<parameter name="min_sequence_matches" value="2"/>
+<parameter name="check_spectral_files" value="1"/>
+<parameter name="search_enzyme_cut_1" value="R"/>
+<parameter name="search_enzyme_nocut_1" value="P"/>
+<parameter name="num_enzyme_termini" value="3"/>
+<parameter name="allowed_missed_cleavage_1" value="2"/>
+<parameter name="search_enzyme_sense_1" value="C"/>
+<parameter name="clip_nTerm_M" value="1"/>
+<parameter name="allow_multiple_variable_mods_on_residue" value="0"/>
+<parameter name="max_variable_mods_per_peptide" value="3"/>
+<parameter name="max_variable_mods_combinations" value="5000"/>
+<parameter name="mass_diff_to_variable_mod" value="0"/>
+<parameter name="output_format" value="pepxml_pin"/>
+<parameter name="output_report_topN" value="1"/>
+<parameter name="output_max_expect" value="50.0"/>
+<parameter name="report_alternative_proteins" value="1"/>
+<parameter name="override_charge" value="0"/>
+<parameter name="precursor_charge" value="1 4"/>
+<parameter name="digest_min_length" value="7"/>
+<parameter name="digest_max_length" value="50"/>
+<parameter name="digest_mass_range" value="500.0 5000.0"/>
+<parameter name="max_fragment_charge" value="1"/>
+<parameter name="deisotope" value="1"/>
+<parameter name="deneutralloss" value="1"/>
+<parameter name="track_zero_topN" value="0"/>
+<parameter name="zero_bin_accept_expect" value="0.0"/>
+<parameter name="zero_bin_mult_expect" value="1.0"/>
+<parameter name="add_topN_complementary" value="0"/>
+<parameter name="minimum_peaks" value="15"/>
+<parameter name="use_topN_peaks" value="200"/>
+<parameter name="min_fragments_modelling" value="2"/>
+<parameter name="min_matched_fragments" value="4"/>
+<parameter name="minimum_ratio" value="0.0"/>
+<parameter name="clear_mz_range" value="125.5 135.5"/>
+<parameter name="excluded_scan_list_file" value=""/>
+<parameter name="variable_mod_01" value="15.9949 M 3"/>
+<parameter name="add_A_alanine" value="0.0"/>
+<parameter name="add_B_user_amino_acid" value="0.0"/>
+<parameter name="add_C_cysteine" value="57.02146"/>
+<parameter name="add_Cterm_peptide" value="0.0"/>
+<parameter name="add_Cterm_protein" value="0.0"/>
+<parameter name="add_D_aspartic_acid" value="0.0"/>
+<parameter name="add_E_glutamic_acid" value="0.0"/>
+<parameter name="add_F_phenylalanine" value="0.0"/>
+<parameter name="add_G_glycine" value="0.0"/>
+<parameter name="add_H_histidine" value="0.0"/>
+<parameter name="add_I_isoleucine" value="0.0"/>
+<parameter name="add_J_user_amino_acid" value="0.0"/>
+<parameter name="add_K_lysine" value="304.20715"/>
+<parameter name="add_L_leucine" value="0.0"/>
+<parameter name="add_M_methionine" value="0.0"/>
+<parameter name="add_N_asparagine" value="0.0"/>
+<parameter name="add_Nterm_peptide" value="304.20715"/>
+<parameter name="add_Nterm_protein" value="0.0"/>
+<parameter name="add_O_user_amino_acid" value="0.0"/>
+<parameter name="add_P_proline" value="0.0"/>
+<parameter name="add_Q_glutamine" value="0.0"/>
+<parameter name="add_R_arginine" value="0.0"/>
+<parameter name="add_S_serine" value="0.0"/>
+<parameter name="add_T_threonine" value="0.0"/>
+<parameter name="add_U_user_amino_acid" value="0.0"/>
+<parameter name="add_V_valine" value="0.0"/>
+<parameter name="add_W_tryptophan" value="0.0"/>
+<parameter name="add_X_user_amino_acid" value="0.0"/>
+<parameter name="add_Y_tyrosine" value="0.0"/>
+<parameter name="add_Z_user_amino_acid" value="0.0"/>
+</search_summary>
+<spectrum_query start_scan="2459" uncalibrated_precursor_neutral_mass="1863.0299" assumed_charge="5" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.2459.2459.5" spectrumNativeID="controllerType=0 controllerNumber=1 scan=2459" end_scan="2459" index="34" precursor_neutral_mass="1863.023" retention_time_sec="1109.2298126220703">
+<search_result>
+<search_hit peptide="GQAVLAFQEQVGTGR" massdiff="-0.98974609375" calc_neutral_pep_mass="1864.0127" peptide_next_aa="Y" num_missed_cleavages="0" num_tol_term="1" protein_descr="Predicted gene 597 OS=Mus musculus OX=10090 GN=Gm597 PE=1 SV=1" num_tot_proteins="1" tot_num_ions="28" hit_rank="1" num_matched_ions="4" protein="rev_tr|E9Q8J5|E9Q8J5_MOUSE" peptide_prev_aa="A" is_rejected="0">
+<modification_info modified_peptide="n[305]GQAVLAFQEQVGTGR" mod_nterm_mass="305.21497">
+</modification_info>
+<search_score name="hyperscore" value="8.221"/>
+<search_score name="nextscore" value="8.221"/>
+<search_score name="expect" value="2.977860e+00"/>
+</search_hit>
+</search_result>
+</spectrum_query>
+<spectrum_query start_scan="2486" uncalibrated_precursor_neutral_mass="1937.0659" assumed_charge="5" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.2486.2486.5" spectrumNativeID="controllerType=0 controllerNumber=1 scan=2486" end_scan="2486" index="42" precursor_neutral_mass="1937.0531" retention_time_sec="1111.622314453125">
+<search_result>
+<search_hit peptide="TEVPMGLSLRTTSAR" massdiff="-0.9996337890625" calc_neutral_pep_mass="1938.0527" peptide_next_aa="G" num_missed_cleavages="1" num_tol_term="1" protein_descr="Predicted gene 45140 (Fragment) OS=Mus musculus OX=10090 GN=Gm45140 PE=4 SV=1" num_tot_proteins="1" tot_num_ions="28" hit_rank="1" num_matched_ions="4" protein="tr|A0A0N4SW17|A0A0N4SW17_MOUSE" peptide_prev_aa="T" is_rejected="0">
+<modification_info modified_peptide="n[305]TEVPM[35]GLSLRTTSAR" mod_nterm_mass="305.21497">
+<mod_aminoacid_mass mass="147.0354" position="5"/>
+</modification_info>
+<search_score name="hyperscore" value="7.083"/>
+<search_score name="nextscore" value="0.0"/>
+<search_score name="expect" value="2.260736e+00"/>
+</search_hit>
+</search_result>
+</spectrum_query>
+<spectrum_query start_scan="2980" uncalibrated_precursor_neutral_mass="1773.8171" assumed_charge="3" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.2980.2980.3" spectrumNativeID="controllerType=0 controllerNumber=1 scan=2980" end_scan="2980" index="193" precursor_neutral_mass="1773.8123" retention_time_sec="1152.5688171386719">
+<search_result>
+<search_hit peptide="YSGNCDRQSVER" massdiff="-0.026611328125" calc_neutral_pep_mass="1773.8389" peptide_next_aa="A" num_missed_cleavages="1" num_tol_term="1" protein_descr="Isoform 2 of SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6" num_tot_proteins="7" tot_num_ions="22" hit_rank="1" num_matched_ions="4" protein="sp|Q9D413-2|SH2D6_MOUSE" peptide_prev_aa="W" is_rejected="0">
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=2 SV=1" protein="sp|Q9D413|SH2D6_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|A0A3Q4EBW9|A0A3Q4EBW9_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=1 SV=1" protein="tr|A0A3Q4ECA8|A0A3Q4ECA8_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|A0A3Q4EGG3|A0A3Q4EGG3_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|E0CYY5|E0CYY5_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|E9QJU1|E9QJU1_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
+<modification_info modified_peptide="n[305]YSGN[41]CDRQSVER" mod_nterm_mass="305.21497">
+<mod_aminoacid_mass mass="160.03065" position="5"/>
+</modification_info>
+<search_score name="hyperscore" value="3.932"/>
+<search_score name="nextscore" value="0.0"/>
+<search_score name="expect" value="1.386756e+00"/>
+</search_hit>
+</search_result>
+</spectrum_query>
+<spectrum_query start_scan="3945" uncalibrated_precursor_neutral_mass="1586.8934" assumed_charge="3" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.3945.3945.3" spectrumNativeID="controllerType=0 controllerNumber=1 scan=3945" end_scan="3945" index="647" precursor_neutral_mass="1586.8887" retention_time_sec="1225.7048034667969">
+<search_result>
+<search_hit peptide="ESTKSAAER" massdiff="0.9967041015625" calc_neutral_pep_mass="1585.892" peptide_next_aa="E" num_missed_cleavages="0" num_tol_term="1" protein_descr="Isoform 5 of Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c" num_tot_proteins="6" tot_num_ions="16" hit_rank="1" num_matched_ions="6" protein="rev_sp|Q3TLH4-5|PRC2C_MOUSE" peptide_prev_aa="V" is_rejected="0">
+<alternative_protein protein_descr="Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c PE=1 SV=3" protein="rev_sp|Q3TLH4|PRC2C_MOUSE" peptide_prev_aa="V" peptide_next_aa="E" num_tol_term="1"/>
+<alternative_protein protein_descr="Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c PE=1 SV=1" protein="rev_tr|A0A0A0MQ79|A0A0A0MQ79_MOUSE" peptide_prev_aa="V" peptide_next_aa="E" num_tol_term="1"/>
+<alternative_protein protein_descr="Protein PRRC2C (Fragment) OS=Mus musculus OX=10090 GN=Prrc2c PE=1 SV=1" protein="rev_tr|S4R209|S4R209_MOUSE" peptide_prev_aa="V" peptide_next_aa="E" num_tol_term="1"/>
+<alternative_protein protein_descr="Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c PE=1 SV=1" protein="rev_tr|S4R294|S4R294_MOUSE" peptide_prev_aa="V" peptide_next_aa="E" num_tol_term="1"/>
+<alternative_protein protein_descr="Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c PE=1 SV=1" protein="rev_tr|S4R2J9|S4R2J9_MOUSE" peptide_prev_aa="V" peptide_next_aa="E" num_tol_term="1"/>
+<modification_info modified_peptide="n[305]ESTKSAAER" mod_nterm_mass="305.21497">
+<mod_aminoacid_mass mass="432.30212" position="4"/>
+</modification_info>
+<search_score name="hyperscore" value="10.839"/>
+<search_score name="nextscore" value="9.935"/>
+<search_score name="expect" value="2.914798e+00"/>
+</search_hit>
+</search_result>
+</spectrum_query>
+</msms_run_summary>
+</msms_pipeline_analysis>

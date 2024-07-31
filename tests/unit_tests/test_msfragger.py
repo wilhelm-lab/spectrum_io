@@ -27,11 +27,26 @@ class TestMSFragger(unittest.TestCase):
         self.assertTrue("PROTEINS" in df.columns)
 
     def test_read_msfragger(self):
-        """Test function for reading sage results and transforming to Prosit format."""
+        """Test function for reading msfragger results and transforming to Prosit format."""
         expected_msfragger_internal_path = Path(__file__).parent / "data" / "psm_tmt_internal.csv"
 
         internal_search_results_df = MSFragger(Path(__file__).parent / "data" / "psm_tmt.pepXML").read_result(
             tmt_labeled="tmtpro"
+        )
+        expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
+        print("Internal Search Results Columns:", internal_search_results_df.columns)
+        print("Expected Columns:", expected_df.columns)
+
+        pd.testing.assert_frame_equal(internal_search_results_df, expected_df)
+
+    def test_read_msfragger_mods(self):
+        """Test function for reading msfragger results and transforming to Prosit format with custom mods."""
+        expected_msfragger_internal_path = Path(__file__).parent / "data" / "psm_tmt_internal_mods.csv"
+        stat_mod = {"M[35]": "[UNIMOD:35]"}
+        var_mod = {"[41]": "[UNIMOD:41]"}
+
+        internal_search_results_df = MSFragger(Path(__file__).parent / "data" / "psm_mods.pepXML").read_result(
+            tmt_labeled="tmtpro", stat_mods=stat_mod, var_mods=var_mod
         )
         expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
         print("Internal Search Results Columns:", internal_search_results_df.columns)

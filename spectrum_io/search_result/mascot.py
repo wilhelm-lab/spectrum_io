@@ -2,11 +2,11 @@ import logging
 import re
 import sqlite3
 from pathlib import Path
-from typing import Optional, Union, Dict, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods, custom_regex_escape
+from spectrum_fundamentals.mod_string import custom_regex_escape, internal_without_mods
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -16,14 +16,16 @@ logger = logging.getLogger(__name__)
 class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
-    def read_result(self, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                    var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_labeled: str,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
-        :param var_mods: dict with custom variable identifier and respecitve internal equivalent 
-        :param stat_mods: dict with custom static identifier and respecitve internal equivalent
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading mascot msf file")
@@ -78,10 +80,10 @@ class Mascot(SearchResults):
             ["SCAN_NUMBER", "PRECURSOR_CHARGE", "SCORE", "RAW_FILE", "SEQUENCE", "REVERSE"],
             as_index=False,
         ).agg({"MODIFICATIONS": "|".join})
-        MOD_MASSES = c.update_mod_masses()
-        mod_masses_reverse = {round(float(v), 3): k for k, v in MOD_MASSES.items()}
-        
-        def find_replacement(match: re.Match, sequence: str) -> str:
+        mod_masses = c.update_mod_masses()
+        mod_masses_reverse = {round(float(v), 3): k for k, v in mod_masses.items()}
+
+        def find_replacement(match: re.Match) -> str:
             """
             Subfunction to find the corresponding substitution for a match.
 
@@ -90,7 +92,13 @@ class Mascot(SearchResults):
             """
             key = match.string[match.start() : match.end()]
             return mods[key]
-        
+
+        stat_mods: Dict[str, str] = {}
+        var_mods: Dict[str, str] = {}
+
+        if custom_mods is not None:
+            stat_mods = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
+            var_mods = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
 
         mods = {}
 
@@ -107,11 +115,11 @@ class Mascot(SearchResults):
             modifications = row["MODIFICATIONS"].split("|")
             sequence = row["SEQUENCE"]
             if mods:
-                sequence = regex.sub(lambda match: find_replacement(match, sequence), sequence) 
+                sequence = regex.sub(lambda match: find_replacement(match), sequence)
 
             if len(modifications) == 0:
                 sequences.append(sequence)
-            else:                 
+            else:
                 skip = 0
                 for mod in modifications:
                     pos, mass = mod.split("$")

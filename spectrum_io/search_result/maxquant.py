@@ -1,11 +1,10 @@
 import logging
 from pathlib import Path
-from typing import Optional, Union, Dict, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
-from spectrum_fundamentals.constants import MAXQUANT_VAR_MODS
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -42,14 +41,16 @@ class MaxQuant(SearchResults):
         mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
         return mass
 
-    def read_result(self, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                    var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_labeled: str,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
-        :param var_mods: dict with custom variable identifier and respecitve internal equivalent 
-        :param stat_mods: dict with custom static identifier and respecitve internal equivalent
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :return: pd.DataFrame with the formatted data
         """
         logger.info("Reading msms.txt file")
@@ -76,24 +77,35 @@ class MaxQuant(SearchResults):
         df.columns = df.columns.str.upper()
         df.columns = df.columns.str.replace(" ", "_")
 
+        stat_mods: Dict[str, str] = {}
+        var_mods: Dict[str, str] = {}
+
+        if custom_mods is not None:
+            stat_mods = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
+            var_mods = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
+
         df = MaxQuant.update_columns_for_prosit(df, tmt_labeled, stat_mods, var_mods)
         return filter_valid_prosit_sequences(df)
 
     @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                                  var_mods: Optional[Dict[str, str]] = None) -> pd.DataFrame:
+    def update_columns_for_prosit(
+        df: pd.DataFrame,
+        tmt_labeled: str,
+        stat_mods: Optional[Dict[str, str]] = None,
+        var_mods: Optional[Dict[str, str]] = None,
+    ) -> pd.DataFrame:
         """
         Update columns of df to work with Prosit.
 
         :param df: df to modify
         :param tmt_labeled: True if tmt labeled
-        :param var_mods: dict with custom variable identifier and respecitve internal equivalent 
+        :param var_mods: dict with custom variable identifier and respecitve internal equivalent
         :param stat_mods: dict with custom static identifier and respecitve internal equivalent
         :return: modified df as pd.DataFrame
         """
         df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        mods = {**(MAXQUANT_VAR_MODS), **(stat_mods or {}), **(var_mods or {})}
+        mods = {**(c.MAXQUANT_VAR_MODS), **(stat_mods or {}), **(var_mods or {})}
 
         df["REVERSE"].fillna(False, inplace=True)
         df["REVERSE"].replace("+", True, inplace=True)
@@ -102,33 +114,32 @@ class MaxQuant(SearchResults):
             unimod_tag = c.TMT_MODS[tmt_labeled]
             logger.info("Adding TMT fixed modifications")
             df["MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df["MODIFIED_SEQUENCE"].to_numpy(), mods=
-                {**{"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"}, **mods}
-                )
+                df["MODIFIED_SEQUENCE"].to_numpy(),
+                mods={**{"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"}, **mods},
+            )
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
             if "msa" in tmt_labeled:
                 logger.info("Replacing phospho by dehydration for Phospho-MSA")
                 df["MODIFIED_SEQUENCE_MSA"] = df["MODIFIED_SEQUENCE"].str.replace(
                     "[UNIMOD:21]", "[UNIMOD:23]", regex=False
                 )
-                fixed_mods = {"C": "C[UNIMOD:4]"}
         elif "LABELING_STATE" in df.columns:
             logger.info("Adding SILAC fixed modifications")
-    
+
             df.loc[df["LABELING_STATE"] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df[df["LABELING_STATE"] == 1]["MODIFIED_SEQUENCE"].to_numpy(), mods = 
-                {**{"C": "C[UNIMOD:4]", "K": "K[UNIMOD:259]", "R": "R[UNIMOD:267]"}, **mods}
+                df[df["LABELING_STATE"] == 1]["MODIFIED_SEQUENCE"].to_numpy(),
+                mods={**{"C": "C[UNIMOD:4]", "K": "K[UNIMOD:259]", "R": "R[UNIMOD:267]"}, **mods},
             )
             df.loc[df["LABELING_STATE"] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df[df["LABELING_STATE"] != 1]["MODIFIED_SEQUENCE"].to_numpy(), mods=
-                {**{"C": "C[UNIMOD:4]"}, **mods}
+                df[df["LABELING_STATE"] != 1]["MODIFIED_SEQUENCE"].to_numpy(), mods={**{"C": "C[UNIMOD:4]"}, **mods}
             )
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:259]"), axis=1)
             df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:267]"), axis=1)
             df.drop(columns=["LABELING_STATE"], inplace=True)
         else:
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy(), mods=
-                                                           {**{"C": "C[UNIMOD:4]"}, **mods})
+            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(
+                df["MODIFIED_SEQUENCE"].to_numpy(), mods={**{"C": "C[UNIMOD:4]"}, **mods}
+            )
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
         df["PROTEINS"].fillna("UNKNOWN", inplace=True)

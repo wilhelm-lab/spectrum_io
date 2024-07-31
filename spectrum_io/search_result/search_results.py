@@ -2,7 +2,7 @@ import logging
 import re
 from abc import abstractmethod
 from pathlib import Path
-from typing import Optional, Union, Dict, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -51,33 +51,35 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
-    def read_result(self, tmt_labeled: str, stat_mods: Optional[Dict[str, str]] = None, 
-                    var_mods: Optional[Dict[str, str]] = None):
+    def read_result(
+        self,
+        tmt_labeled: str,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         """Read result.
 
         :param tmt_labeled: tmt label as str
-        :param var_mods: variable modifications with custom identifier and respecitve internal equivalent 
-        :param stat_mods: static modifications with custom identifier and respecitve internal equivalent
-
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         """
         raise NotImplementedError
 
-    def generate_internal(self, tmt_labeled: str, out_path: Optional[Union[str, Path]] = None, custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None) -> pd.DataFrame:
+    def generate_internal(
+        self,
+        tmt_labeled: str,
+        out_path: Optional[Union[str, Path]] = None,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
 
         :param out_path: path to output
         :param tmt_labeled: tmt label as str
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
-        :raises AssertionError: if custom modification with illegal mass was provided
         :return: path to output file
         """
-        stat_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
-        var_mods: Dict[str, str] = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
-
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
+            return self.read_result(tmt_labeled, custom_mods=custom_mods)
 
         if isinstance(out_path, str):
             out_path = Path(out_path)
@@ -85,11 +87,11 @@ class SearchResults:
         if out_path.is_file():
             # only read converted and return
             logger.info(f"Found search results in internal format at {out_path}, skipping conversion")
-            #TODO: internal_to_unimod
+            # TODO: internal_to_unimod
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_labeled, stat_mods=stat_mods, var_mods=var_mods)
+        df = self.read_result(tmt_labeled, custom_mods=custom_mods)
         csv.write_file(df, out_path)
         return df
 

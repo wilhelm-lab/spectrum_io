@@ -3,9 +3,8 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Union
+from typing import Dict, Optional, Tuple, Union
 
-import numpy as np
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import xisearch_to_internal
@@ -18,11 +17,16 @@ logger = logging.getLogger(__name__)
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
-    def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_labeled: str = "",
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
         :param tmt_labeled: tmt label as str
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :raises NotImplementedError: if a tmt label is provided
         :return: pd.DataFrame with the formatted data
         """
