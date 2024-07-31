@@ -60,7 +60,8 @@ class Sage(SearchResults):
         # removing .mzML
         df["RAW_FILE"] = df["RAW_FILE"].str.replace(r"\.mz[M|m][l|L]", "", regex=True)
         # extracting only the scan number
-        df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
+        if not df["SCAN_NUMBER"].dtype == int:
+            df["SCAN_NUMBER"] = [int(x.rsplit("=", 1)[-1]) for x in df["SCAN_NUMBER"]]
         # creating a column of decoys and targets
         df["REVERSE"] = df["REVERSE"] < 0
         # removing modification to create the unmodified sequences
