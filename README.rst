@@ -13,8 +13,8 @@ Spectrum-IO: File / Data Conversion for Mass Spec data within the Oktoberfest ec
    :target: https://opensource.org/licenses/MIT
    :alt: License
 .. |Read the Docs| image:: https://img.shields.io/readthedocs/spectrum_io/latest.svg?label=Read%20the%20Docs
-   :target: https://spectrum_io.readthedocs.io/
-   :alt: Read the documentation at https://spectrum_io.readthedocs.io/
+   :target: https://spectrum-io.readthedocs.io/
+   :alt: Read the documentation at https://spectrum-io.readthedocs.io/
 .. |Build| image:: https://github.com/wilhelm-lab/spectrum_io/workflows/Build%20spectrum_io%20Package/badge.svg
    :target: https://github.com/wilhelm-lab/spectrum_io/actions?workflow=Package
    :alt: Build Package Status
