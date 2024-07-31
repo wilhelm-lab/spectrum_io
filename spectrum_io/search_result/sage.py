@@ -69,5 +69,6 @@ class Sage(SearchResults):
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         # converting sage to unimod
         df["MODIFIED_SEQUENCE"] = sage_to_internal(df["MODIFIED_SEQUENCE"])
+        df["PROTEINS"].fillna("UNKNOWN", inplace=True)
 
         return df
