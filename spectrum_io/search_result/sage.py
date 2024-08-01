@@ -59,10 +59,10 @@ class Sage(SearchResults):
         """
         df = self.results
 
-        # removing .mzML
         df.fillna({"proteins": "UNKNOWN"}, inplace=True)
         df.replace({"filename": {r"\.mz[M|m][l|L]": ""}, "peptide": mods}, regex=True, inplace=True)
-        df["scannr"] = df["scannr"].str.rsplit(pat="=", n=1).str[1].astype(int)
+        if not df["scannr"].dtype == int:
+           df["scannr"] = df["scannr"].str.rsplit(pat="=", n=1).str[1].astype(int)
         df["label"] = df["label"] < 0
         df["SEQUENCE"] = internal_without_mods(df["peptide"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
