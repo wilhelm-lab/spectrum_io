@@ -69,7 +69,7 @@ class TestMSFragger(unittest.TestCase):
     def test_read_msfragger_with_custom_mods_with_tmt(self):
         """Test function for reading msfragger results and transforming to Prosit format with custom mods and explicit TMT."""
         expected_msfragger_internal_path = Path(__file__).parent / "data" / "psm_tmt_internal.csv"
-        custom_mods = {"M[147]": 35, "C": 4, "^n[305]": 2016, "K": 2016}
+        custom_mods = {"^n[305]": 2016, "K": 2016}
 
         internal_search_results_df = MSFragger(Path(__file__).parent / "data" / "psm_tmt.pepXML").read_result(
             custom_mods=custom_mods

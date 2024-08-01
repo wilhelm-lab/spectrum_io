@@ -63,8 +63,6 @@ class TestMaxQuant(unittest.TestCase):
         expected_df_path = Path(__file__).parent / "data" / "msms_internal_tmt.csv"
         internal_search_results_df = MaxQuant(Path(__file__).parent / "data" / "msms.txt").read_result(tmt_label="")
         custom_mods = {
-            "M(Oxidation (M)": 35,
-            "C": 4,
             "K": 2016,
             "^": 2016,
         }
