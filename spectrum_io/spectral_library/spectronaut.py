@@ -2,7 +2,7 @@ import os
 import re
 from itertools import chain, cycle
 from sqlite3 import Connection
-from typing import IO, Dict, Tuple, Union, Optional
+from typing import IO, Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -26,8 +26,13 @@ class Spectronaut(SpectralLibrary):
             f"{f_int:.4f},{f_mz:.8f},{m.group(2)},{m.group(1)},{m.group(3)},{m.group(4) if m.group(4) else 'noloss'}\n"
         )
 
-    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame,
-               custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None):
+    def _write(
+        self,
+        out: Union[IO, Connection],
+        data: Dict[str, np.ndarray],
+        metadata: pd.DataFrame,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         # prepare metadata
         if isinstance(out, Connection):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")

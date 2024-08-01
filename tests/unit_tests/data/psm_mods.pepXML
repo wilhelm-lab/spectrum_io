@@ -127,7 +127,7 @@
 <spectrum_query start_scan="2486" uncalibrated_precursor_neutral_mass="1937.0659" assumed_charge="5" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.2486.2486.5" spectrumNativeID="controllerType=0 controllerNumber=1 scan=2486" end_scan="2486" index="42" precursor_neutral_mass="1937.0531" retention_time_sec="1111.622314453125">
 <search_result>
 <search_hit peptide="TEVPMGLSLRTTSAR" massdiff="-0.9996337890625" calc_neutral_pep_mass="1938.0527" peptide_next_aa="G" num_missed_cleavages="1" num_tol_term="1" protein_descr="Predicted gene 45140 (Fragment) OS=Mus musculus OX=10090 GN=Gm45140 PE=4 SV=1" num_tot_proteins="1" tot_num_ions="28" hit_rank="1" num_matched_ions="4" protein="tr|A0A0N4SW17|A0A0N4SW17_MOUSE" peptide_prev_aa="T" is_rejected="0">
-<modification_info modified_peptide="n[305]TEVPM[35]GLSLRTTSAR" mod_nterm_mass="305.21497">
+<modification_info modified_peptide="n[305]TEVPM[147]GLSLRTTSAR" mod_nterm_mass="305.21497">
 <mod_aminoacid_mass mass="147.0354" position="5"/>
 </modification_info>
 <search_score name="hyperscore" value="7.083"/>

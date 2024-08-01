@@ -1,7 +1,7 @@
 import sqlite3
 import zlib
 from pathlib import Path
-from typing import IO, Dict, Union, Tuple, Optional
+from typing import IO, Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -125,12 +125,17 @@ class DLib(SpectralLibrary):
         c.execute(sql_insert_meta, ["staleProteinMapping", "true"])
         conn.commit()
 
-    def _write(self, out: Union[IO, sqlite3.Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame,
-               custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None):
+    def _write(
+        self,
+        out: Union[IO, sqlite3.Connection],
+        data: Dict[str, np.ndarray],
+        metadata: pd.DataFrame,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         if isinstance(out, IO):
             raise TypeError("Not supported. Use msp/spectronaut if you want to write a text file.")
         seqs = metadata["SEQUENCE"]
-        modseqs = metadata["MODIFIED_SEQUENCE"]        
+        modseqs = metadata["MODIFIED_SEQUENCE"]
         mass_mod_sequences = internal_to_mod_mass(modseqs, custom_mods)
 
         p_charges = metadata["PRECURSOR_CHARGE"]

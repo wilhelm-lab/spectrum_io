@@ -3,7 +3,7 @@ from multiprocessing import Queue
 from multiprocessing.managers import ValueProxy
 from pathlib import Path
 from sqlite3 import Connection
-from typing import IO, Dict, Optional, Union, Tuple
+from typing import IO, Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -52,8 +52,9 @@ class SpectralLibrary:
     def _get_handle(self):
         return open(self.out_path, self.mode)
 
-    def async_write(self, queue: Queue, progress: ValueProxy, 
-                    custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None):
+    def async_write(
+        self, queue: Queue, progress: ValueProxy, custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None
+    ):
         """
         Asynchronously write content to the output file from a queue.
 
@@ -88,8 +89,13 @@ class SpectralLibrary:
         return (f_mz != -1) & (f_int >= self.min_intensity_threshold)
 
     @abstractmethod
-    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame,
-               custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None):
+    def _write(
+        self,
+        out: Union[IO, Connection],
+        data: Dict[str, np.ndarray],
+        metadata: pd.DataFrame,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         """
         Internal writer function.
 

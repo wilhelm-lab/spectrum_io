@@ -1,5 +1,5 @@
 from sqlite3 import Connection
-from typing import IO, Dict, Union, Tuple, Optional
+from typing import IO, Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -17,8 +17,13 @@ class MSP(SpectralLibrary):
         annot = f_a[:-2].decode() if f_a.endswith(b"1") else f_a.replace(b"+", b"^").decode()
         return f'{f_mz:.8f}\t{f_int:.4f}\t"{annot}/0.0ppm"\n'
 
-    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame, 
-               custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None):
+    def _write(
+        self,
+        out: Union[IO, Connection],
+        data: Dict[str, np.ndarray],
+        metadata: pd.DataFrame,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         # prepare metadata
         if isinstance(out, Connection):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")
