@@ -48,7 +48,6 @@ class Sage(SearchResults):
         logger.info(f"Finished reading {self.path}")
 
         self.convert_to_internal(mods=parsed_mods)
-        print(parsed_mods, self.results)
         return filter_valid_prosit_sequences(self.results)
 
     def convert_to_internal(self, mods: Dict[str, str]) -> pd.DataFrame:
@@ -62,7 +61,7 @@ class Sage(SearchResults):
         df.fillna({"proteins": "UNKNOWN"}, inplace=True)
         df.replace({"filename": {r"\.mz[M|m][l|L]": ""}, "peptide": mods}, regex=True, inplace=True)
         if not df["scannr"].dtype == int:
-           df["scannr"] = df["scannr"].str.rsplit(pat="=", n=1).str[1].astype(int)
+            df["scannr"] = df["scannr"].str.rsplit(pat="=", n=1).str[1].astype("int64")
         df["label"] = df["label"] < 0
         df["SEQUENCE"] = internal_without_mods(df["peptide"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()

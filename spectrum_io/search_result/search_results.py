@@ -110,21 +110,21 @@ class SearchResults:
 
     def generate_internal(
         self,
-        tmt_labeled: str,
+        tmt_label: str = "",
         out_path: Optional[Union[str, Path]] = None,
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        custom_mods: Optional[Dict[str, int]] = None,
     ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
 
         :param out_path: path to output
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: tmt label as str
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
         :return: path to output file
         """
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_labeled, custom_mods=custom_mods)
+            return self.read_result(tmt_label, custom_mods=custom_mods)
 
         if isinstance(out_path, str):
             out_path = Path(out_path)
@@ -136,7 +136,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_labeled, custom_mods=custom_mods)
+        df = self.read_result(tmt_label, custom_mods=custom_mods)
         csv.write_file(df, out_path)
         return df
 
@@ -149,7 +149,7 @@ class SearchResults:
         return csv.read_file(self.path)
 
     @abstractmethod
-    def convert_to_internal(self, mods: Dict[str, int]):
+    def convert_to_internal(self, mods: Dict[str, str]):
         """
         Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 

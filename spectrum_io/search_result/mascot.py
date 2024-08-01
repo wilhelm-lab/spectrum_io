@@ -6,7 +6,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import custom_regex_escape, internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults, filter_valid_prosit_sequences
 
@@ -16,18 +16,26 @@ logger = logging.getLogger(__name__)
 class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {}
+
     def read_result(
         self,
-        tmt_labeled: str,
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: tmt label as str
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :raises NotImplementedError: always
         :return: pd.DataFrame with the formatted data
         """
+        raise NotImplementedError
+
         logger.info("Reading mascot msf file")
         connection = sqlite3.connect(self.path)
         # cursor = connection.cursor()
@@ -83,39 +91,14 @@ class Mascot(SearchResults):
         mod_masses = c.update_mod_masses()
         mod_masses_reverse = {round(float(v), 3): k for k, v in mod_masses.items()}
 
-        def find_replacement(match: re.Match) -> str:
-            """
-            Subfunction to find the corresponding substitution for a match.
-
-            :param match: an re.Match object found by re.sub
-            :return: substitution string for the given match
-            """
-            key = match.string[match.start() : match.end()]
-            return mods[key]
-
-        stat_mods: Dict[str, str] = {}
-        var_mods: Dict[str, str] = {}
-
-        if custom_mods is not None:
-            stat_mods = {key: value[0] for key, value in (custom_mods.get("stat_mods") or {}).items()}
-            var_mods = {key: value[0] for key, value in (custom_mods.get("var_mods") or {}).items()}
-
-        mods = {}
-
-        if var_mods is not None:
-            mods.update(var_mods)
-        if stat_mods is not None:
-            mods.update(stat_mods)
-
-        if mods:
-            regex = re.compile("|".join(map(custom_regex_escape, mods.keys())))
+        parsed_mods = self.standard_mods | (custom_mods or {})
 
         sequences = []
         for _, row in df.iterrows():
             modifications = row["MODIFICATIONS"].split("|")
             sequence = row["SEQUENCE"]
-            if mods:
-                sequence = regex.sub(lambda match: find_replacement(match), sequence)
+            if parsed_mods:
+                sequence = sequence.replace(parsed_mods, sequence, regex=True)
 
             if len(modifications) == 0:
                 sequences.append(sequence)

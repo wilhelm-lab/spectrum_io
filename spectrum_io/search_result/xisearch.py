@@ -19,18 +19,18 @@ class Xisearch(SearchResults):
 
     def read_result(
         self,
-        tmt_labeled: str = "",
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: tmt label as str
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :raises NotImplementedError: if a tmt label is provided
         :return: pd.DataFrame with the formatted data
         """
-        if tmt_labeled != "":
+        if tmt_label != "":
             raise NotImplementedError("TMT is not supported for XIsearch")
 
         logger.info("Reading search results file...")
@@ -112,7 +112,7 @@ class Xisearch(SearchResults):
         df["PEPTIDE_LENGTH_B"] = df["aa_len_p2"]
         logger.info("Converting XIsearch peptide sequence to internal format...")
 
-        df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "")
+        df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "", regex=False)
 
         df["MODIFIED_SEQUENCE_A"] = df.apply(
             lambda row: xisearch_to_internal(
