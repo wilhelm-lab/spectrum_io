@@ -17,6 +17,11 @@ logger = logging.getLogger(__name__)
 class MSFragger(SearchResults):
     """Handle search results from MSFragger."""
 
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {"C": 4, "M[147]": 35}
+
     def read_result(
         self,
         tmt_label: str = "",
@@ -32,9 +37,7 @@ class MSFragger(SearchResults):
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
-        if custom_mods is None:
-            custom_mods = {"C": 4, "M[147]": 35}
-        parsed_mods = parse_mods(custom_mods)
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"

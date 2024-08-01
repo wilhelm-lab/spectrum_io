@@ -27,6 +27,15 @@ class MaxQuant(SearchResults):
             path = path.parent
         self.path = path
 
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {
+            "C": 4,
+            "M(ox)": 35,
+            "M(Oxidation (M))": 35,
+        }
+
     @staticmethod
     def add_tmt_mod(mass: float, seq: str, unimod_tag: str) -> float:
         """
@@ -55,13 +64,7 @@ class MaxQuant(SearchResults):
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
         :return: pd.DataFrame with the formatted data
         """
-        if custom_mods is None:
-            custom_mods = {
-                "C": 4,
-                "M(ox)": 35,
-                "M(Oxidation (M))": 35,
-            }
-        parsed_mods = parse_mods(custom_mods)
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"

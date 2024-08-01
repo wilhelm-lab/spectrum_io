@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 class Sage(SearchResults):
     """Handle search results from Sage."""
 
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {"C[+57.0215]": 4, "M[+15.9949]": 35, "M[+15.994]": 35}
+
     def read_result(
         self,
         tmt_label: str = "",
@@ -28,13 +33,7 @@ class Sage(SearchResults):
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
         :return: pd.DataFrame with the formatted data
         """
-        if custom_mods is None:
-            custom_mods = {
-                "C[+57.0215]": 4,
-                "M[+15.9949]": 35,
-                "M[+15.994]": 35,
-            }
-        parsed_mods = parse_mods(custom_mods)
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods[r"K\[\+\d+\.\d+\]"] = f"K{unimod_tag}"
