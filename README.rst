@@ -1,4 +1,4 @@
-Spectrum-IO: File / Data Conversion for Mass Spec data within the Oktoberfest ecosystem
+Spectrum IO: File / Data Conversion for Mass Spec data within the Oktoberfest ecosystem
 =======================================================================================
 
 |PyPI| |Python Version| |License| |Read the Docs| |Build| |Tests| |Codecov| |pre-commit| |Black|
@@ -31,4 +31,12 @@ Spectrum-IO: File / Data Conversion for Mass Spec data within the Oktoberfest ec
    :target: https://github.com/psf/black
    :alt: Black
 
-Spectrum IO is a package primarily developed for usage within oktoberfest (https://github.com/wilhelm-lab/oktoberfest). It handles file conversions and input / output operations for oktoberfest.
+spectrum_io is a package primarily developed for usage within the rescoring and spectral library generation pipeline oktoberfest (https://github.com/wilhelm-lab/oktoberfest).
+
+It provides the following functionalities:
+ -   read search results from different search engines (MaxQuant, MSFragger, Sage, Xisearch) or a generic csv format and transform them to the internal format for rescoring with oktoberfest
+ -   extraction of MS2 level spectra from .RAW files and conversion to to mzML for rescoring with oktoberfest
+ -   spectra extraction from .d folders, conversion to .hdf5 format, and aggregation to MS2 level with metadata from a MaxQuant search for timsTOF rescoring with oktoberfest
+ -   in-silico digestion of a fasta file with various configuration options (protease, missed cleavages, length of peptides, fragmentation, ...) for spectral library generation with oktoberfest
+ -   write spectral libraries in dlib, msp, or spectronaut(csv) format
+ -   parquet file creation for peptide prediction model development and refinement within DLOmix
