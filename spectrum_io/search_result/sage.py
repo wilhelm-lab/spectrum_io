@@ -50,7 +50,7 @@ class Sage(SearchResults):
         self.convert_to_internal(mods=parsed_mods)
         return filter_valid_prosit_sequences(self.results)
 
-    def convert_to_internal(self, mods: Dict[str, str]) -> pd.DataFrame:
+    def convert_to_internal(self, mods: Dict[str, str]):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 
