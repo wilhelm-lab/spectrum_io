@@ -1,23 +1,24 @@
-.. include:: ../README.rst
-===========================
-Welcome to spectrum_io's documentation!
-==========================================================
+.. include:: readme.rst
+
+.. include:: _key_contributors.rst
+
+.. role:: small
+
+.. role:: smaller
+
+.. include:: quickstart.rst
+
+.. include:: news.rst
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
 
-   readme
    installation
    usage
-   modules
-   reference
+   API
    contributing
-   authors
-   code_of_conduct
+   reference
 
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. _github: https://github.com/wilhelm-lab/spectrum_io
