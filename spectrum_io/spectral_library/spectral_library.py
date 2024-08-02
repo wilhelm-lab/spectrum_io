@@ -3,7 +3,7 @@ from multiprocessing import Queue
 from multiprocessing.managers import ValueProxy
 from pathlib import Path
 from sqlite3 import Connection
-from typing import IO, Dict, Optional, Union
+from typing import IO, Dict, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -52,12 +52,15 @@ class SpectralLibrary:
     def _get_handle(self):
         return open(self.out_path, self.mode)
 
-    def async_write(self, queue: Queue, progress: ValueProxy):
+    def async_write(
+        self, queue: Queue, progress: ValueProxy, custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None
+    ):
         """
         Asynchronously write content to the output file from a queue.
 
         :param queue: A queue from which content will be retrieved for writing.
         :param progress: An integer value representing the progress of the writing process.
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         """
         with self._get_handle() as out:
             self._initialize(out)
@@ -65,7 +68,8 @@ class SpectralLibrary:
                 content = queue.get()
                 if content is None:
                     break
-                self._write(out, *content)
+                data, metadata = content
+                self._write(out, data=data, metadata=metadata, custom_mods=custom_mods)
                 progress.value += 1
 
     def _fragment_filter_passed(
@@ -86,7 +90,13 @@ class SpectralLibrary:
         return (f_mz != -1) & (f_int >= self.min_intensity_threshold)
 
     @abstractmethod
-    def _write(self, out: Union[IO, Connection], data: Dict[str, np.ndarray], metadata: pd.DataFrame):
+    def _write(
+        self,
+        out: Union[IO, Connection],
+        data: Dict[str, np.ndarray],
+        metadata: pd.DataFrame,
+        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+    ):
         """
         Internal writer function.
 
@@ -97,6 +107,8 @@ class SpectralLibrary:
         :param out: file handle accepting the data to be written to disk
         :param data: Dictionary containing TODO keys and corresponding values as numpy array
         :param metadata: a dataframe that contains the columns TODO
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+
         """
         pass
 
