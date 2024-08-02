@@ -68,7 +68,8 @@ class SpectralLibrary:
                 content = queue.get()
                 if content is None:
                     break
-                self._write(out, *content, custom_mods=custom_mods)
+                data, metadata = content
+                self._write(out, data=data, metadata=metadata, custom_mods=custom_mods)
                 progress.value += 1
 
     def _fragment_filter_passed(
