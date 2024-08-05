@@ -15,7 +15,7 @@ class TestMSP:
         """Test write to file."""
         out_file = Path(__file__).parent / "test.msp"
         msp_lib = MSP(out_file)
-        msp_lib.write(data, metadata)
+        msp_lib.write(data=data, metadata=metadata)
         with open(out_file) as test_file:
             file_content = test_file.read()
 
@@ -37,6 +37,7 @@ class TestMSP:
             '0.40000000	0.6000	"y2^2/0.0ppm"\n'
             '0.30000000	0.0010	"b2^2/0.0ppm"\n'
         )
+        print(file_content)
         assert file_content == anticipated_content
 
         out_file.unlink()
@@ -48,8 +49,8 @@ class TestSpectronaut:
     def test_write(self, data, metadata):
         """Test write to file."""
         out_file = Path(__file__).parent / "test.csv"
-        msp_lib = Spectronaut(out_file)
-        msp_lib.write(data, metadata)
+        spectronaut_lib = Spectronaut(out_file)
+        spectronaut_lib.write(data=data, metadata=metadata)
         with open(out_file) as test_file:
             file_content = test_file.read()
 
@@ -77,7 +78,7 @@ class TestDLib:
         """Test write to dlib library file."""
         out_file = Path(__file__).parent / "test.dlib"
         dlib = DLib(out_file)
-        dlib.write(data, metadata)
+        dlib.write(data=data, metadata=metadata)
         con = sqlite3.connect(out_file)
         df_entries = pd.read_sql_query("SELECT * from entries", con)
         df_p2p = pd.read_sql_query("SELECT * from peptidetoprotein", con)

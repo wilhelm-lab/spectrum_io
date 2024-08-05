@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "spectrum_io"
-version = "0.5.0"  # <<COOKIETEMPLE_FORCE_BUMP>>
+version = "0.6.0"  # <<COOKIETEMPLE_FORCE_BUMP>>
 description = "IO related functionalities for oktoberfest."
 authors = ["Wilhelmlab at Technical University of Munich"]
 license = "MIT"
 readme = "README.rst"
 homepage = "https://github.com/wilhelm-lab/spectrum_io"
 repository = "https://github.com/wilhelm-lab/spectrum_io"
-documentation = "https://spectrum_io.readthedocs.io"
+documentation = "https://spectrum-io.readthedocs.io"
 packages = [
     { include = "spectrum_io" },
 ]
@@ -29,7 +29,7 @@ pyarrow = ">=16.0.0"
 pymzml = "^2.5.0"
 pyteomics = "^4.3.3"
 lxml= '>=4.5.2,<6.0.0'
-spectrum-fundamentals = ">=0.6.0,<0.7.0"
+spectrum-fundamentals = ">=0.7.1,<0.8.0"
 alphatims = "^1.0.8"
 sortedcontainers = "^2.4.0"
 
@@ -64,6 +64,9 @@ pyupgrade = ">=2.31.0"
 
 [tool.poetry.scripts]
 spectrum_io = "spectrum_io.__main__:main"
+
+[tool.poetry.group.dev.dependencies]
+sphinx-autodoc-typehints = "^2.2.2"
 
 [tool.black]
 line-length = 120
