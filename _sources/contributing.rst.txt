@@ -14,7 +14,7 @@ Here is a list of important resources for contributors:
 
 .. _MIT license: https://opensource.org/licenses/MIT
 .. _Source Code: https://github.com/wilhelm-lab/spectrum_io
-.. _Documentation: https://spectrum_io.readthedocs.io/
+.. _Documentation: https://spectrum-io.readthedocs.io/
 .. _Issue Tracker: https://github.com/wilhelm-lab/spectrum_io/issues
 
 How to report a bug
