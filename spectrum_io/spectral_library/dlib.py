@@ -1,12 +1,10 @@
 import sqlite3
 import zlib
-from pathlib import Path
-from typing import IO, Dict, Optional, Tuple, Union
+from typing import IO, Dict, Union
 
 import numpy as np
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
-from spectrum_fundamentals.mod_string import internal_to_mod_mass, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 
@@ -25,6 +23,18 @@ DLIB_COL_NAMES = [
 
 class DLib(SpectralLibrary):
     """Main to init a DLib obj."""
+
+    @property
+    def standard_mods(self) -> Dict[str, int]:
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {
+            "M[+15.994915]": 35,
+            "C[+57.021464]": 4,
+            "^[+304.207146]": 2016,
+            "K[+304.207146]": 2016,
+            "^[+229.162932]": 737,
+            "K[+229.162932]": 737,
+        }
 
     def _initialize(self, out: Union[IO, sqlite3.Connection]):
         if isinstance(out, IO):
@@ -130,13 +140,14 @@ class DLib(SpectralLibrary):
         out: Union[IO, sqlite3.Connection],
         data: Dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        mods: Dict[str, str],
     ):
         if isinstance(out, IO):
             raise TypeError("Not supported. Use msp/spectronaut if you want to write a text file.")
         seqs = metadata["SEQUENCE"]
-        modseqs = metadata["MODIFIED_SEQUENCE"]
-        mass_mod_sequences = internal_to_mod_mass(modseqs, custom_mods)
+        modseqs = metadata["MODIFIED_SEQUENCE"].replace(mods, regex=True)
+        # mass_mod_sequences = internal_to_mod_mass(modseqs)#, custom_mods)
+        # print(mass_mod_sequences, "masmodseq")
 
         p_charges = metadata["PRECURSOR_CHARGE"]
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
@@ -152,7 +163,7 @@ class DLib(SpectralLibrary):
 
         masked_values = self._calculate_masked_values(f_mzss, f_intss)
 
-        data_list = [*masked_values, p_charges, mass_mod_sequences, seqs, irts, p_mzs]
+        data_list = [*masked_values, p_charges, modseqs, seqs, irts, p_mzs]
         entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
         p2p = pd.DataFrame({"PeptideSeq": seqs, "ProteinAccession": pr_ids})
 
