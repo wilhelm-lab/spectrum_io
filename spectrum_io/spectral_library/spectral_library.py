@@ -59,8 +59,8 @@ def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
 class SpectralLibrary:
     """Main to initialze a SpectralLibrary obj."""
 
-    @abstractmethod
     @property
+    @abstractmethod
     def standard_mods(self) -> Dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         pass
