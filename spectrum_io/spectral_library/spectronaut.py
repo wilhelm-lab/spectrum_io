@@ -1,13 +1,11 @@
-import os
 import re
 from itertools import chain, cycle
 from sqlite3 import Connection
-from typing import IO, Dict, Optional, Tuple, Union
+from typing import IO, Dict, Union
 
 import numpy as np
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
-from spectrum_fundamentals.mod_string import internal_to_spectronaut, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 
@@ -18,7 +16,7 @@ class Spectronaut(SpectralLibrary):
     # Check spectronaut folder for output format.
 
     @property
-    def standard_mods(self):
+    def standard_mods(self) -> Dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         return {
             "C[Carbamidomethyl (C)]": 4,

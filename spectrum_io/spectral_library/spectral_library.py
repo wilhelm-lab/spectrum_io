@@ -4,7 +4,7 @@ from multiprocessing import Queue
 from multiprocessing.managers import ValueProxy
 from pathlib import Path
 from sqlite3 import Connection
-from typing import IO, Dict, Optional, Tuple, Union
+from typing import IO, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -59,6 +59,12 @@ def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
 class SpectralLibrary:
     """Main to initialze a SpectralLibrary obj."""
 
+    @abstractmethod
+    @property
+    def standard_mods(self) -> Dict[str, int]:
+        """Standard modifications that are always applied if not otherwise specified."""
+        pass
+
     def __init__(
         self,
         output_path: Union[str, Path],
@@ -85,7 +91,7 @@ class SpectralLibrary:
     def load(self):
         """Load predictions from hdf5 file."""
 
-    def write(self, *, custom_mods: Optional[Dict[str, str]] = None, **kwargs):
+    def write(self, *, custom_mods: Optional[Dict[str, int]] = None, **kwargs):
         """
         Write content to the output file.
 
@@ -101,7 +107,7 @@ class SpectralLibrary:
     def _get_handle(self):
         return open(self.out_path, self.mode)
 
-    def async_write(self, queue: Queue, progress: ValueProxy, custom_mods: Optional[Dict[str, str]] = None):
+    def async_write(self, queue: Queue, progress: ValueProxy, custom_mods: Optional[Dict[str, int]] = None):
         """
         Asynchronously write content to the output file from a queue.
 

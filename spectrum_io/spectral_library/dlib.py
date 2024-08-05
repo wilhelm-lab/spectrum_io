@@ -1,12 +1,10 @@
 import sqlite3
 import zlib
-from pathlib import Path
-from typing import IO, Dict, Optional, Tuple, Union
+from typing import IO, Dict, Union
 
 import numpy as np
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
-from spectrum_fundamentals.mod_string import internal_to_mod_mass, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 
@@ -27,7 +25,7 @@ class DLib(SpectralLibrary):
     """Main to init a DLib obj."""
 
     @property
-    def standard_mods(self):
+    def standard_mods(self) -> Dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         return {
             "M[+15.994915]": 35,
