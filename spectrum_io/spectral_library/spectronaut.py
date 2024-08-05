@@ -17,6 +17,18 @@ class Spectronaut(SpectralLibrary):
 
     # Check spectronaut folder for output format.
 
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {
+            "C[Carbamidomethyl (C)]": 4,
+            "M[Oxidation (O)]": 35,
+            "^[TMT_6]": 737,
+            "K[TMT_6]": 737,
+            "^[TMT_Pro]": 2016,
+            "K[TMT_Pro]": 2016,
+        }
+
     @staticmethod
     def _assemble_fragment_string(f_int: float, f_mz: float, f_annot: bytes):
         m = re.match(r"([by])(\d+)\+(\d)(?:-(\w+))?", f_annot.decode())
@@ -31,13 +43,15 @@ class Spectronaut(SpectralLibrary):
         out: Union[IO, Connection],
         data: Dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        mods: Dict[str, str],
     ):
         # prepare metadata
         if isinstance(out, Connection):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")
         seqs = metadata["SEQUENCE"]
-        modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
+
+        modseqs = metadata["MODIFIED_SEQUENCE"].replace(mods, regex=True).apply(lambda x: "_" + x + "_")
+        # modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
         p_charges = metadata["PRECURSOR_CHARGE"]
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
         ces = metadata["COLLISION_ENERGY"]

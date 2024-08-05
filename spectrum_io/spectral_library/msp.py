@@ -4,13 +4,25 @@ from typing import IO, Dict, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
-from spectrum_fundamentals.mod_string import internal_to_mod_names, internal_without_mods
+from spectrum_fundamentals.mod_string import internal_to_msp, internal_without_mods
 
 from .spectral_library import SpectralLibrary
 
 
 class MSP(SpectralLibrary):
     """Main to initialze a MSP obj."""
+
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {
+            "C,Carbamidomethyl": 4,
+            "M,Oxidation": 35,
+            "^,TMT_6": 737,
+            "K,TMT_6": 737,
+            "^,TMT_Pro": 2016,
+            "K,TMT_Pro": 2016,
+        }
 
     @staticmethod
     def _assemble_fragment_string(f_mz: float, f_int: float, f_a: bytes):
@@ -22,13 +34,14 @@ class MSP(SpectralLibrary):
         out: Union[IO, Connection],
         data: Dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        custom_mods: Optional[Dict[str, Dict[str, Tuple[str, float]]]] = None,
+        mods: Dict[str, str],
     ):
         # prepare metadata
         if isinstance(out, Connection):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")
         stripped_peptides = metadata["SEQUENCE"]
-        modss = internal_to_mod_names(metadata["MODIFIED_SEQUENCE"])
+        modss = internal_to_msp(metadata["MODIFIED_SEQUENCE"], mods)
+        print(modss)
         p_charges = metadata["PRECURSOR_CHARGE"]
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
         ces = metadata["COLLISION_ENERGY"]
@@ -49,7 +62,7 @@ class MSP(SpectralLibrary):
             lines.append(f"Name: {stripped_peptide}/{p_charge}\nMW: {p_mz}\n")
             lines.append(
                 f"Comment: Parent={p_mz:.8f} Collision_energy={ce} Protein_ids={pr_id} Mods={mods[0]} "
-                f"ModString={mods[1]}/{p_charge} iRT={irt:.2f}\n"
+                f"ModString={stripped_peptide}//{mods[1]}/{p_charge} iRT={irt:.2f}\n"
             )
 
             cond = self._fragment_filter_passed(f_mzs, f_ints)
