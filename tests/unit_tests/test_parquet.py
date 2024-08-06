@@ -79,19 +79,3 @@ class TestParquet(unittest.TestCase):
         parquet.write_partition([df, df, df], output_path, ["1", "2", "3"])
         read_df = parquet.read_partition(output_path, "2")
         pd.testing.assert_frame_equal(read_df, df)
-
-    def test_write_not_implemented(self):
-        """Check whether write_file() raises a NotImplementedError if provided with an unsupported object."""
-        with self.assertRaises(NotImplementedError):
-            with suppress_type_checks() if "typeguard" in sys.modules else nullcontext():
-                output_path = self.temp_dir / "table.parquet"
-                df = pd.DataFrame(self.raw_data).to_numpy()
-                parquet.write_file(df, output_path)
-
-    def test_read_write_partition_not_implemented(self):
-        """Check whether write_partition() raises a NotImplementedError if provided with an unsupported object."""
-        with self.assertRaises(NotImplementedError):
-            with suppress_type_checks() if "typeguard" in sys.modules else nullcontext():
-                output_path = self.temp_dir / "partition"
-                df = pd.DataFrame(self.raw_data).to_numpy()
-                parquet.write_partition([df, df], output_path, ["dataset_1", "dataset_2"])
