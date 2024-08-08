@@ -22,7 +22,7 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     # retain only peptides that fall within [7, 30] length supported by Prosit
     df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
     # remove unsupported mods to exclude
-    supported_pattern = re.compile("^(?:\[UNIMOD:\d+\]\-)?(?:[ACDEFGHIKLMNPQRSTVWY]+(?:\[UNIMOD:\d+\])?)*$")
+    supported_pattern = re.compile(r"^(?:\[UNIMOD:\d+\]\-)?(?:[ACDEFGHIKLMNPQRSTVWY]+(?:\[UNIMOD:\d+\])?)*$")
     df = df[df["MODIFIED_SEQUENCE"].str.contains(supported_pattern)] 
     # remove non-canonical aas
     df = df[(~df["SEQUENCE"].str.contains("U|O"))]
