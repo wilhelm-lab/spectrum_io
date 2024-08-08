@@ -37,9 +37,7 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
     # remove unsupported mods to exclude
     supported_pattern = re.compile(r"^(?:\[UNIMOD:\d+\]\-)?(?:[ACDEFGHIKLMNPQRSTVWY]+(?:\[UNIMOD:\d+\])?)*$")
-    df = df[df["MODIFIED_SEQUENCE"].str.contains(supported_pattern)]
-    # remove non-canonical aas
-    df = df[(~df["SEQUENCE"].str.contains("U|O"))]
+    df = df[df["MODIFIED_SEQUENCE"].str.match(supported_pattern)]
     # remove precursor charges greater than 6
     df = df[df["PRECURSOR_CHARGE"] <= 6]
     logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
