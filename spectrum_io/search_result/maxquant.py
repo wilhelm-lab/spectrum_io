@@ -71,7 +71,21 @@ class MaxQuant(SearchResults):
             parsed_mods["^_"] = f"_{unimod_tag}-"
 
         logger.info("Reading msms.txt file")
-        self.results = pd.read_csv(self.path / "msms.txt", sep="\t")
+        self.results = pd.read_csv(
+            self.path / "msms.txt",
+            usecols=[
+                "Raw file",
+                "Scan number",
+                "Modified sequence",
+                "Charge",
+                "Scan event number",
+                "Mass",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                "Score",
+                "Reverse",
+                "Proteins",
+            ],
+            sep="\t",
+        )
 
         logger.info("Finished reading msms.txt file")
 

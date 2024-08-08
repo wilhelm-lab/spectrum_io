@@ -11,6 +11,20 @@ from spectrum_io.file import csv
 logger = logging.getLogger(__name__)
 
 
+COLUMNS = [
+    "RAW_FILE",
+    "SCAN_NUMBER",
+    "MODIFIED_SEQUENCE",
+    "PRECURSOR_CHARGE",
+    "MASS",
+    "SCORE",
+    "REVERSE",
+    "SEQUENCE",
+    "PEPTIDE_LENGTH",
+    "PROTEINS",
+]
+
+
 def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     """
     Filter valid Prosit sequences.
@@ -22,11 +36,8 @@ def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     # retain only peptides that fall within [7, 30] length supported by Prosit
     df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
     # remove unsupported mods to exclude
-    unsupported_mods = [r"Acetyl \(Protein N\-term\)", "ac", r"\[[0-9]+\]", r"\+"]
-    exclude_mods_pattern = re.compile("|".join(unsupported_mods))
-    df = df[~df["MODIFIED_SEQUENCE"].str.contains(exclude_mods_pattern)]
-    # remove non-canonical aas
-    df = df[(~df["SEQUENCE"].str.contains("U|O"))]
+    supported_pattern = re.compile(r"^(?:\[UNIMOD:\d+\]\-)?(?:[ACDEFGHIKLMNPQRSTVWY]+(?:\[UNIMOD:\d+\])?)*$")
+    df = df[df["MODIFIED_SEQUENCE"].str.match(supported_pattern)]
     # remove precursor charges greater than 6
     df = df[df["PRECURSOR_CHARGE"] <= 6]
     logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
@@ -124,8 +135,8 @@ class SearchResults:
         """
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_label, custom_mods=custom_mods)
-
+            filtered_df = self.read_result(tmt_label, custom_mods=custom_mods)
+            return filtered_df[COLUMNS]
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -136,7 +147,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods)
+        df = self.read_result(tmt_label, custom_mods=custom_mods)[COLUMNS]
         csv.write_file(df, out_path)
         return df
 
