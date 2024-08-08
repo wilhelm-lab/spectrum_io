@@ -116,7 +116,6 @@ class MSRaw:
         source: Union[str, Path, List[Union[str, Path]]],
         ext: str = "mzml",
         package: str = "pyteomics",
-        search_type: str = "Maxquant",
         scanidx: Optional[List] = None,
         *args,
         **kwargs,
@@ -128,7 +127,6 @@ class MSRaw:
         :param ext: file extension for searching a specified directory
         :param package: package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
         :param scanidx: optional list of scan numbers to extract. if not specified, all scans will be extracted
-        :param search_type: type of the search (Maxquant, Mascot, Msfragger)
         :param args: additional positional arguments
         :param kwargs: additional keyword arguments
         :raises AssertionError: if package has an unexpected type
