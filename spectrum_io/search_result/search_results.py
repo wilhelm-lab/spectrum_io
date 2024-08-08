@@ -11,6 +11,20 @@ from spectrum_io.file import csv
 logger = logging.getLogger(__name__)
 
 
+COLUMNS = [
+    "RAW_FILE",
+    "SCAN_NUMBER",
+    "MODIFIED_SEQUENCE",
+    "PRECURSOR_CHARGE",
+    "MASS",
+    "SCORE",
+    "REVERSE",
+    "SEQUENCE",
+    "PEPTIDE_LENGTH",
+    "PROTEINS",
+]
+
+
 def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
     """
     Filter valid Prosit sequences.
@@ -124,8 +138,8 @@ class SearchResults:
         """
         if out_path is None:
             # convert and return
-            return self.read_result(tmt_label, custom_mods=custom_mods)
-
+            filtered_df = self.read_result(tmt_label, custom_mods=custom_mods)
+            return filtered_df[COLUMNS]
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
