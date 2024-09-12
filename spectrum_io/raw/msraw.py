@@ -116,7 +116,6 @@ class MSRaw:
         source: Union[str, Path, List[Union[str, Path]]],
         ext: str = "mzml",
         package: str = "pyteomics",
-        search_type: str = "Maxquant",
         scanidx: Optional[List] = None,
         *args,
         **kwargs,
@@ -128,7 +127,6 @@ class MSRaw:
         :param ext: file extension for searching a specified directory
         :param package: package for parsing the mzml file. Can eiter be "pymzml" or "pyteomics"
         :param scanidx: optional list of scan numbers to extract. if not specified, all scans will be extracted
-        :param search_type: type of the search (Maxquant, Mascot, Msfragger)
         :param args: additional positional arguments
         :param kwargs: additional keyword arguments
         :raises AssertionError: if package has an unexpected type
@@ -157,6 +155,7 @@ class MSRaw:
                 file_name = file_path.stem
                 mass_analyzer = get_mass_analyzer(file_path)
                 namespace = "{http://psi.hupo.org/ms/mzml}"
+                instrument_name = data_iter.info["referenceable_param_group_list_element"][0][0].get("name")
 
                 if scanidx is None:
                     spectra = data_iter
@@ -204,6 +203,7 @@ class MSRaw:
                         mass_analyzer.get(instrument_configuration_ref, "unknown"),
                         fragmentation,
                         collision_energy,
+                        instrument_name,
                     ]
                 data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
@@ -215,8 +215,13 @@ class MSRaw:
         for file_path in file_list:
             mass_analyzer = get_mass_analyzer(file_path)
             logger.info(f"Reading mzML file: {file_path}")
-            data_iter = mzml.read(source=str(file_path), *args, **kwargs)
+            data_iter = mzml.read(str(file_path), *args, **kwargs)
             file_name = file_path.stem
+            try:
+                instrument_params = data_iter.get_by_id("commonInstrumentParams")
+            except KeyError:
+                instrument_params = data_iter.get_by_id("CommonInstrumentParams")
+            instrument_name = list(instrument_params.keys())[1]
             for spec in data_iter:
                 if spec["ms level"] != 2:
                     continue  # filter out ms1 spectra if there are any
@@ -250,6 +255,7 @@ class MSRaw:
                     mass_analyzer.get(instrument_configuration_ref, "unknown"),
                     fragmentation,
                     collision_energy,
+                    instrument_name,
                 ]
             data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)

@@ -1,18 +1,40 @@
 import logging
 from pathlib import Path
-from typing import Union
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods, maxquant_to_internal
+from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences
+from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
 
 logger = logging.getLogger(__name__)
 
 
 class MaxQuant(SearchResults):
     """Handle search results from MaxQuant."""
+
+    def __init__(self, path: Union[str, Path]):
+        """
+        Init Searchresults object.
+
+        :param path: path to file
+        """
+        if isinstance(path, str):
+            path = Path(path)
+
+        if path.is_file() and path.name == "msms.txt":
+            path = path.parent
+        self.path = path
+
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {
+            "C": 4,
+            "M(ox)": 35,
+            "M(Oxidation (M))": 35,
+        }
 
     @staticmethod
     def add_tmt_mod(mass: float, seq: str, unimod_tag: str) -> float:
@@ -28,83 +50,108 @@ class MaxQuant(SearchResults):
         mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
         return mass
 
-    @staticmethod
-    def read_result(path: Union[str, Path], tmt_labeled: str) -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
 
-        :param path: path to msms.txt to read
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: optional tmt label as str
+        :param custom_mods: optional dictionary mapping MaxQuant-specific mod pattern to UNIMOD IDs.
+            If None, static carbamidomethylation of cytein and variable oxidation of methionine
+            are mapped automatically. To avoid this, explicitely provide an empty dictionary.
         :return: pd.DataFrame with the formatted data
         """
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+        if tmt_label:
+            unimod_tag = c.TMT_MODS[tmt_label]
+            parsed_mods["K"] = f"K{unimod_tag}"
+            parsed_mods["^_"] = f"_{unimod_tag}-"
+
         logger.info("Reading msms.txt file")
-        df = pd.read_csv(
-            path,
-            usecols=lambda x: x.upper()
-            in [
-                "RAW FILE",
-                "SCAN NUMBER",
-                "MODIFIED SEQUENCE",
-                "CHARGE",
-                "SCAN EVENT NUMBER",
-                "LABELING STATE",
-                "MASS",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
-                "SCORE",
-                "REVERSE",
+        self.results = pd.read_csv(
+            self.path / "msms.txt",
+            usecols=[
+                "Raw file",
+                "Scan number",
+                "Modified sequence",
+                "Charge",
+                "Scan event number",
+                "Mass",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
+                "Score",
+                "Reverse",
+                "Proteins",
             ],
             sep="\t",
         )
+
         logger.info("Finished reading msms.txt file")
 
+        self.convert_to_internal(mods=parsed_mods)
+        return filter_valid_prosit_sequences(self.results)
+
+    def convert_to_internal(self, mods: Dict[str, str]):
+        """
+        Convert all columns in the MaxQuant output to the internal format used by Oktoberfest.
+
+        :param mods: dictionary mapping MaxQuant-specific mod patterns (keys) to ProForma standard (values)
+        """
+        df = self.results
         # Standardize column names
-        df.columns = df.columns.str.upper()
-        df.columns = df.columns.str.replace(" ", "_")
+        # df.columns = df.columns.str.upper()
+        # df.columns = df.columns.str.replace(" ", "_")
+        # df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
 
-        df = MaxQuant.update_columns_for_prosit(df, tmt_labeled)
-        return filter_valid_prosit_sequences(df)
+        mods["_"] = ""
 
-    @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame, tmt_labeled: str) -> pd.DataFrame:
+        df.fillna({"Reverse": "", "Proteins": "UNKNOWN"}, inplace=True)
+        df["Reverse"] = df["Reverse"].astype(bool)
+        df.replace({"Modified sequence": mods}, regex=True, inplace=True)
+
+        df["Sequence"] = internal_without_mods(df["Modified sequence"])
+        df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
+
+        df.rename(
+            columns={
+                "Reverse": "REVERSE",
+                "Sequence": "SEQUENCE",
+                "Modified sequence": "MODIFIED_SEQUENCE",
+                "Proteins": "PROTEINS",
+                "Charge": "PRECURSOR_CHARGE",
+                "Raw file": "RAW_FILE",
+                "Scan number": "SCAN_NUMBER",
+                "Scan event number": "SCAN_EVENT_NUMBER",
+                "Mass": "MASS",
+                "Score": "SCORE",
+            },
+            inplace=True,
+        )
+
+    def generate_internal_timstof_metadata(self):
         """
-        Update columns of df to work with Prosit.
+        Load information files required for correct aggregation of spectra in timsTOF experiments.
 
-        :param df: df to modify
-        :param tmt_labeled: True if tmt labeled
-        :return: modified df as pd.DataFrame
+        :return: dataframe containing the columns RAW_FILE, SCANNUMBER, PRECURSOR, FRAME, SCANNUMBEGIN, SCANNUMEND, CollisionEnergy
         """
-        df.rename(columns={"CHARGE": "PRECURSOR_CHARGE"}, inplace=True)
+        df_msms = pd.read_csv(self.path / "msms.txt", sep="\t", usecols=["Raw file", "Scan number"])
+        df_msms.columns = ["RAW_FILE", "SCAN_NUMBER"]
 
-        df["REVERSE"].fillna(False, inplace=True)
-        df["REVERSE"].replace("+", True, inplace=True)
-        logger.info("Converting MaxQuant peptide sequence to internal format")
-        if tmt_labeled != "":
-            unimod_tag = c.TMT_MODS[tmt_labeled]
-            logger.info("Adding TMT fixed modifications")
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df["MODIFIED_SEQUENCE"].to_numpy(),
-                fixed_mods={"C": "C[UNIMOD:4]", "^_": f"_{unimod_tag}-", "K": f"K{unimod_tag}"},
-            )
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, unimod_tag), axis=1)
-            if "msa" in tmt_labeled:
-                logger.info("Replacing phospho by dehydration for Phospho-MSA")
-                df["MODIFIED_SEQUENCE_MSA"] = df["MODIFIED_SEQUENCE"].str.replace(
-                    "[UNIMOD:21]", "[UNIMOD:23]", regex=False
-                )
-        elif "LABELING_STATE" in df.columns:
-            logger.info("Adding SILAC fixed modifications")
-            df.loc[df["LABELING_STATE"] == 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df[df["LABELING_STATE"] == 1]["MODIFIED_SEQUENCE"].to_numpy(),
-                fixed_mods={"C": "C[UNIMOD:4]", "K": "K[UNIMOD:259]", "R": "R[UNIMOD:267]"},
-            )
-            df.loc[df["LABELING_STATE"] != 1, "MODIFIED_SEQUENCE"] = maxquant_to_internal(
-                df[df["LABELING_STATE"] != 1]["MODIFIED_SEQUENCE"].to_numpy()
-            )
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:259]"), axis=1)
-            df["MASS"] = df.apply(lambda x: MaxQuant.add_tmt_mod(x.MASS, x.MODIFIED_SEQUENCE, "[UNIMOD:267]"), axis=1)
-            df.drop(columns=["LABELING_STATE"], inplace=True)
-        else:
-            df["MODIFIED_SEQUENCE"] = maxquant_to_internal(df["MODIFIED_SEQUENCE"].to_numpy())
-        df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-        df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
+        df_precursors = pd.read_csv(
+            self.path / "accumulatedMsmsScans.txt", sep="\t", usecols=["Raw file", "Scan number", "PASEF precursor IDs"]
+        )
+        df_precursors.columns = ["RAW_FILE", "SCAN_NUMBER", "PRECURSOR"]
+        df_precursors.query("SCAN_NUMBER in @df_msms.SCAN_NUMBER", inplace=True)
+        df_precursors["PRECURSOR"] = df_precursors["PRECURSOR"].str.split(";")
+        df_precursors = df_precursors.explode("PRECURSOR")
+        df_precursors["PRECURSOR"] = df_precursors["PRECURSOR"].astype("int")
 
-        return df
+        df_pasef = pd.read_csv(
+            self.path / "pasefMsmsScans.txt",
+            sep="\t",
+            usecols=["Raw file", "Frame", "Precursor", "ScanNumBegin", "ScanNumEnd", "CollisionEnergy"],
+        )
+        df_pasef.columns = ["RAW_FILE", "FRAME", "PRECURSOR", "SCAN_NUM_BEGIN", "SCAN_NUM_END", "COLLISION_ENERGY"]
+
+        return df_pasef.merge(df_precursors).sort_values(["FRAME", "PRECURSOR"])
