@@ -25,11 +25,9 @@ class TestSage(unittest.TestCase):
     def test_read_sage(self):
         """Test function for reading sage results and transforming to Prosit format."""
         expected_sage_internal_path = Path(__file__).parent / "data" / "sage_output_internal.csv"
-        internal_search_results_df = Sage(Path(__file__).parent / "data" / "sage_output.tsv").read_result(
-            tmt_label="tmt"
-        )
+        search_results_df = Sage(Path(__file__).parent / "data" / "sage_output.tsv").read_result(tmt_label="tmt")
         expected_df = pd.read_csv(expected_sage_internal_path)
-        pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
+        pd.testing.assert_frame_equal(search_results_df[COLUMNS], expected_df[COLUMNS])
 
     def test_read_sage_with_custom_mods(self):
         """Test function for reading sage results with custom mods and transforming to Prosit format ."""
