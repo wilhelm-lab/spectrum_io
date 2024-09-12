@@ -78,7 +78,7 @@ def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
                 f"Replacement {k} not understood. Replacements must be strings and follow " f"the pattern {key_pattern}"
             )
         if k[0].isalpha():
-            unimod_regex_map[re.escape(k)] = f"{k[0]}[UNIMOD:{v}]"
+            unimod_regex_map[re.escape(k)] = f"{k[0].upper()}[UNIMOD:{v}]"
             continue
         if k[0] == "^":
             unimod_regex_map[f"^{re.escape(k[1:])}"] = f"[UNIMOD:{v}]-"
