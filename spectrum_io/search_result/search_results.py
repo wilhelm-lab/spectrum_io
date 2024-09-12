@@ -87,7 +87,8 @@ def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
             f"Replacement {k} not understood. {k[0]} is not a valid aminoacid. "
             f"Replacements most follow the pattern {key_pattern}"
         )
-    return unimod_regex_map
+    # sort descending by length to avoid replacement of single-aa keys within larger keys
+    return dict(sorted(unimod_regex_map.items(), key=lambda x: -len(x[0])))
 
 
 class SearchResults:
