@@ -91,7 +91,7 @@ class Mascot(SearchResults):
         mod_masses = c.update_mod_masses()
         mod_masses_reverse = {round(float(v), 3): k for k, v in mod_masses.items()}
 
-        parsed_mods = (custom_mods or {}) | self.standard_mods | (custom_mods or {})
+        parsed_mods = self.standard_mods | (custom_mods or {})
 
         sequences = []
         for _, row in df.iterrows():

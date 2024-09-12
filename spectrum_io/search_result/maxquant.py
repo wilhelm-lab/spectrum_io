@@ -64,7 +64,7 @@ class MaxQuant(SearchResults):
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
         :return: pd.DataFrame with the formatted data
         """
-        parsed_mods = parse_mods((custom_mods or {}) | self.standard_mods | (custom_mods or {}))
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"

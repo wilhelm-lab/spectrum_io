@@ -37,7 +37,7 @@ class MSFragger(SearchResults):
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
-        parsed_mods = parse_mods((custom_mods or {}) | self.standard_mods | (custom_mods or {}))
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"
