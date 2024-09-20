@@ -58,6 +58,23 @@ class MSFragger(SearchResults):
         self.convert_to_internal(mods=parsed_mods)
         return filter_valid_prosit_sequences(self.results)
 
+    def check_decoys(protein_names: str):
+        """
+        Check if all protein names in a given string correspond to decoy proteins.
+
+        :param protein_names: A string containing one or more protein names separated by semicolons (';').
+                            Each protein name is checked for the presence of the substring 'rev'.
+        :return: `True` if all proteins are decoy proteins (i.e., if all protein names contain 'rev'),
+                otherwise `False`.
+        """
+        all_proteins = protein_names.split(';')
+        reverse= True
+        for protein in all_proteins:
+            if 'rev' not in protein:
+                reverse = False
+                break
+        return reverse
+
     def convert_to_internal(self, mods: Dict[str, str]):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
@@ -67,11 +84,12 @@ class MSFragger(SearchResults):
         df = self.results
         df["protein"] = df["protein"].fillna("UNKNOWN").apply(lambda x: ";".join(x))
 
-        df["REVERSE"] = df["protein"].apply(lambda x: "rev" in str(x))
+        df["REVERSE"] = df["protein"].apply(lambda x: check_decoys(x))
         df["spectrum"] = df["spectrum"].str.split(pat=".", n=1).str[0]
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
 
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
+        
         df["peptide"] = internal_without_mods(df["modified_peptide"])
 
         df.rename(
