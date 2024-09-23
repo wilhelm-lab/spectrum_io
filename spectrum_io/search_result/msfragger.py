@@ -6,7 +6,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
 from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
-from spectrum_fundamentals.mod_string import internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods, add_permutations
 from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
@@ -75,7 +75,8 @@ class MSFragger(SearchResults):
                 break
         return reverse
 
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def convert_to_internal(self, mods: Dict[str, str],ptm_unimod_id: int,
+        ptm_sites: list[str]):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
 
@@ -89,8 +90,18 @@ class MSFragger(SearchResults):
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
 
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
-        
         df["peptide"] = internal_without_mods(df["modified_peptide"])
+
+        if ptm_unimod_id != 0:
+            #PTM permutation generation
+            if ptm_unimod_id == 7:
+                allow_one_less_modification = True
+            else:
+                allow_one_less_modification = False
+            
+            df['modified_peptide'] = df['modified_peptide'].apply(add_permutations,unimod_id=ptm_unimod_id, residues=ptm_sites,
+                                                                allow_one_less_modification=allow_one_less_modification, axis=1)
+            df = df.explode('modified_peptide', ignore_index=True)
 
         df.rename(
             columns={
