@@ -23,6 +23,8 @@ class Sage(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
@@ -31,6 +33,8 @@ class Sage(SearchResults):
         :param custom_mods: optional dictionary mapping Sage-specific mod pattern to UNIMOD IDs.
             If None, static carbamidomethylation of cytein and variable oxidation of methionine
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
@@ -47,14 +51,16 @@ class Sage(SearchResults):
         )
         logger.info(f"Finished reading {self.path}")
 
-        self.convert_to_internal(mods=parsed_mods)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return filter_valid_prosit_sequences(self.results)
 
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def convert_to_internal(self, mods: Dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping Sage-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
 

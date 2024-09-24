@@ -18,7 +18,12 @@ class MSAmanda(SearchResults):
         return {"m": 35, "c": 4}
 
     def read_result(
-        self, tmt_label: str = "", custom_mods: Optional[Dict[str, int]] = None, suffix: str = "output.csv"
+        self,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
+        suffix: str = "output.csv",
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -28,6 +33,8 @@ class MSAmanda(SearchResults):
             If None, static carbamidomethylation of cytein and variable oxidation of methionine
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
         :param suffix: Optional suffix to determine which fileresult files should be taken from the supplied path
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :raises FileNotFoundError: If the supplied path is not found
         :raises AssertionError: If the supplied path does not contain any files matching the provided suffix.
         :raises NotImplementedError: If tmt label was supplied.
@@ -72,14 +79,16 @@ class MSAmanda(SearchResults):
 
         self.results = pd.concat(df_list)
 
-        self.convert_to_internal(mods=parsed_mods)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return filter_valid_prosit_sequences(self.results)
 
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def convert_to_internal(self, mods: Dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping Sage-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
         df["REVERSE"] = df["Protein Accessions"].str.startswith("REV_")

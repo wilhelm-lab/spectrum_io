@@ -25,12 +25,16 @@ class Mascot(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
         :param tmt_label: tmt label as str
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :raises NotImplementedError: always
         :return: pd.DataFrame with the formatted data
         """

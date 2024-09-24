@@ -6,7 +6,7 @@ import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
 from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
-from spectrum_fundamentals.mod_string import internal_without_mods, add_permutations
+from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 from tqdm import tqdm
 
 from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
@@ -26,6 +26,8 @@ class MSFragger(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -34,6 +36,8 @@ class MSFragger(SearchResults):
         :param custom_mods: optional dictionary mapping MSFragger-specific mod pattern to UNIMOD IDs.
             If None, static carbamidomethylation of cytein and variable oxidation of methionine
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :return: pd.DataFrame with the formatted data
         """
@@ -55,9 +59,10 @@ class MSFragger(SearchResults):
 
         self.results = pd.concat(ms_frag_results)
 
-        self.convert_to_internal(mods=parsed_mods)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return filter_valid_prosit_sequences(self.results)
 
+    @staticmethod
     def check_decoys(protein_names: str):
         """
         Check if all protein names in a given string correspond to decoy proteins.
@@ -67,25 +72,26 @@ class MSFragger(SearchResults):
         :return: `True` if all proteins are decoy proteins (i.e., if all protein names contain 'rev'),
                 otherwise `False`.
         """
-        all_proteins = protein_names.split(';')
-        reverse= True
+        all_proteins = protein_names.split(";")
+        reverse = True
         for protein in all_proteins:
-            if 'rev' not in protein:
+            if "rev" not in protein:
                 reverse = False
                 break
         return reverse
 
-    def convert_to_internal(self, mods: Dict[str, str],ptm_unimod_id: int,
-        ptm_sites: list[str]):
+    def convert_to_internal(self, mods: Dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping MSFragger-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
         df["protein"] = df["protein"].fillna("UNKNOWN").apply(lambda x: ";".join(x))
 
-        df["REVERSE"] = df["protein"].apply(lambda x: check_decoys(x))
+        df["REVERSE"] = df["protein"].apply(lambda x: MSFragger.check_decoys(x))
         df["spectrum"] = df["spectrum"].str.split(pat=".", n=1).str[0]
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
 
@@ -93,15 +99,20 @@ class MSFragger(SearchResults):
         df["peptide"] = internal_without_mods(df["modified_peptide"])
 
         if ptm_unimod_id != 0:
-            #PTM permutation generation
+            # PTM permutation generation
             if ptm_unimod_id == 7:
                 allow_one_less_modification = True
             else:
                 allow_one_less_modification = False
-            
-            df['modified_peptide'] = df['modified_peptide'].apply(add_permutations,unimod_id=ptm_unimod_id, residues=ptm_sites,
-                                                                allow_one_less_modification=allow_one_less_modification, axis=1)
-            df = df.explode('modified_peptide', ignore_index=True)
+
+            df["modified_peptide"] = df["modified_peptide"].apply(
+                add_permutations,
+                unimod_id=ptm_unimod_id,
+                residues=ptm_sites,
+                allow_one_less_modification=allow_one_less_modification,
+                axis=1,
+            )
+            df = df.explode("modified_peptide", ignore_index=True)
 
         df.rename(
             columns={
