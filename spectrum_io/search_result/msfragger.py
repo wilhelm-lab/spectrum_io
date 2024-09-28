@@ -20,7 +20,7 @@ class MSFragger(SearchResults):
     @property
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
-        return {"C": 4, "M[147]": 35}
+        return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7}
 
     def read_result(
         self,
@@ -92,13 +92,13 @@ class MSFragger(SearchResults):
         df["protein"] = df["protein"].fillna("UNKNOWN").apply(lambda x: ";".join(x))
 
         df["REVERSE"] = df["protein"].apply(lambda x: MSFragger.check_decoys(x))
+
         df["spectrum"] = df["spectrum"].str.split(pat=".", n=1).str[0]
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
-
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
         df["peptide"] = internal_without_mods(df["modified_peptide"])
-
         if ptm_unimod_id != 0:
+
             # PTM permutation generation
             if ptm_unimod_id == 7:
                 allow_one_less_modification = True
@@ -110,10 +110,9 @@ class MSFragger(SearchResults):
                 unimod_id=ptm_unimod_id,
                 residues=ptm_sites,
                 allow_one_less_modification=allow_one_less_modification,
-                axis=1,
             )
             df = df.explode("modified_peptide", ignore_index=True)
-
+        
         df.rename(
             columns={
                 "assumed_charge": "PRECURSOR_CHARGE",
@@ -129,7 +128,7 @@ class MSFragger(SearchResults):
             },
             inplace=True,
         )
-
+        self.results = df
         """
         return df[
             [
