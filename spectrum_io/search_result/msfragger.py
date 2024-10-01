@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import logging
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -9,7 +10,7 @@ from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
 from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 from tqdm import tqdm
 
-from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
+from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +23,25 @@ class MSFragger(SearchResults):
         """Standard modifications that are always applied if not otherwise specified."""
         return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7}
 
+    def filter_valid_prosit_sequences(self):
+        """Filter valid Prosit sequences."""
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+        # retain only peptides that fall within [7, 30] length supported by Prosit
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        # remove unsupported mods to exclude
+        self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
+        # remove precursor charges greater than 6
+        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
+
+        return self.results
+
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
-        ptm_unimod_id: Optional[int] = 0,
-        ptm_sites: Optional[list[str]] = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -60,7 +74,7 @@ class MSFragger(SearchResults):
         self.results = pd.concat(ms_frag_results)
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
-        return filter_valid_prosit_sequences(self.results)
+        return self.filter_valid_prosit_sequences()
 
     @staticmethod
     def check_decoys(protein_names: str):
@@ -80,7 +94,7 @@ class MSFragger(SearchResults):
                 break
         return reverse
 
-    def convert_to_internal(self, mods: Dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
 
@@ -112,7 +126,7 @@ class MSFragger(SearchResults):
                 allow_one_less_modification=allow_one_less_modification,
             )
             df = df.explode("modified_peptide", ignore_index=True)
-        
+
         df.rename(
             columns={
                 "assumed_charge": "PRECURSOR_CHARGE",

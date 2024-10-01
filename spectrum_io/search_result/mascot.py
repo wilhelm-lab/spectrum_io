@@ -1,14 +1,12 @@
 import logging
-import re
 import sqlite3
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences
+from .search_results import SearchResults
 
 logger = logging.getLogger(__name__)
 
@@ -123,4 +121,4 @@ class Mascot(SearchResults):
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
-        return filter_valid_prosit_sequences(df)
+        return self.filter_valid_prosit_sequences()

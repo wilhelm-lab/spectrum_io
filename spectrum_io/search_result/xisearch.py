@@ -1,12 +1,7 @@
-import glob
 import logging
-import os
-import re
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional
 
 import pandas as pd
-import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import xisearch_to_internal
 
 from .search_results import SearchResults
@@ -69,7 +64,7 @@ class Xisearch(SearchResults):
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
-        df = Xisearch.filter_valid_prosit_sequences(df)
+        df = Xisearch.filter_valid_prosit_sequences_xl(df)
         return df
 
     @staticmethod
@@ -145,7 +140,7 @@ class Xisearch(SearchResults):
         return df
 
     @staticmethod
-    def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
+    def filter_valid_prosit_sequences_xl(df: pd.DataFrame) -> pd.DataFrame:
         """
         Filter valid Prosit sequences.
 
