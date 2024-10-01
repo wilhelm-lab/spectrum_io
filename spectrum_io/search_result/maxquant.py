@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods
+from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
+from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ logger = logging.getLogger(__name__)
 class MaxQuant(SearchResults):
     """Handle search results from MaxQuant."""
 
-    def __init__(self, path: Union[str, Path]):
+    def __init__(self, path: str | Path):
         """
         Init Searchresults object.
 
@@ -34,6 +36,9 @@ class MaxQuant(SearchResults):
             "C": 4,
             "M(ox)": 35,
             "M(Oxidation (M))": 35,
+            "R(Citrullination)": 7,
+            "Q(Deamidation (NQ))": 7,
+            "N(Deamidation (NQ))": 7,
         }
 
     @staticmethod
@@ -50,10 +55,25 @@ class MaxQuant(SearchResults):
         mass += num_of_tmt * c.MOD_MASSES[f"{unimod_tag}"]
         return mass
 
+    def filter_valid_prosit_sequences(self):
+        """Filter valid Prosit sequences."""
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+        # retain only peptides that fall within [7, 30] length supported by Prosit
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        # remove unsupported mods to exclude
+        self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\(", regex=True)]
+        # remove precursor charges greater than 6
+        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
+
+        return self.results
+
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -62,6 +82,8 @@ class MaxQuant(SearchResults):
         :param custom_mods: optional dictionary mapping MaxQuant-specific mod pattern to UNIMOD IDs.
             If None, static carbamidomethylation of cytein and variable oxidation of methionine
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
@@ -89,14 +111,16 @@ class MaxQuant(SearchResults):
 
         logger.info("Finished reading msms.txt file")
 
-        self.convert_to_internal(mods=parsed_mods)
-        return filter_valid_prosit_sequences(self.results)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
+        return self.filter_valid_prosit_sequences()
 
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the MaxQuant output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping MaxQuant-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
         # Standardize column names
@@ -112,6 +136,21 @@ class MaxQuant(SearchResults):
 
         df["Sequence"] = internal_without_mods(df["Modified sequence"])
         df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
+        if ptm_unimod_id != 0:
+
+            # PTM permutation generation
+            if ptm_unimod_id == 7:
+                allow_one_less_modification = True
+            else:
+                allow_one_less_modification = False
+
+            df["Modified sequence"] = df["Modified sequence"].apply(
+                add_permutations,
+                unimod_id=ptm_unimod_id,
+                residues=ptm_sites,
+                allow_one_less_modification=allow_one_less_modification,
+            )
+            df = df.explode("Modified sequence", ignore_index=True)
 
         df.rename(
             columns={
@@ -128,6 +167,7 @@ class MaxQuant(SearchResults):
             },
             inplace=True,
         )
+        self.results = df
 
     def generate_internal_timstof_metadata(self):
         """

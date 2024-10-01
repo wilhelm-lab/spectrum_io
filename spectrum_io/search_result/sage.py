@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 import logging
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences, parse_mods
+from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,9 @@ class Sage(SearchResults):
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.
@@ -31,6 +34,8 @@ class Sage(SearchResults):
         :param custom_mods: optional dictionary mapping Sage-specific mod pattern to UNIMOD IDs.
             If None, static carbamidomethylation of cytein and variable oxidation of methionine
             are mapped automatically. To avoid this, explicitely provide an empty dictionary.
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
@@ -47,14 +52,29 @@ class Sage(SearchResults):
         )
         logger.info(f"Finished reading {self.path}")
 
-        self.convert_to_internal(mods=parsed_mods)
-        return filter_valid_prosit_sequences(self.results)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
+        return self.filter_valid_prosit_sequences()
 
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def filter_valid_prosit_sequences(self):
+        """Filter valid Prosit sequences."""
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+        # retain only peptides that fall within [7, 30] length supported by Prosit
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        # remove unsupported mods to exclude
+        self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
+        # remove precursor charges greater than 6
+        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
+
+        return self.results
+
+    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping Sage-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
 
