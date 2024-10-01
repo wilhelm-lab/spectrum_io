@@ -6,7 +6,7 @@ from typing import Dict, Optional, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import internal_without_mods
+from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 
 from .search_results import SearchResults, parse_mods
 
@@ -36,6 +36,9 @@ class MaxQuant(SearchResults):
             "C": 4,
             "M(ox)": 35,
             "M(Oxidation (M))": 35,
+            "R(Citrullination)": 7,
+            "Q(Deamidation (NQ))": 7,
+            "N(Deamidation (NQ))": 7,
         }
 
     @staticmethod
@@ -133,6 +136,21 @@ class MaxQuant(SearchResults):
 
         df["Sequence"] = internal_without_mods(df["Modified sequence"])
         df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
+        if ptm_unimod_id != 0:
+
+            # PTM permutation generation
+            if ptm_unimod_id == 7:
+                allow_one_less_modification = True
+            else:
+                allow_one_less_modification = False
+
+            df["Modified sequence"] = df["Modified sequence"].apply(
+                add_permutations,
+                unimod_id=ptm_unimod_id,
+                residues=ptm_sites,
+                allow_one_less_modification=allow_one_less_modification,
+            )
+            df = df.explode("Modified sequence", ignore_index=True)
 
         df.rename(
             columns={
@@ -149,6 +167,7 @@ class MaxQuant(SearchResults):
             },
             inplace=True,
         )
+        self.results = df
 
     def generate_internal_timstof_metadata(self):
         """
