@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import re
 from abc import abstractmethod
@@ -25,27 +27,7 @@ COLUMNS = [
 ]
 
 
-def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Filter valid Prosit sequences.
-
-    :param df: df to filter
-    :return: df after filtering out unsupported peptides
-    """
-    logger.info(f"#sequences before filtering for valid prosit sequences: {len(df.index)}")
-    # retain only peptides that fall within [7, 30] length supported by Prosit
-    df = df[(df["PEPTIDE_LENGTH"] <= 30) & (df["PEPTIDE_LENGTH"] >= 7)]
-    # remove unsupported mods to exclude
-    supported_pattern = re.compile(r"^(?:\[UNIMOD:\d+\]\-)?(?:[ACDEFGHIKLMNPQRSTVWY]+(?:\[UNIMOD:\d+\])?)*$")
-    df = df[df["MODIFIED_SEQUENCE"].str.match(supported_pattern)]
-    # remove precursor charges greater than 6
-    df = df[df["PRECURSOR_CHARGE"] <= 6]
-    logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
-
-    return df
-
-
-def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
+def parse_mods(mods: dict[str, int]) -> dict[str, str]:
     """
     Parse provided mapping of custom modification pattern to ProForma standard.
 
@@ -97,7 +79,7 @@ class SearchResults:
     orig_res: pd.DataFrame
     fake_msms: pd.DataFrame
 
-    def __init__(self, path: Union[str, Path]):
+    def __init__(self, path: str | Path):
         """
         Init Searchresults object.
 
@@ -108,23 +90,34 @@ class SearchResults:
         self.path = path
 
     @abstractmethod
+    def filter_valid_prosit_sequences(self):
+        """Filter valid Prosit sequences."""
+        raise NotImplementedError
+
+    @abstractmethod
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ):
         """Read result.
 
         :param tmt_label: tmt label as str
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         raise NotImplementedError
 
     def generate_internal(
         self,
         tmt_label: str = "",
-        out_path: Optional[Union[str, Path]] = None,
-        custom_mods: Optional[Dict[str, int]] = None,
+        out_path: str | Path | None = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
@@ -132,11 +125,15 @@ class SearchResults:
         :param out_path: path to output
         :param tmt_label: tmt label as str
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :return: path to output file
         """
         if out_path is None:
             # convert and return
-            filtered_df = self.read_result(tmt_label, custom_mods=custom_mods)
+            filtered_df = self.read_result(
+                tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
+            )
             return filtered_df[COLUMNS]
         if isinstance(out_path, str):
             out_path = Path(out_path)
@@ -148,7 +145,9 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods)[COLUMNS]
+        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
+            COLUMNS
+        ]
         csv.write_file(df, out_path)
         return df
 
@@ -161,10 +160,12 @@ class SearchResults:
         return csv.read_file(self.path)
 
     @abstractmethod
-    def convert_to_internal(self, mods: Dict[str, str]):
+    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
         """
         Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 
         :param mods: dictionary mapping search engine-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         raise NotImplementedError

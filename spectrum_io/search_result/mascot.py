@@ -1,14 +1,12 @@
 import logging
-import re
 import sqlite3
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences
+from .search_results import SearchResults
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +23,16 @@ class Mascot(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
     ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
         :param tmt_label: tmt label as str
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :raises NotImplementedError: always
         :return: pd.DataFrame with the formatted data
         """
@@ -119,4 +121,4 @@ class Mascot(SearchResults):
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
-        return filter_valid_prosit_sequences(df)
+        return self.filter_valid_prosit_sequences()

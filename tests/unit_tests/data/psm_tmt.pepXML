@@ -136,24 +136,6 @@
 </search_hit>
 </search_result>
 </spectrum_query>
-<spectrum_query start_scan="2980" uncalibrated_precursor_neutral_mass="1773.8171" assumed_charge="3" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.2980.2980.3" spectrumNativeID="controllerType=0 controllerNumber=1 scan=2980" end_scan="2980" index="193" precursor_neutral_mass="1773.8123" retention_time_sec="1152.5688171386719">
-<search_result>
-<search_hit peptide="YSGNCDRQSVER" massdiff="-0.026611328125" calc_neutral_pep_mass="1773.8389" peptide_next_aa="A" num_missed_cleavages="1" num_tol_term="1" protein_descr="Isoform 2 of SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6" num_tot_proteins="7" tot_num_ions="22" hit_rank="1" num_matched_ions="4" protein="sp|Q9D413-2|SH2D6_MOUSE" peptide_prev_aa="W" is_rejected="0">
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=2 SV=1" protein="sp|Q9D413|SH2D6_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|A0A3Q4EBW9|A0A3Q4EBW9_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=1 SV=1" protein="tr|A0A3Q4ECA8|A0A3Q4ECA8_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|A0A3Q4EGG3|A0A3Q4EGG3_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|E0CYY5|E0CYY5_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<alternative_protein protein_descr="SH2 domain-containing protein 6 OS=Mus musculus OX=10090 GN=Sh2d6 PE=4 SV=1" protein="tr|E9QJU1|E9QJU1_MOUSE" peptide_prev_aa="W" peptide_next_aa="A" num_tol_term="1"/>
-<modification_info modified_peptide="n[305]YSGNCDRQSVER" mod_nterm_mass="305.21497">
-<mod_aminoacid_mass mass="160.03065" position="5"/>
-</modification_info>
-<search_score name="hyperscore" value="3.932"/>
-<search_score name="nextscore" value="0.0"/>
-<search_score name="expect" value="1.386756e+00"/>
-</search_hit>
-</search_result>
-</spectrum_query>
 <spectrum_query start_scan="3945" uncalibrated_precursor_neutral_mass="1586.8934" assumed_charge="3" spectrum="Ecl1_0277_R0096-01_S004436_D_H01_TMT18_01.3945.3945.3" spectrumNativeID="controllerType=0 controllerNumber=1 scan=3945" end_scan="3945" index="647" precursor_neutral_mass="1586.8887" retention_time_sec="1225.7048034667969">
 <search_result>
 <search_hit peptide="ESTKSAAER" massdiff="0.9967041015625" calc_neutral_pep_mass="1585.892" peptide_next_aa="E" num_missed_cleavages="0" num_tol_term="1" protein_descr="Isoform 5 of Protein PRRC2C OS=Mus musculus OX=10090 GN=Prrc2c" num_tot_proteins="6" tot_num_ions="16" hit_rank="1" num_matched_ions="6" protein="rev_sp|Q3TLH4-5|PRC2C_MOUSE" peptide_prev_aa="V" is_rejected="0">

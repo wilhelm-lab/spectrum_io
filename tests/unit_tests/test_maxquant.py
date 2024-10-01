@@ -7,7 +7,6 @@ import pandas as pd
 import pytest
 
 from spectrum_io.search_result.maxquant import MaxQuant
-from spectrum_io.search_result.search_results import filter_valid_prosit_sequences
 
 COLUMNS = [
     "RAW_FILE",
