@@ -50,7 +50,6 @@ class Scout(SearchResults):
         # Standardize column names
         df = Scout.update_columns_for_prosit(df)
         df = Scout.filter_valid_prosit_sequences(df)
-        #df.to_csv("/cmnfs/data/proteomics/XL/Fan_lab/raw_files/raw_files_third_fourth_batch/last_version_scout_both_third_fourth_together/df_filtered_by_oktoberfest.csv")
         #df = Scout.filter_duplicates(df)
         return df
 

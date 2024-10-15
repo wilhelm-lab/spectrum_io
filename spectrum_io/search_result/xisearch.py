@@ -1,13 +1,16 @@
-import glob
 import logging
+
 import os
 import re
 from pathlib import Path
 from typing import Union
 from math import ceil
 import numpy as np
+
+from typing import Dict, Optional
+
+
 import pandas as pd
-import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import xisearch_to_internal
 import multiprocess as mp
 
@@ -19,15 +22,24 @@ logger = logging.getLogger(__name__)
 class Xisearch(SearchResults):
     """Handle search results from xisearch."""
 
-    def read_result(self, tmt_labeled: str = "") -> pd.DataFrame:
+    def read_result(
+        self,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: tmt label as str
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         :raises NotImplementedError: if a tmt label is provided
         :return: pd.DataFrame with the formatted data
         """
-        if tmt_labeled != "":
+        if tmt_label != "":
             raise NotImplementedError("TMT is not supported for XIsearch")
 
         logger.info("Reading search results file...")
@@ -64,11 +76,11 @@ class Xisearch(SearchResults):
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
+        
         df = Xisearch.filter_valid_prosit_sequences(df)
         #df = Xisearch.filter_duplicates(df)
         df = Xisearch.fdr_group(df, fdr_group_col=None, decoy_class=None)
-        df.to_csv("/cmnfs/data/proteomics/XL/juri_lab/MycoEcoliRaw/test/df_filtered_2.csv")
-        
+
         return df
 
     @staticmethod
@@ -181,7 +193,7 @@ class Xisearch(SearchResults):
         df["PEPTIDE_LENGTH_B"] = df["aa_len_p2"]
         logger.info("Converting Xisearch peptide sequence to internal format...")
 
-        df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "")
+        df["RAW_FILE"] = df["RAW_FILE"].str.replace(".raw", "", regex=False)
 
         df["MODIFIED_SEQUENCE_A"] = df.apply(
             lambda row: xisearch_to_internal(

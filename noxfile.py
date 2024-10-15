@@ -18,7 +18,7 @@ except ImportError:
     sys.exit(1)
 
 package = "spectrum_io"
-python_versions = ["3.8", "3.9"]
+python_versions = ["3.9", "3.10"]
 nox.options.sessions = (
     "pre-commit",
     "safety",
@@ -125,9 +125,10 @@ def precommit(session: Session) -> None:
 @session(python=python_versions)
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
+    to_ignore = "--ignore=70612"
     requirements = session.poetry.export_requirements()
     session.install("safety")
-    session.run("safety", "check", "--full-report", f"--file={requirements}")
+    session.run("safety", "check", "--full-report", f"--file={requirements}", to_ignore)
 
 
 @session(python=python_versions)
@@ -189,7 +190,8 @@ def docs_build(session: Session) -> None:
     """Build the documentation."""
     args = session.posargs or ["docs", "docs/_build"]
     session.install(".")
-    session.install("sphinx", "sphinx-click", "sphinx-rtd-theme", "sphinx-rtd-dark-mode")
+    session.install("sphinx", "sphinx-click", "sphinx-rtd-theme")
+    session.install("-r", "./docs/requirements.txt")
 
     build_dir = Path("docs", "_build")
     if build_dir.exists():

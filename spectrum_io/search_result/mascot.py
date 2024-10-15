@@ -1,13 +1,12 @@
 import logging
 import sqlite3
-from pathlib import Path
-from typing import Optional, Union
+from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import internal_without_mods
 
-from .search_results import SearchResults, filter_valid_prosit_sequences
+from .search_results import SearchResults
 
 logger = logging.getLogger(__name__)
 
@@ -15,13 +14,30 @@ logger = logging.getLogger(__name__)
 class Mascot(SearchResults):
     """Handle search results from Mascot."""
 
-    def read_result(self, tmt_labeled: str) -> pd.DataFrame:
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {}
+
+    def read_result(
+        self,
+        tmt_label: str = "",
+        custom_mods: Optional[Dict[str, int]] = None,
+        ptm_unimod_id: Optional[int] = 0,
+        ptm_sites: Optional[list[str]] = None,
+    ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.
 
-        :param tmt_labeled: tmt label as str
+        :param tmt_label: tmt label as str
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
+        :raises NotImplementedError: always
         :return: pd.DataFrame with the formatted data
         """
+        raise NotImplementedError
+
         logger.info("Reading mascot msf file")
         connection = sqlite3.connect(self.path)
         # cursor = connection.cursor()
@@ -74,15 +90,21 @@ class Mascot(SearchResults):
             ["SCAN_NUMBER", "PRECURSOR_CHARGE", "SCORE", "RAW_FILE", "SEQUENCE", "REVERSE"],
             as_index=False,
         ).agg({"MODIFICATIONS": "|".join})
-        mod_masses_reverse = {round(float(v), 3): k for k, v in c.MOD_MASSES.items()}
+        mod_masses = c.update_mod_masses()
+        mod_masses_reverse = {round(float(v), 3): k for k, v in mod_masses.items()}
+
+        parsed_mods = self.standard_mods | (custom_mods or {})
 
         sequences = []
         for _, row in df.iterrows():
             modifications = row["MODIFICATIONS"].split("|")
+            sequence = row["SEQUENCE"]
+            if parsed_mods:
+                sequence = sequence.replace(parsed_mods, sequence, regex=True)
+
             if len(modifications) == 0:
-                sequences.append(row["SEQUENCE"])
+                sequences.append(sequence)
             else:
-                sequence = row["SEQUENCE"]
                 skip = 0
                 for mod in modifications:
                     pos, mass = mod.split("$")
@@ -99,4 +121,4 @@ class Mascot(SearchResults):
         df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].apply(lambda x: len(x))
 
-        return filter_valid_prosit_sequences(df)
+        return self.filter_valid_prosit_sequences()
