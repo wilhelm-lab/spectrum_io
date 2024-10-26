@@ -5,5 +5,5 @@ from .maxquant import MaxQuant
 from .msamanda import MSAmanda
 from .msfragger import MSFragger
 from .sage import Sage
-from .xisearch import Xisearch
 from .scout import Scout
+from .xisearch import Xisearch

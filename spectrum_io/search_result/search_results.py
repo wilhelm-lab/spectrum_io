@@ -150,11 +150,13 @@ class SearchResults:
 
         # convert, save and return
         if xl:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[:]
+            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
+                :
+            ]
         else:
             df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
-            COLUMNS
-        ]
+                COLUMNS
+            ]
         csv.write_file(df, out_path)
         return df
 

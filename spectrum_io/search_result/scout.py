@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import glob
 import logging
 import os
@@ -21,9 +23,9 @@ class Scout(SearchResults):
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
-        ptm_unimod_id: Optional[int] = 0,
-        ptm_sites: Optional[list[str]] = None,
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -54,13 +56,12 @@ class Scout(SearchResults):
             "FileName",
         ]
 
-        df = pd.read_csv(self.path, usecols=columns_to_read)
+        self.results = pd.read_csv(self.path, usecols=columns_to_read)
         logger.info("Finished reading search results file.")
         # Standardize column names
-        df = Scout.update_columns_for_prosit(df)
-        df = Scout.filter_valid_prosit_sequences(df)
+        self.convert_to_internal(mods={})
+        return self.filter_valid_prosit_sequences()
         # df = Scout.filter_duplicates(df)
-        return df
 
     @staticmethod
     def filter_duplicates(df: pd.DataFrame) -> pd.DataFrame:
@@ -106,6 +107,7 @@ class Scout(SearchResults):
         positions = [str(i + 1) for i, component in enumerate(split_peptide) if "+" in component]
         return ";".join(positions)
 
+    @staticmethod
     def self_or_between_mp(df: pd.DataFrame) -> pd.DataFrame:
         df["tmp_id"] = df.index
         df_expl = df.copy()
@@ -120,8 +122,9 @@ class Scout(SearchResults):
         df.loc[:, "fdr_group"] = df["self"].apply(lambda x: "self" if x else "between")
         return df
 
-    @staticmethod
-    def update_columns_for_prosit(df: pd.DataFrame) -> pd.DataFrame:
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | None = None, ptm_sites: list[str] | None = None
+    ):
         """
         Update columns of df to work with xl-prosit.
 
@@ -129,6 +132,7 @@ class Scout(SearchResults):
         :return: modified df as pd.DataFrame
         """
         # Filter csms that does not contain any "k"
+        df = self.results
         df = df[(df["AlphaPeptide"].str.contains("K")) & (df["BetaPeptide"].str.contains("K"))]
         df["decoy_p1"] = df["AlphaMappings"].str.contains("Reverse").astype(bool)
         df["decoy_p2"] = df["BetaMappings"].str.contains("Reverse").astype(bool)
@@ -208,26 +212,23 @@ class Scout(SearchResults):
             "Charge": "precursor_charge",
             "scan_number": "ScanNumber",
         }
-        df = df.rename(columns=new_column_names)
-        return df
+        self.results = df.rename(columns=new_column_names)
 
-    @staticmethod
-    def filter_valid_prosit_sequences(df: pd.DataFrame) -> pd.DataFrame:
+    def filter_valid_prosit_sequences(self) -> pd.DataFrame:
         """
         Filter valid Prosit sequences.
 
         :param df: df to filter
         :return: df after filtration
         """
-        logger.info(f"#sequences before filtering for valid prosit sequences: {len(df.index)}")
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results)}")
+        self.results = self.results[(self.results["PEPTIDE_LENGTH_A"] <= 30)]
+        self.results = self.results[self.results["PEPTIDE_LENGTH_A"] >= 6]
+        self.results = self.results[(self.results["PEPTIDE_LENGTH_B"] <= 30)]
+        self.results = self.results[self.results["PEPTIDE_LENGTH_B"] >= 6]
+        self.results = self.results[(~self.results["SEQUENCE_A"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
+        self.results = self.results[(~self.results["SEQUENCE_B"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
+        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results)}")
 
-        df = df[(df["PEPTIDE_LENGTH_A"] <= 30)]
-        df = df[df["PEPTIDE_LENGTH_A"] >= 6]
-        df = df[(df["PEPTIDE_LENGTH_B"] <= 30)]
-        df = df[df["PEPTIDE_LENGTH_B"] >= 6]
-        df = df[(~df["SEQUENCE_A"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
-        df = df[(~df["SEQUENCE_B"].str.contains(r"B|\*|\.|U|O|X|Z|\(|\)"))]
-        df = df[df["PRECURSOR_CHARGE"] <= 6]
-        logger.info(f"#sequences after filtering for valid prosit sequences: {len(df.index)}")
-
-        return df
+        return self.results
