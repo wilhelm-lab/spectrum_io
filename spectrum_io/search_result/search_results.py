@@ -118,6 +118,7 @@ class SearchResults:
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        xl: bool = False,
     ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
@@ -134,7 +135,10 @@ class SearchResults:
             filtered_df = self.read_result(
                 tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
             )
-            return filtered_df[COLUMNS]
+            if xl:
+                return filtered_df[:]  # Return all columns
+            else:
+                return filtered_df[COLUMNS]
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -145,7 +149,10 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
+        if xl:
+            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[:]
+        else:
+            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
             COLUMNS
         ]
         csv.write_file(df, out_path)

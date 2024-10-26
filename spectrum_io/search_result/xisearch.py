@@ -51,6 +51,10 @@ class Xisearch(SearchResults):
             "crosslinker_name",
             "decoy_p1",
             "base_sequence_p1",
+            "sequence_p1",
+            "sequence_p2",
+            "start_pos_p1",
+            "start_pos_p2",
             "aa_len_p1",
             "link_pos_p1",
             "linked_aa_p1",
@@ -69,14 +73,14 @@ class Xisearch(SearchResults):
             "match_score",
         ]
 
-        converters = {"mods_p1": str, "mods_p2": str, "mod_pos_p1": str, "mod_pos_p2": str}
+        converters = {"mods_p1": str, "mods_p2": str, "mod_pos_p1": str, "mod_pos_p2": str, "start_pos_p1": str, "start_pos_p2": str}
 
         df = pd.read_csv(self.path, sep="\t", usecols=columns_to_read, converters=converters)
+
         logger.info("Finished reading search results file.")
         # Standardize column names
         df = Xisearch.filter_xisearch_result(df)
         df = Xisearch.update_columns_for_prosit(df)
-        
         df = Xisearch.filter_valid_prosit_sequences(df)
         #df = Xisearch.filter_duplicates(df)
         df = Xisearch.fdr_group(df, fdr_group_col=None, decoy_class=None)
@@ -173,7 +177,6 @@ class Xisearch(SearchResults):
         df['crosslinker_name'] = df['crosslinker_name'].replace(to_replace='*', value='DSSO')
         df["decoy"] = df["decoy_p1"] | df["decoy_p2"]
         df['run_name'] = df['run_name'].str.replace('-', '_')
-        df.to_csv("/cmnfs/data/proteomics/XL/juri_lab/MycoEcoliRaw/test/df_filtered_1.csv")
         df["RAW_FILE"] = df["run_name"]
         df["MASS"] = df["precursor_mass"]
         df["PRECURSOR_CHARGE"] = df["precursor_charge"]
