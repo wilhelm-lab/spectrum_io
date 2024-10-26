@@ -26,7 +26,9 @@ class TestXisearch(unittest.TestCase):
             "mods_p2": str,
             "mod_pos_p1": str,
             "mod_pos_p2": str,
+            "start_pos_p1": str,
+            "start_pos_p2": str,
         }
 
-        expected_df = pd.read_csv(expected_xisearch_internal_path, converters=converters)
+        expected_df = pd.read_csv(expected_xisearch_internal_path, sep="\t", converters=converters)
         pd.testing.assert_frame_equal(internal_search_results_df, expected_df)
