@@ -1,1 +1,0 @@
-/cmnfs/home/m.kalhor/miniconda3/envs/oktoberfest/bin/pytest
