@@ -30,8 +30,11 @@ class Scout(SearchResults):
         """
         Function to read a csv of CSMs and perform some basic formatting.
 
-        :param tmt_labeled: tmt label as str
-        :raises NotImplementedError: if a tmt label is provided
+        :param tmt_label: tmt label as str
+        :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
+        :raises NotImplementedError: if TMT label is provided
         :return: pd.DataFrame with the formatted data
         """
         if tmt_label != "":
@@ -61,12 +64,12 @@ class Scout(SearchResults):
         # Standardize column names
         self.convert_to_internal(mods={})
         return self.filter_valid_prosit_sequences()
-        # df = Scout.filter_duplicates(df)
+        # df = Scout._filter_duplicates(df)
 
     @staticmethod
-    def filter_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    def _filter_duplicates(df: pd.DataFrame) -> pd.DataFrame:
         """
-        keep csm with higher score and remove duplicate (only top ranks) .
+        Keep csm with higher score and remove duplicate (only top ranks).
 
         :param df: df to filter
         :return: filtered df as pd.DataFrame
@@ -82,7 +85,7 @@ class Scout(SearchResults):
         return df
 
     @staticmethod
-    def extract_modifications(peptide_seq: str):
+    def _extract_modifications(peptide_seq: str):
         modifications = []
         # Find all matches of modifications
         matches = re.findall(r"([CM])\(\+([\d.]+)\)", peptide_seq)
@@ -96,7 +99,7 @@ class Scout(SearchResults):
         return ";".join(modifications)
 
     @staticmethod
-    def extract_modification_positions(peptide_seq: str):
+    def _extract_modification_positions(peptide_seq: str):
         pattern = r"([A-Z])(\(\+\d+\.\d+\))?"
         matches = re.findall(pattern, peptide_seq)
         split_peptide = []
@@ -108,7 +111,7 @@ class Scout(SearchResults):
         return ";".join(positions)
 
     @staticmethod
-    def self_or_between_mp(df: pd.DataFrame) -> pd.DataFrame:
+    def _self_or_between_mp(df: pd.DataFrame) -> pd.DataFrame:
         df["tmp_id"] = df.index
         df_expl = df.copy()
         df_expl.loc[:, "AlphaMappings"] = df_expl["AlphaMappings"].str.split(";")
@@ -126,10 +129,11 @@ class Scout(SearchResults):
         self, mods: dict[str, str], ptm_unimod_id: int | None = None, ptm_sites: list[str] | None = None
     ):
         """
-        Update columns of df to work with xl-prosit.
+        Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 
-        :param df: df to modify
-        :return: modified df as pd.DataFrame
+        :param mods: dictionary mapping search engine-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         # Filter csms that does not contain any "k"
         df = self.results
@@ -157,12 +161,12 @@ class Scout(SearchResults):
         df["base_sequence_p2"] = df["SEQUENCE_B"]
         df = df[df.apply(lambda row: row["SEQUENCE_A"][row["AlphaPos"]] == "K", axis=1)]
         df = df[df.apply(lambda row: row["SEQUENCE_B"][row["BetaPos"]] == "K", axis=1)]
-        df["Modifications_A"] = df["AlphaPeptide"].apply(Scout.extract_modifications)
-        df["Modifications_B"] = df["BetaPeptide"].apply(Scout.extract_modifications)
-        df["mods_p1"] = df["AlphaPeptide"].apply(Scout.extract_modifications)
-        df["mods_p2"] = df["BetaPeptide"].apply(Scout.extract_modifications)
-        df["ModificationPositions1"] = df["AlphaPeptide"].apply(Scout.extract_modification_positions)
-        df["ModificationPositions2"] = df["BetaPeptide"].apply(Scout.extract_modification_positions)
+        df["Modifications_A"] = df["AlphaPeptide"].apply(Scout._extract_modifications)
+        df["Modifications_B"] = df["BetaPeptide"].apply(Scout._extract_modifications)
+        df["mods_p1"] = df["AlphaPeptide"].apply(Scout._extract_modifications)
+        df["mods_p2"] = df["BetaPeptide"].apply(Scout._extract_modifications)
+        df["ModificationPositions1"] = df["AlphaPeptide"].apply(Scout._extract_modification_positions)
+        df["ModificationPositions2"] = df["BetaPeptide"].apply(Scout._extract_modification_positions)
         df["CROSSLINKER_POSITION_A"] = df["AlphaPos"] + 1
         df["CROSSLINKER_POSITION_B"] = df["BetaPos"] + 1
         df["mod_pos_p1"] = df["AlphaPos"] + 1
@@ -173,7 +177,7 @@ class Scout(SearchResults):
         df["PEPTIDE_LENGTH_B"] = df["SEQUENCE_B"].apply(len)
         df["aa_len_p1"] = df["SEQUENCE_A"].apply(len)
         df["aa_len_p2"] = df["SEQUENCE_B"].apply(len)
-        df = Scout.self_or_between_mp(df)
+        df = Scout._self_or_between_mp(df)
         df["fdr_group"] = np.where(
             df["AlphaMappings"].str.replace("Reverse_", "") == df["BetaMappings"].str.replace("Reverse_", ""),
             "self",
@@ -218,7 +222,6 @@ class Scout(SearchResults):
         """
         Filter valid Prosit sequences.
 
-        :param df: df to filter
         :return: df after filtration
         """
         logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results)}")

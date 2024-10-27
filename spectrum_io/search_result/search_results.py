@@ -128,6 +128,7 @@ class SearchResults:
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param xl: set to True for crosslinking data
         :return: path to output file
         """
         if out_path is None:

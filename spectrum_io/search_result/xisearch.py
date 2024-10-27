@@ -4,10 +4,12 @@ import logging
 import os
 import re
 from math import ceil
+
+# import multiprocess as mp
+from multiprocessing import pool
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-import multiprocess as mp
 import numpy as np
 import pandas as pd
 from spectrum_fundamentals.mod_string import xisearch_to_internal
@@ -34,7 +36,7 @@ class Xisearch(SearchResults):
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
-        :raises NotImplementedError: if a tmt label is provided
+        :raises NotImplementedError: if TMT label is provided
         :return: pd.DataFrame with the formatted data
         """
         if tmt_label != "":
@@ -87,18 +89,13 @@ class Xisearch(SearchResults):
         self.filter_xisearch_result()
         self.convert_to_internal(mods={})
         self.filter_valid_prosit_sequences()
-        # df = Xisearch.filter_duplicates(df)
-        self.results = Xisearch.fdr_group(self.results, fdr_group_col=None, decoy_class=None)
+        # df = Xisearch._filter_duplicates(df)
+        self.results = Xisearch._fdr_group(self.results, fdr_group_col=None)
 
         return self.results
 
     def filter_xisearch_result(self):
-        """
-        Remove unsupported modifications and keep only k-k as linked amino acid .
-
-        :param df: df to filter
-        :return: filtered df as pd.DataFrame
-        """
+        """Remove unsupported modifications and keep only k-k as linked amino acid."""
         df = self.results
         df["linear"] = df["linear"].fillna(True)
         df["linear"] = df["linear"].astype(bool)
@@ -111,7 +108,7 @@ class Xisearch(SearchResults):
         self.results = df
 
     @staticmethod
-    def self_or_between(df):
+    def _self_or_between(df):
         df.loc[:, "protein_p1_arr"] = (
             df.loc[:, "protein_p1"].astype(str).str.replace("REV_", "").str.split(";").map(np.unique).map(list)
         )
@@ -127,7 +124,7 @@ class Xisearch(SearchResults):
         return df.loc[:, "is_between"].map({True: "between", False: "self"})
 
     @staticmethod
-    def self_or_between_mp(df):
+    def _self_or_between_mp(df):
         pool_size = min([10, os.cpu_count()])
         slice_size = ceil(len(df) / pool_size)
         cols = ["protein_p1", "protein_p2"]
@@ -135,20 +132,20 @@ class Xisearch(SearchResults):
         df_slices = [df.iloc[i * slice_size : (i + 1) * slice_size][cols] for i in range(pool_size)]
         print("slicing done")
         print(f"Pool size: {pool_size}")
-        with mp.Pool(processes=pool_size) as pool:
-            map_res = pool.map(Xisearch.self_or_between, df_slices)
+        with pool.Pool(processes=pool_size) as self_or_between_pool:
+            map_res = self_or_between_pool.map(Xisearch._self_or_between, df_slices)
         return pd.concat(map_res).copy()
 
     @staticmethod
-    def fdr_group(df, fdr_group_col=None, decoy_class=None):
+    def _fdr_group(df, fdr_group_col=None):
         if fdr_group_col is None:
-            df.loc[:, "fdr_group"] = Xisearch.self_or_between_mp(df)
+            df.loc[:, "fdr_group"] = Xisearch._self_or_between_mp(df)
         return df
 
     @staticmethod
-    def filter_duplicates(df: pd.DataFrame) -> pd.DataFrame:
+    def _filter_duplicates(df: pd.DataFrame) -> pd.DataFrame:
         """
-        keep csm with higher score and remove duplicate (only top ranks) .
+        Keep csm with higher score and remove duplicate (only top ranks).
 
         :param df: df to filter
         :return: filtered df as pd.DataFrame
@@ -167,10 +164,11 @@ class Xisearch(SearchResults):
         self, mods: dict[str, str], ptm_unimod_id: int | None = None, ptm_sites: list[str] | None = None
     ):
         """
-        Update columns of df to work with xl-prosit.
+        Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 
-        :param df: df to modify
-        :return: modified df as pd.DataFrame
+        :param mods: dictionary mapping search engine-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
         df["crosslinker_name"] = df["crosslinker_name"].replace(to_replace="*", value="DSSO")
@@ -227,7 +225,6 @@ class Xisearch(SearchResults):
         """
         Filter valid Prosit sequences.
 
-        :param df: df to filter
         :return: df after filtration
         """
         logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results)}")
