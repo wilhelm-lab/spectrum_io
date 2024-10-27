@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spectrum_io"
-version = "0.6.3"  # <<COOKIETEMPLE_FORCE_BUMP>>
+version = "0.6.4"  # <<COOKIETEMPLE_FORCE_BUMP>>
 description = "IO related functionalities for oktoberfest."
 authors = ["Wilhelmlab at Technical University of Munich"]
 license = "MIT"
