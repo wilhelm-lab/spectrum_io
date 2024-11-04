@@ -23,7 +23,7 @@ def check_analyzer(mass_analyzers: Dict[str, str]) -> Dict[str, str]:
     """
     for elem in mass_analyzers.keys():
         accession = mass_analyzers[elem]
-        if accession in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
+        if accession in ["MS:1000079", "MS:1000484",'MS:1000081']:  # fourier transform ion cyclotron, orbitrap
             mass_analyzers[elem] = "FTMS"
         elif accession in ["MS:1000082", "MS:1000264", "MS:1000078"]:  # quadrupole ion-trap, ion-trap, linear ion-trap
             mass_analyzers[elem] = "ITMS"
@@ -200,7 +200,7 @@ class MSRaw:
                         spec.mz,
                         mz_range,
                         spec.scan_time_in_minutes(),
-                        mass_analyzer.get(instrument_configuration_ref, "unknown"),
+                        mass_analyzer.get(instrument_configuration_ref, "FTMS"),
                         fragmentation,
                         collision_energy,
                         instrument_name,
@@ -252,7 +252,7 @@ class MSRaw:
                     spec["m/z array"],
                     mz_range,
                     rt,
-                    mass_analyzer.get(instrument_configuration_ref, "unknown"),
+                    mass_analyzer.get(instrument_configuration_ref, "FTMS"),
                     fragmentation,
                     collision_energy,
                     instrument_name,
