@@ -118,7 +118,8 @@ class SearchResults:
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
-        ptm_model: bool = False
+        ptm_model: bool = False,
+        xl: bool = False,
     ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
@@ -128,6 +129,7 @@ class SearchResults:
         :param custom_mods: dict with static and variable custom modifications, their internal identifier and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param xl: set to True for crosslinking data
         :return: path to output file
         """
         if out_path is None:
@@ -135,7 +137,10 @@ class SearchResults:
             filtered_df = self.read_result(
                 tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
             )
-            return filtered_df[COLUMNS]
+            if xl:
+                return filtered_df[:]  # Return all columns
+            else:
+                return filtered_df[COLUMNS]
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -146,9 +151,16 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites,ptm_model=ptm_model)[
-            COLUMNS
-        ]
+
+        if xl:
+            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model)[
+                :
+            ]
+        else:
+            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model)[
+                COLUMNS
+            ]
+
         csv.write_file(df, out_path)
         return df
 
