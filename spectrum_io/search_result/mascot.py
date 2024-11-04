@@ -25,6 +25,7 @@ class Mascot(SearchResults):
         custom_mods: Optional[Dict[str, int]] = None,
         ptm_unimod_id: Optional[int] = 0,
         ptm_sites: Optional[list[str]] = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.

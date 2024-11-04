@@ -74,6 +74,7 @@ class MaxQuant(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -87,6 +88,8 @@ class MaxQuant(SearchResults):
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+        if ptm_model:
+            parsed_mods = c.MAXQUANT_VAR_MODS
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"

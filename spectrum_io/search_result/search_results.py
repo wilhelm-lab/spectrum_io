@@ -118,6 +118,7 @@ class SearchResults:
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Generate df and save to out_path if provided.
@@ -145,7 +146,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
+        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites,ptm_model=ptm_model)[
             COLUMNS
         ]
         csv.write_file(df, out_path)

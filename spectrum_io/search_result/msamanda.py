@@ -25,6 +25,7 @@ class MSAmanda(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
         suffix: str = "output.csv",
     ) -> pd.DataFrame:
         """

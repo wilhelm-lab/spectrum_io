@@ -18,6 +18,7 @@ class Xisearch(SearchResults):
         custom_mods: Optional[Dict[str, int]] = None,
         ptm_unimod_id: Optional[int] = 0,
         ptm_sites: Optional[list[str]] = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.

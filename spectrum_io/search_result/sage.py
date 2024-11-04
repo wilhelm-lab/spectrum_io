@@ -26,6 +26,7 @@ class Sage(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Function to read a msms tsv and perform some basic formatting.

@@ -6,7 +6,6 @@ from typing import Dict, Optional
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
 from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 from tqdm import tqdm
 
@@ -21,13 +20,25 @@ class MSFragger(SearchResults):
     @property
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
-        return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7}
+        return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7,
+                }
+    
+    @staticmethod
+    def fix_similar_mz(seq_modifications):
+        sequence = seq_modifications['modified_peptide']
+        mods = seq_modifications['modifications']
+        if 'K[170]' in sequence:
+            if '170.10' in mods:
+               sequence = sequence.replace('K[170]','K[170.10]')
+            else:
+               sequence =sequence.replace('K[170]','K[170.14]')
+        return sequence
 
     def filter_valid_prosit_sequences(self):
         """Filter valid Prosit sequences."""
         logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
         # retain only peptides that fall within [7, 30] length supported by Prosit
-        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 6)]
         # remove unsupported mods to exclude
         self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
         # remove precursor charges greater than 6
@@ -42,6 +53,7 @@ class MSFragger(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -56,6 +68,9 @@ class MSFragger(SearchResults):
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+        #TODO: fix model parsing for PTM model
+        if ptm_model:
+            parsed_mods = c.MSFRAGGER_VAR_MODS
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"
@@ -72,6 +87,7 @@ class MSFragger(SearchResults):
             ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
         self.results = pd.concat(ms_frag_results)
+        self.results['modified_peptide'] = self.results[['modified_peptide','modifications']].apply(MSFragger.fix_similar_mz,axis=1)
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return self.filter_valid_prosit_sequences()
