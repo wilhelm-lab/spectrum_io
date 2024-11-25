@@ -183,6 +183,7 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
             "ScanNr": "SCAN_NUMBER",
             "Score": "SCORE",
             "PSMId": "SCAN_EVENT_NUMBER",
+            "accessions": "PROTEINS",
         },
         inplace=True,
     )
@@ -199,6 +200,7 @@ def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
         "REVERSE",
         "SEQUENCE",
         "PEPTIDE_LENGTH",
+        "PROTEINS",
     ]
 
     # if NA XL modification available
