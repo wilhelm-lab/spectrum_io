@@ -1,27 +1,31 @@
+from __future__ import annotations
+
 import logging
+from pathlib import Path
 
 import pandas as pd
-from pyopenms import IdXMLFile
-from spectrum_fundamentals.mod_string import internal_without_mods, openms_to_internal
+from pyopenms import IdXMLFile, PeptideIdentification, ProteinIdentification
+from spectrum_fundamentals.mod_string import internal_without_mods
 from tqdm import tqdm
 
-from .search_results import SearchResults
+from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
 
 
-def read_and_process_id_xml(input_file, top=1):
+def _read_and_process_id_xml(input_file: Path, top: int = 0):
     """
     Convert the (.idXML) format identification file to a DataFrame.
 
     :param input_file: Path to the input .idXML file.
-    :param top: Number of top hits to consider, defaults to 1.
+    :param top: Number of top hits to consider, defaults to 0, which returns all hits.
     :return: DataFrame containing identification information.
     """
-    prot_ids = []
-    pep_ids = []
-    IdXMLFile().load(input_file, prot_ids, pep_ids)
-    meta_value_keys = []
+    prot_ids: list[ProteinIdentification] = []
+    pep_ids: list[PeptideIdentification] = []
+    IdXMLFile().load(str(input_file), prot_ids, pep_ids)
+    meta_value_keys_bytes: list[bytes] = []
+    meta_value_keys: list[str] = []
     rows = []
     for peptide_id in pep_ids:
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
@@ -31,7 +35,7 @@ def read_and_process_id_xml(input_file, top=1):
 
         psm_index = 1
         for h in hits:
-            if psm_index > top:
+            if top > 0 and psm_index > top:
                 break
             charge = h.getCharge()
             score = h.getScore()
@@ -43,9 +47,9 @@ def read_and_process_id_xml(input_file, top=1):
 
             sequence = h.getSequence().toString()
 
-            if len(meta_value_keys) == 0:  # fill meta value keys on first run
-                h.getKeys(meta_value_keys)
-                meta_value_keys = [x.decode() for x in meta_value_keys]
+            if len(meta_value_keys_bytes) == 0:  # fill meta value keys on first run
+                h.getKeys(meta_value_keys_bytes)
+                meta_value_keys = [x.decode() for x in meta_value_keys_bytes]
 
                 all_columns = [
                     "SpecId",
@@ -61,7 +65,7 @@ def read_and_process_id_xml(input_file, top=1):
                 ] + meta_value_keys
 
             # static part
-            accessions = ";".join([s.decode() for s in h.extractProteinAccessionsSet()])
+            accessions = ";".join(sorted([s.decode() for s in h.extractProteinAccessionsSet()]))
 
             row = [
                 spectrum_id,
@@ -105,18 +109,10 @@ def read_and_process_id_xml(input_file, top=1):
 class OpenMS(SearchResults):
     """Handle search results from OpenMS."""
 
-    def filter_valid_prosit_sequences(self):
-        """Filter valid Prosit sequences."""
-        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
-        # retain only peptides that fall within [7, 30] length supported by Prosit
-        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
-        # remove unsupported mods to exclude
-        self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
-        # remove precursor charges greater than 6
-        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
-        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
-
-        return self.results
+    @property
+    def standard_mods(self):
+        """Standard modifications that are always applied if not otherwise specified."""
+        return {"C(Carbamidomethyl)": 4, "M(Oxidation)": 35, "R(Deamidated)": 7, "Q(Deamidated)": 7, "N(Deamidated)": 7}
 
     def read_result(
         self,
@@ -133,9 +129,21 @@ class OpenMS(SearchResults):
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
+        :raises NotImplementedError: in case TMT or ptm_unimod_id/ptm_sites are given.
+
         :return: pd.DataFrame with the formatted data
         """
-        logger.info("Reading OpenMS idXML file")
+        parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+        if tmt_label:
+            raise NotImplementedError("TMT data is currently not supported for OpenMS")
+            # unimod_tag = c.TMT_MODS[tmt_label]
+            # parsed_mods[r"K\[\+\d+\.\d+\]"] = f"K{unimod_tag}"
+            # parsed_mods[r"^\[\+\d+\.\d+\]"] = f"{unimod_tag}"
+
+        if ptm_unimod_id is not None and ptm_unimod_id != 0 or ptm_sites is not None:
+            raise NotImplementedError("ptm_unimod_id and ptm_sties are not supported yet.")
+
+        logger.info("Reading OpenMS idXML file(s)...")
 
         if self.path.is_file():
             file_list = [self.path]
@@ -146,72 +154,64 @@ class OpenMS(SearchResults):
 
         openms_results = []
         for openms_file in tqdm(file_list):
-            print("collecting data from ", openms_file)
-            openms_results.append(read_and_process_id_xml(str(openms_file)))
+            print("Collecting data from ", openms_file)
+            openms_results.append(_read_and_process_id_xml(openms_file))
 
         self.results = pd.concat(openms_results)
 
-        logger.info("Finished reading OpenMS idXML file.")
+        logger.info("Finished reading OpenMS idXML file(s).")
 
-        self.results = update_columns_for_prosit(self.results, tmt_label)
+        self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
 
         return self.filter_valid_prosit_sequences()
 
+    def filter_valid_prosit_sequences(self):
+        """Filter valid Prosit sequences."""
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+        # retain only peptides that fall within [7, 30] length supported by Prosit
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        # remove unsupported mods to exclude
+        self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
+        # remove precursor charges greater than 6
+        self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
+        logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
 
-def update_columns_for_prosit(df, tmt_labeled: str) -> pd.DataFrame:
-    """
-    Update columns of df to work with Prosit.
+        return self.results
 
-    :param df: df to modify
-    :param tmt_labeled: True if tmt labeled
-    :return: modified df as pd.DataFrame
-    """
-    if tmt_labeled != "":
-        logger.debug("not implemented TMT modifications")
-    else:
-        df["MODIFIED_SEQUENCE"] = openms_to_internal(df["Peptide"].to_list())
+    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+        """
+        Convert all columns in the Sage output to the internal format used by Oktoberfest.
 
-    df["SEQUENCE"] = internal_without_mods(df["MODIFIED_SEQUENCE"])
-    df["REVERSE"] = ~df["Label"]
+        :param mods: dictionary mapping Sage-specific mod patterns (keys) to ProForma standard (values)
+        :param ptm_unimod_id: unimod id used for site localization
+        :param ptm_sites: possible sites that the ptm can exist on
+        """
+        df = self.results
+        df.replace({"Peptide": mods}, regex=True, inplace=True)
+        df["SEQUENCE"] = internal_without_mods(df["Peptide"])
+        df["Label"] = ~df["Label"]
 
-    df.rename(
-        columns={
-            "raw_file": "RAW_FILE",
-            "ExpMass": "MASS",
-            "peplen": "PEPTIDE_LENGTH",
-            "charge": "PRECURSOR_CHARGE",
-            "ScanNr": "SCAN_NUMBER",
-            "Score": "SCORE",
-            "PSMId": "SCAN_EVENT_NUMBER",
-            "accessions": "PROTEINS",
-        },
-        inplace=True,
-    )
-
-    # Select columns to return
-    return_columns = [
-        "RAW_FILE",
-        "SCAN_NUMBER",
-        "MODIFIED_SEQUENCE",
-        "PRECURSOR_CHARGE",
-        "SCAN_EVENT_NUMBER",
-        "MASS",
-        "SCORE",
-        "REVERSE",
-        "SEQUENCE",
-        "PEPTIDE_LENGTH",
-        "PROTEINS",
-    ]
-
-    # if NA XL modification available
-    if "NuXL:NA" in df.columns:
         df.rename(
             columns={
-                "NuXL:NA": "NA_MOD",
+                "raw_file": "RAW_FILE",
+                "ExpMass": "MASS",
+                "peplen": "PEPTIDE_LENGTH",
+                "charge": "PRECURSOR_CHARGE",
+                "ScanNr": "SCAN_NUMBER",
+                "Peptide": "MODIFIED_SEQUENCE",
+                "Score": "SCORE",
+                "PSMId": "SCAN_EVENT_NUMBER",
+                "accessions": "PROTEINS",
+                "Label": "REVERSE",
             },
             inplace=True,
         )
 
-        return_columns.append("NA_MOD")
-
-    return df[return_columns]
+        # if NA XL modification available
+        if "NuXL:NA" in df.columns:
+            df.rename(
+                columns={
+                    "NuXL:NA": "NA_MOD",
+                },
+                inplace=True,
+            )

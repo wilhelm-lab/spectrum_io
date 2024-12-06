@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from spectrum_io.search_result.openms import OpenMS
+from spectrum_io.search_result import OpenMS
 
 COLUMNS = [
     "SCAN_NUMBER",
@@ -39,12 +39,16 @@ class TestOpenMS(unittest.TestCase):
         self.assertTrue("PROTEINS" in df.columns)
 
     def test_read_openms(self):
-        #Test function for reading OpenMS results and transforming to Prosit format.
+        """Test function for reading OpenMS results and transforming to Prosit format."""
         expected_openms_internal_path = Path(__file__).parent / "data" / "openms.csv"
-        OpenMS(Path(__file__).parent / "data" / "openms.idXML").generate_internal(out_path=Path(__file__).parent / "data" / "openms.csv")
+        OpenMS(Path(__file__).parent / "data" / "openms.idXML").generate_internal(
+            out_path=Path(__file__).parent / "data" / "openms.csv"
+        )
 
-        internal_search_results_df = OpenMS(Path(__file__).parent / "data" / "openms.idXML").read_result().reset_index(drop=True)
+        internal_search_results_df = (
+            OpenMS(Path(__file__).parent / "data" / "openms.idXML").read_result().reset_index(drop=True)
+        )
+
         expected_df = pd.read_csv(expected_openms_internal_path)
 
         pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
-

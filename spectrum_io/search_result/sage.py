@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -18,7 +17,14 @@ class Sage(SearchResults):
     @property
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
-        return {"C[+57.0215]": 4, "M[+15.9949]": 35, "M[+15.994]": 35}
+        return {
+            "C[+57.0215]": 4,
+            "M[+15.9949]": 35,
+            "M[+15.994]": 35,
+            "R[+0.98402]": 7,
+            "Q[+0.98402]": 7,
+            "N[+0.98402]": 7,
+        }
 
     def read_result(
         self,
@@ -44,13 +50,13 @@ class Sage(SearchResults):
             parsed_mods[r"K\[\+\d+\.\d+\]"] = f"K{unimod_tag}"
             parsed_mods[r"^\[\+\d+\.\d+\]"] = f"{unimod_tag}"
 
-        logger.info(f"Reading {self.path}")
+        logger.info(f"Reading {self.path}...")
         self.results = pd.read_csv(
             self.path,
             usecols=["filename", "scannr", "peptide", "charge", "hyperscore", "calcmass", "label", "proteins"],
             sep="\t",
         )
-        logger.info(f"Finished reading {self.path}")
+        logger.info(f"Finished reading {self.path}.")
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return self.filter_valid_prosit_sequences()

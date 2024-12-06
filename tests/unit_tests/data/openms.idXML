@@ -218,7 +218,7 @@
 				<UserParam type="float" name="MS:1001492" value="-100.0"/>
 				<UserParam type="float" name="MS:1001491" value="1.0"/>
 				<UserParam type="float" name="MS:1001493" value="1.0"/>
-			</PeptideHit>	
+			</PeptideHit>
 			<UserParam type="float" name="precursor_intensity_log10" value="0.0"/>
 			<UserParam type="int" name="scan_index" value="1857"/>
 		</PeptideIdentification>
@@ -479,7 +479,7 @@
 				<UserParam type="float" name="MS:1001492" value="0.237215"/>
 				<UserParam type="float" name="MS:1001491" value="1.24533e-03"/>
 				<UserParam type="float" name="MS:1001493" value="0.0537112"/>
-			</PeptideHit>	
+			</PeptideHit>
 			<UserParam type="float" name="precursor_intensity_log10" value="0.0"/>
 			<UserParam type="int" name="scan_index" value="4737"/>
 		</PeptideIdentification>

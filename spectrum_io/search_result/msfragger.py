@@ -136,7 +136,6 @@ class MSFragger(SearchResults):
                 "hyperscore": "SCORE",
                 "modified_peptide": "MODIFIED_SEQUENCE",
                 "protein": "PROTEINS",
-                "peptide": "SEQUENCE",
                 "precursor_neutral_mass": "MASS",
                 "spectrum": "RAW_FILE",
             },
