@@ -28,8 +28,15 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
     meta_value_keys: list[str] = []
     rows = []
     for peptide_id in pep_ids:
+
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
-        scan_nr = spectrum_id[spectrum_id.rfind("=") + 1 :]
+        if isinstance(spectrum_id, str):
+            scan_nr = spectrum_id[spectrum_id.rfind("=") + 1 :]
+        elif isinstance(spectrum_id, bytes):
+            decoded = spectrum_id.decode("utf-8")
+            scan_nr = decoded[decoded.rfind("=") + 1 :]
+        else:
+            raise TypeError(f"spectrum_reference must be a str or bytes, but got {type(spectrum_id)}")
 
         hits = peptide_id.getHits()
 
@@ -97,8 +104,18 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
     df = df.astype(convert_dict)
     df["Label"] = df["Label"].astype(bool)
 
+    # get the raw file name 
     for prot_id in prot_ids:
-        raw_file = (prot_id.getMetaValue("spectra_data"))[0].decode("utf-8").split("/")[-1].split(".")[0]
+        spectra_data = (prot_id.getMetaValue("spectra_data"))
+
+        if isinstance(spectra_data, list) and spectra_data:
+            if isinstance(spectra_data[0], bytes):
+                raw_file = spectra_data[0].decode('utf-8').split('/')[-1].split('.')[0]
+            else:
+                raise TypeError(f"Expected bytes in the list, but got {type(spectra_data[0])}")
+        else:
+            raise TypeError("spectra_data must be a non-empty list of bytes")
+        
         break
 
     df["raw_file"] = raw_file
