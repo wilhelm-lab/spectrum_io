@@ -55,10 +55,10 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
     for peptide_id in pep_ids:
 
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
+        # extract scan number
         scan_nr = extract_scan_number(spectrum_id=spectrum_id)
 
         hits = peptide_id.getHits()
-
         psm_index = 1
         for h in hits:
             if top > 0 and psm_index > top:
@@ -105,6 +105,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
                 charge,
                 accessions,
             ]
+
             # scores in meta values
             for k in meta_value_keys:
                 s = h.getMetaValue(k)
@@ -113,14 +114,12 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
                 row.append(s)
             rows.append(row)
             psm_index += 1
-            break
-            # parse only first hit
 
     df = pd.DataFrame(rows, columns=all_columns)
 
     df = df.astype({"SpecId": str, "PSMId": int, "Score": float, "ScanNr": int, "peplen": int, "Label": bool})
 
-     # Add raw file column
+    # extract raw file name
     raw_file = get_raw_file_name(prot_ids)
     if raw_file:
         df["raw_file"] = raw_file
