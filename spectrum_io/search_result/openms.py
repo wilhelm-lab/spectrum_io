@@ -13,7 +13,7 @@ from .search_results import SearchResults, parse_mods
 logger = logging.getLogger(__name__)
 
 
-def _extract_scan_number(spectrum_id: str | bytes) -> int:
+def _extract_scan_number(spectrum_id: int | float | bytes | str | list[int] | list[float] | list[bytes]) -> int:
     """Extract scan number from spectrum ID."""
     if isinstance(spectrum_id, str):
         return int(spectrum_id[spectrum_id.rfind("=") + 1 :])
@@ -36,6 +36,7 @@ def _get_raw_file_name(prot_ids: list[ProteinIdentification]) -> str:
                 raise TypeError(f"Expected bytes in the list, but got {type(first_element)}")
         else:
             raise TypeError("spectra_data must be a non-empty list of bytes")
+    raise ValueError("Raw file name could not be extracted from protein identifications.")
 
 
 def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
@@ -44,7 +45,6 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
 
     :param input_file: Path to the input .idXML file.
     :param top: Number of top hits to consider, defaults to 0, which returns all hits.
-    :raises ValueError: If raw file name could not be extracted from ProteinIdentification.
     :return: DataFrame containing identification information.
     """
     prot_ids: list[ProteinIdentification] = []
@@ -123,10 +123,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
 
     # extract raw file name
     raw_file = _get_raw_file_name(prot_ids)
-    if raw_file:
-        df["raw_file"] = raw_file
-    else:
-        raise ValueError("Failed to extract raw file name from ProteinIdentification.")
+    df["raw_file"] = raw_file
 
     return df
 
