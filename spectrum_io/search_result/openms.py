@@ -68,7 +68,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
             charge = h.getCharge()
             score = h.getScore()
 
-            if "target" in h.getMetaValue("target_decoy"):
+            if "target" in str(h.getMetaValue("target_decoy")):
                 label = 1
             else:
                 label = 0
@@ -119,7 +119,17 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
 
     df = pd.DataFrame(rows, columns=all_columns)
 
-    df = df.astype({"SpecId": str, "PSMId": int, "Score": float, "ScanNr": int, "peplen": int, "Label": bool})
+    df = df.astype(
+        {
+            "SpecId": str,
+            "PSMId": "int64",
+            "Score": float,
+            "ScanNr": "int64",
+            "peplen": "int64",
+            "Label": bool,
+            "charge": "int64",
+        }
+    )
 
     # extract raw file name
     raw_file = _get_raw_file_name(prot_ids)
