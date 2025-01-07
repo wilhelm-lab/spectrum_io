@@ -13,42 +13,44 @@ from .search_results import SearchResults, parse_mods
 logger = logging.getLogger(__name__)
 
 
-def _read_and_process_id_xml(input_file: Path, top: int = 0):
+def _extract_scan_number(spectrum_id: str | bytes) -> int:
+    """Extract scan number from spectrum ID."""
+    if isinstance(spectrum_id, str):
+        return int(spectrum_id[spectrum_id.rfind("=") + 1 :])
+    elif isinstance(spectrum_id, bytes):
+        decoded = spectrum_id.decode("utf-8")
+        return int(decoded[decoded.rfind("=") + 1 :])
+    else:
+        raise TypeError(f"spectrum_reference must be a str or bytes, but got {type(spectrum_id)}")
+
+
+def _get_raw_file_name(prot_ids: list[ProteinIdentification]) -> str:
+    """Extract raw file name from the first ProteinIdentification."""
+    for prot_id in prot_ids:
+        spectra_data = prot_id.getMetaValue("spectra_data")
+        if isinstance(spectra_data, list) and spectra_data:
+            first_element = spectra_data[0]
+            if isinstance(first_element, bytes):
+                return first_element.decode("utf-8").split("/")[-1].split(".")[0]
+            else:
+                raise TypeError(f"Expected bytes in the list, but got {type(first_element)}")
+        else:
+            raise TypeError("spectra_data must be a non-empty list of bytes")
+
+
+def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
     """
     Convert the (.idXML) format identification file to a DataFrame.
 
     :param input_file: Path to the input .idXML file.
     :param top: Number of top hits to consider, defaults to 0, which returns all hits.
+    :raises ValueError: If raw file name could not be extracted from ProteinIdentification.
     :return: DataFrame containing identification information.
     """
     prot_ids: list[ProteinIdentification] = []
     pep_ids: list[PeptideIdentification] = []
     IdXMLFile().load(str(input_file), prot_ids, pep_ids)
 
-    def extract_scan_number(spectrum_id):
-        """Extract scan number from spectrum ID."""
-        if isinstance(spectrum_id, str):
-            return int(spectrum_id[spectrum_id.rfind("=") + 1 :])
-        elif isinstance(spectrum_id, bytes):
-            decoded = spectrum_id.decode("utf-8")
-            return int(decoded[decoded.rfind("=") + 1 :])
-        else:
-            raise TypeError(f"spectrum_reference must be a str or bytes, but got {type(spectrum_id)}")
-
-    def get_raw_file_name(prot_ids):
-        """Extract raw file name from the first ProteinIdentification."""
-        for prot_id in prot_ids:
-            spectra_data = prot_id.getMetaValue("spectra_data")
-            if isinstance(spectra_data, list) and spectra_data:
-                first_element = spectra_data[0]
-                if isinstance(first_element, bytes):
-                    return first_element.decode("utf-8").split("/")[-1].split(".")[0]
-                else:
-                    raise TypeError(f"Expected bytes in the list, but got {type(first_element)}")
-            else:
-                raise TypeError("spectra_data must be a non-empty list of bytes")
-        return None
-    
     meta_value_keys_bytes: list[bytes] = []
     meta_value_keys: list[str] = []
     rows = []
@@ -56,7 +58,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
 
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
         # extract scan number
-        scan_nr = extract_scan_number(spectrum_id=spectrum_id)
+        scan_nr = _extract_scan_number(spectrum_id=spectrum_id)
 
         hits = peptide_id.getHits()
         psm_index = 1
@@ -120,7 +122,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0):
     df = df.astype({"SpecId": str, "PSMId": int, "Score": float, "ScanNr": int, "peplen": int, "Label": bool})
 
     # extract raw file name
-    raw_file = get_raw_file_name(prot_ids)
+    raw_file = _get_raw_file_name(prot_ids)
     if raw_file:
         df["raw_file"] = raw_file
     else:
