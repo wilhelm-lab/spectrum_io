@@ -68,7 +68,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
             charge = h.getCharge()
             score = h.getScore()
 
-            if "target" in h.getMetaValue("target_decoy"):
+            if "target" in str(h.getMetaValue("target_decoy")):
                 label = 1
             else:
                 label = 0
