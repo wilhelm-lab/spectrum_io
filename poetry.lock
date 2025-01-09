@@ -1457,13 +1457,13 @@ files = [
 
 [[package]]
 name = "marshmallow"
-version = "3.24.1"
+version = "3.24.2"
 description = "A lightweight library for converting complex datatypes to and from native Python datatypes."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "marshmallow-3.24.1-py3-none-any.whl", hash = "sha256:ddb5c9987017d37be351c184e4e867e7bf55f7331f4da730dedad6b7af662cdd"},
-    {file = "marshmallow-3.24.1.tar.gz", hash = "sha256:efdcb656ac8788f0e3d1d938f8dc0f237bf1a99aff8f6dfbffa594981641cea0"},
+    {file = "marshmallow-3.24.2-py3-none-any.whl", hash = "sha256:bf3c56db473bb160e5191f1c5e32e3fc8bfb58998eb2b35d6747de023e31f9e7"},
+    {file = "marshmallow-3.24.2.tar.gz", hash = "sha256:0822c3701de396b51d3f8ac97319aea5493998ba4e7d0e4c05f6fce7777bf3a2"},
 ]
 
 [package.dependencies]
@@ -2309,32 +2309,37 @@ pynumpress = ["pynumpress (>=0.0.4)"]
 
 [[package]]
 name = "pyopenms"
-version = "3.2.0"
-description = "Python wrapper for C++ LC-MS library OpenMS"
+version = "3.0.0"
+description = "Python wrapper for C++ LCMS library OpenMS"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyopenms-3.2.0-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:b962257d0172d94994ad66c63df362f9980f11fdb44f34798315dc1a98bb9688"},
-    {file = "pyopenms-3.2.0-cp310-cp310-macosx_14_0_arm64.whl", hash = "sha256:ccda824418d43e592da5c2cb34b8b07e51c79bfb9daf546e9264c64c651b13f6"},
-    {file = "pyopenms-3.2.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:0039860d1218f17d0e9a921c98d41667ff1eafef6b36fe80d65b158121009e50"},
-    {file = "pyopenms-3.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:632e10b80f6324731e997fa0926a33857495b51a2091fcedddbdc810c6f1aa9f"},
-    {file = "pyopenms-3.2.0-cp311-cp311-macosx_13_0_x86_64.whl", hash = "sha256:c041a10ea6472a6758290cd7a1554a7060c3ba31c716c9df30c8926948d8c040"},
-    {file = "pyopenms-3.2.0-cp311-cp311-macosx_14_0_arm64.whl", hash = "sha256:cfd16fe1ea2c65f761d9c4c6ac3db89e7267e552acbed5ea79b2a38aef441312"},
-    {file = "pyopenms-3.2.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:ea32a6b092a2bf459997ed102bf7042701e2af3ab17e0531b2518bb767c0ccbf"},
-    {file = "pyopenms-3.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:ea10adfebff42278ab03017298109c833da10a52469d4b7e6fbefb095f80cfb2"},
-    {file = "pyopenms-3.2.0-cp312-cp312-macosx_13_0_x86_64.whl", hash = "sha256:247d2addaf24a8239f1a4e0e6d093e8dcc2c46be45d007c4417b49c241e5ae74"},
-    {file = "pyopenms-3.2.0-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:e2fe26f29e2b43581cb3db07a8deefc712b0686bd1c83f5b591c2028364aad1d"},
-    {file = "pyopenms-3.2.0-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:bb7d8c5aa155a8971236359ae9e244bc5c0a397b7bff9ffd1dd6fa35edd78d27"},
-    {file = "pyopenms-3.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:020ff04aeb7dd36d45b366fb2e6a8db35217a97e9d773cebff65d7aa458f3d89"},
-    {file = "pyopenms-3.2.0-cp39-cp39-macosx_13_0_x86_64.whl", hash = "sha256:726e291dcf7c172e679d4c6205230ba1d531cd02cd659f666a3d9ad4277f98b0"},
-    {file = "pyopenms-3.2.0-cp39-cp39-macosx_14_0_arm64.whl", hash = "sha256:bb6bd26c0e452b001ef2739c26fd23027544da70a0ab246a241530b5560359e3"},
-    {file = "pyopenms-3.2.0-cp39-cp39-manylinux_2_28_x86_64.whl", hash = "sha256:6bbd862712d8c89b3dcfd10c3819ebf9728a3fd7842bbeb5ae9479aa1fbcfb6d"},
-    {file = "pyopenms-3.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:32bf1f0e61187136f4024b6a05826397ff69309e85564faa8b63c8c627338919"},
+    {file = "pyopenms-3.0.0-1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:544931add5e1fe145dae0a69e44ef0cd7e86ef256595880a3392a4da91f941a3"},
+    {file = "pyopenms-3.0.0-1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ef841a5067dea49d64699872ed0fb516ecc8cfc42b1cbd99bdee31b94184d311"},
+    {file = "pyopenms-3.0.0-1-cp310-cp310-win_amd64.whl", hash = "sha256:e934c076afbde395dd8a1b34de724ab299a1049f0c8fb44aba2456f9624ab85e"},
+    {file = "pyopenms-3.0.0-1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:57c9ae1e3fc8b0f68ad8965ea50819d53c50a5cdc6c93ea5a018dc8563ec94ef"},
+    {file = "pyopenms-3.0.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4dceb72eea5eb718740f8fe47fe52de56f2c55b2cf963954c688e078c3183d45"},
+    {file = "pyopenms-3.0.0-1-cp311-cp311-win_amd64.whl", hash = "sha256:f01a7c25522c99e82e87f82ef77821db3e96d1e030956b66e668b2541964f839"},
+    {file = "pyopenms-3.0.0-1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:d170b4cfc62c78f7af4169454396eb6baa631340ff197069c8a9f2902cc4b69f"},
+    {file = "pyopenms-3.0.0-1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:23b8e17e1c6aa4bf6c23aa1efb77fef470a2fadb110dafee19a36eef3615a289"},
+    {file = "pyopenms-3.0.0-1-cp39-cp39-win_amd64.whl", hash = "sha256:5d4aa003f79a7305f97e835ea0eb5b6b77ebec10e37a10bc51f67f2deb75f405"},
+    {file = "pyopenms-3.0.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:922efd0071ceee81ab42a951de9cdcaecd91821201966abd9d2f28c5a1f846c7"},
+    {file = "pyopenms-3.0.0-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:9e07407a10e12d06288edc04ede5e8fcb5810db700edbcd76c1fa3e24ed12799"},
+    {file = "pyopenms-3.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:236937fae41bcac8965b0ffd232da9780b3ea179aba16cb3ae0b3d021474893b"},
+    {file = "pyopenms-3.0.0-cp310-cp310-win_amd64.whl", hash = "sha256:c5ce4d2eb98d3d01b643d4d107bd8d6c1fa04d634fd3f77a2070bd93c73c4d96"},
+    {file = "pyopenms-3.0.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:307d2b1d298be4b8ac9af235d045833cfad4725eb9e8fe5d70ec52cc4a42d9d2"},
+    {file = "pyopenms-3.0.0-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:96ba54f1b81322b84d29f6042d9cda92fa5eba271c3cf9a142a6f26e5bb7e074"},
+    {file = "pyopenms-3.0.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e730a7f647eb4132a1a982ad3522c6c61dc43f6aef955cca4b786f9ee25e37cb"},
+    {file = "pyopenms-3.0.0-cp311-cp311-win_amd64.whl", hash = "sha256:2da73fd5a086a856cd0ba44ea8b617b11e2df60873925d10ed7224bbee95fab6"},
+    {file = "pyopenms-3.0.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b4c0f8996ce8e1c5c413eea0de90d59091949da276c882dc03f21a6a7b897553"},
+    {file = "pyopenms-3.0.0-cp39-cp39-macosx_13_0_arm64.whl", hash = "sha256:31b44ee358f1aa3ccfbf5d011c49a09e4560618d3239aff674e0ee9aaa4d663e"},
+    {file = "pyopenms-3.0.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:98100fd54593b0aef50590caeba1f730e057dddbdf01f2e7e0304996047ed95b"},
+    {file = "pyopenms-3.0.0-cp39-cp39-win_amd64.whl", hash = "sha256:5ea5e11eeef9f481fd835f367362ef5d3dc6945420f81f93b2afdf68ec9d8f1d"},
 ]
 
 [package.dependencies]
 matplotlib = ">=3.5"
-numpy = "<=1.26.4"
+numpy = "*"
 pandas = "*"
 
 [[package]]
@@ -2964,13 +2969,13 @@ test = ["array-api-strict", "asv", "gmpy2", "hypothesis (>=6.30)", "mpmath", "po
 
 [[package]]
 name = "setuptools"
-version = "75.7.0"
+version = "75.8.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "setuptools-75.7.0-py3-none-any.whl", hash = "sha256:84fb203f278ebcf5cd08f97d3fb96d3fbed4b629d500b29ad60d11e00769b183"},
-    {file = "setuptools-75.7.0.tar.gz", hash = "sha256:886ff7b16cd342f1d1defc16fc98c9ce3fde69e087a4e1983d7ab634e5f41f4f"},
+    {file = "setuptools-75.8.0-py3-none-any.whl", hash = "sha256:e3982f444617239225d675215d51f6ba05f845d4eec313da4418fdbb56fb27e3"},
+    {file = "setuptools-75.8.0.tar.gz", hash = "sha256:c5afc8f407c626b8313a86e10311dd3f661c6cd9c09d4bf8c15c0e11f9f2b0e6"},
 ]
 
 [package.extras]
@@ -3771,4 +3776,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9.0,<3.11.0"
-content-hash = "cd6a301c3fd571d757ada6edbe8c4c5d58cd527b013718dce0f938006c4a4d28"
+content-hash = "eace3ba6e000257ae6a6abd371c088019a95f229e9709b2a567cc9a28106f308"
