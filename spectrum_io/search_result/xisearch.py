@@ -43,46 +43,109 @@ class Xisearch(SearchResults):
             raise NotImplementedError("TMT is not supported for XIsearch")
 
         logger.info("Reading search results file...")
-        columns_to_read = [
-            "run_name",
-            "scan_number",
-            "precursor_mass",
-            "precursor_charge",
-            "crosslinker_name",
-            "decoy_p1",
-            "base_sequence_p1",
-            "sequence_p1",
-            "sequence_p2",
-            "start_pos_p1",
-            "start_pos_p2",
-            "aa_len_p1",
-            "link_pos_p1",
-            "linked_aa_p1",
-            "mods_p1",
-            "mod_pos_p1",
-            "protein_p1",
-            "decoy_p2",
-            "base_sequence_p2",
-            "aa_len_p2",
-            "link_pos_p2",
-            "linked_aa_p2",
-            "mods_p2",
-            "mod_pos_p2",
-            "protein_p2",
-            "linear",
-            "match_score",
-        ]
+        # assume xiSEARCH2 style
+        try:
+            columns_to_read = [
+                "run_name",
+                "scan_number",
+                "precursor_mass",
+                "precursor_charge",
+                "crosslinker_name",
+                "decoy_p1",
+                "base_sequence_p1",
+                "sequence_p1",
+                "sequence_p2",
+                "start_pos_p1",
+                "start_pos_p2",
+                "aa_len_p1",
+                "link_pos_p1",
+                "linked_aa_p1",
+                "mods_p1",
+                "mod_pos_p1",
+                "protein_p1",
+                "decoy_p2",
+                "base_sequence_p2",
+                "aa_len_p2",
+                "link_pos_p2",
+                "linked_aa_p2",
+                "mods_p2",
+                "mod_pos_p2",
+                "protein_p2",
+                "linear",
+                "match_score",
+            ]
 
-        converters = {
-            "mods_p1": str,
-            "mods_p2": str,
-            "mod_pos_p1": str,
-            "mod_pos_p2": str,
-            "start_pos_p1": str,
-            "start_pos_p2": str,
-        }
+            converters = {
+                "mods_p1": str,
+                "mods_p2": str,
+                "mod_pos_p1": str,
+                "mod_pos_p2": str,
+                "start_pos_p1": str,
+                "start_pos_p2": str,
+            }
 
-        self.results = pd.read_csv(self.path, sep="\t", usecols=columns_to_read, converters=converters)
+            self.results = pd.read_csv(self.path, sep="\t", usecols=columns_to_read, converters=converters)
+        except ValueError:
+            # assume xiSEARCH1 style
+            column_mapping = {
+                "Run": "run_name",
+                "Scan": "scan_number",
+                "PrecursorMass": "precursor_mass",
+                "PrecoursorCharge": "precursor_charge",
+                "Crosslinker": "crosslinker_name",
+                "BasePeptide1": "base_sequence_p1",
+                "Peptide1": "sequence_p1",
+                "Peptide2": "sequence_p2",
+                "Start1": "start_pos_p1",
+                "Start2": "start_pos_p2",
+                "LengthPeptide1": "aa_len_p1",
+                "Link1": "link_pos_p1",
+                "Linked AminoAcid 1": "linked_aa_p1",
+                "Modifications1": "mods_p1",
+                "ModificationPositions1": "mod_pos_p1",
+                "Protein1": "protein_p1",
+                "Protein2decoy": "decoy_p2",
+                "BasePeptide2": "base_sequence_p2",
+                "LengthPeptide2": "aa_len_p2",
+                "Link2": "link_pos_p2",
+                "Linked AminoAcid 2": "linked_aa_p2",
+                "Modifications2": "mods_p2",
+                "ModificationPositions2": "mod_pos_p2",
+                "Protein2": "protein_p2",
+                "match score": "match_score",
+            }
+
+            converters = {
+                "Modifications1": str,
+                "Modifications2": str,
+                "ModificationPositions1": str,
+                "ModificationPositions2": str,
+                "Start1": str,
+                "Start2": str,
+            }
+            # read in the xi1 columns
+            # could be csv
+            try:
+                self.results = pd.read_csv(
+                    self.path, sep=",", usecols=[*column_mapping.keys(), "decoy"], converters=converters
+                )
+            except ValueError:
+                # or tsv
+                self.results = pd.read_csv(
+                    self.path, sep="\t", usecols=[*column_mapping.keys(), "decoy"], converters=converters
+                )
+
+            # convert ot xi2 column names
+            self.results.rename(columns=column_mapping, inplace=True)
+            # add the decoy columns
+            self.results["decoy_p1"] = self.results["decoy"] & (
+                self.results["protein_p1"].str.contains("REV_") | self.results["protein_p1"].str.contains("RAN_")
+            )
+            self.results["decoy_p2"] = self.results["decoy"] & (
+                self.results["protein_p2"].str.contains("REV_") | self.results["protein_p2"].str.contains("RAN_")
+            )
+            # flag linears
+            self.results["Linear"] = self.results["protein_p2"].isna()
 
         logger.info("Finished reading search results file.")
         # Standardize column names
