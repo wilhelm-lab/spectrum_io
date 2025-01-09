@@ -112,8 +112,8 @@ class Xisearch(SearchResults):
                 "Modifications2": "mods_p2",
                 "ModificationPositions2": "mod_pos_p2",
                 "Protein2": "protein_p2",
-                "match score": "match_score",  
-            }            
+                "match score": "match_score",
+            }
 
             converters = {
                 "Modifications1": str,
@@ -126,22 +126,26 @@ class Xisearch(SearchResults):
             # read in the xi1 columns
             # could be csv
             try:
-                self.results = pd.read_csv(self.path, sep=",", usecols=column_mapping.keys() + ['decoy'], converters=converters)
+                self.results = pd.read_csv(
+                    self.path, sep=",", usecols=[*column_mapping.keys(), "decoy"], converters=converters
+                )
             except ValueError:
                 # or tsv
-                self.results = pd.read_csv(self.path, sep="\t", usecols=column_mapping.keys() + ['decoy'], converters=converters)
+                self.results = pd.read_csv(
+                    self.path, sep="\t", usecols=[*column_mapping.keys(), "decoy"], converters=converters
+                )
 
             # convert ot xi2 column names
             self.results.rename(columns=column_mapping, inplace=True)
             # add the decoy columns
-            self.results['decoy_p1'] = self.results['decoy'] &\
-                (self.results['protein_p1'].str.contains('REV_') |
-                 self.results['protein_p1'].str.contains('RAN_'))
-            self.results['decoy_p2'] = self.results['decoy'] &\
-                (self.results['protein_p2'].str.contains('REV_') |
-                 self.results['protein_p2'].str.contains('RAN_'))
+            self.results["decoy_p1"] = self.results["decoy"] & (
+                self.results["protein_p1"].str.contains("REV_") | self.results["protein_p1"].str.contains("RAN_")
+            )
+            self.results["decoy_p2"] = self.results["decoy"] & (
+                self.results["protein_p2"].str.contains("REV_") | self.results["protein_p2"].str.contains("RAN_")
+            )
             # flag linears
-            self.results['Linear'] = self.results['protein_p2'].isna()
+            self.results["Linear"] = self.results["protein_p2"].isna()
 
         logger.info("Finished reading search results file.")
         # Standardize column names
