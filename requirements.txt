@@ -65,7 +65,7 @@ pluggy==1.5.0 ; python_full_version >= "3.9.0" and python_full_version < "3.11.0
 pre-commit-hooks==5.0.0 ; python_full_version >= "3.9.0" and python_full_version < "3.11.0"
 pre-commit==4.0.1 ; python_version >= "3.9" and python_full_version < "3.11.0"
 psutil==6.1.1 ; python_full_version >= "3.9.0" and python_full_version < "3.11.0"
-pyarrow==18.1.0 ; python_version >= "3.9" and python_full_version < "3.11.0"
+pyarrow==19.0.1 ; python_version >= "3.9" and python_full_version < "3.11.0"
 pycodestyle==2.12.1 ; python_full_version >= "3.9.0" and python_full_version < "3.11.0"
 pycparser==2.22 ; python_version >= "3.9" and python_full_version < "3.11.0" and platform_python_implementation != "PyPy"
 pydantic-core==2.23.4 ; python_full_version >= "3.9.0" and python_full_version < "3.11.0"
