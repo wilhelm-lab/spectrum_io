@@ -137,6 +137,6 @@ def write_dataset(
                     f.create_dataset(f"{group_name}/index", data=index, compression=compression)
         else:
             raise AssertionError("Only pd.DataFrame and scipy.sparse.spmatrix are supported." + type(data))
-        logger.info(f"Data {'appended' if mode=='a' else 'written'} to {path}")
+        logger.info(f"Data {'appended' if mode == 'a' else 'written'} to {path}")
     except Exception as e:
         logger.exception(e)
