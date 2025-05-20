@@ -12,13 +12,15 @@ packages = [
     { include = "spectrum_io" },
 ]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 
 
 [tool.poetry.dependencies]
-python = ">=3.9.0,<3.11.0"
+python = ">=3.10,<3.14.0"
 click = ">=8.0.0"
 rich = ">=10.3.0"
 PyYAML = ">=5.4.1"
@@ -29,12 +31,12 @@ pyarrow = ">=16.0.0"
 pymzml = "^2.5.0"
 pyteomics = "^4.3.3"
 lxml= '>=4.5.2,<6.0.0'
-spectrum-fundamentals = ">=0.7.9,<0.8.0"
+spectrum-fundamentals = ">=0.8.0,<0.9.0"
 alphatims = "^1.0.8"
 sortedcontainers = "^2.4.0"
 pyopenms = "==3.0.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = ">=6.2.3"
 coverage = {extras = ["toml"], version = ">=5.3"}
 safety = ">=1.9.0"
@@ -55,7 +57,6 @@ pre-commit-hooks = ">=4.0.1"
 sphinx-rtd-theme = ">=0.5.0"
 sphinx-click = ">=3.0.0"
 Pygments = ">=2.8.1"
-types-pkg-resources = ">=0.1.2"
 types-requests = ">=2.25.2"
 types-attrs = ">=19.1.0"
 sphinx-rtd-dark-mode = ">=1.2.3"
@@ -65,9 +66,6 @@ pyupgrade = ">=2.31.0"
 
 [tool.poetry.scripts]
 spectrum_io = "spectrum_io.__main__:main"
-
-[tool.poetry.group.dev.dependencies]
-sphinx-autodoc-typehints = "^2.2.2"
 
 [tool.black]
 line-length = 120
