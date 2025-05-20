@@ -25,7 +25,7 @@ def _assemble_arg_list(
 ) -> List[Union[str, Path]]:
     exec_arg_list: List[Union[str, Path]] = [
         thermo_exe,
-        f"--msLevel={','.join([str(l) for l in ms_level])}",
+        f"--msLevel={','.join([str(level) for level in ms_level])}",
         "-i",
         input_path.resolve(),
         "-b",
