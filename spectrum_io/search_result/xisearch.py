@@ -257,6 +257,8 @@ class Xisearch(SearchResults):
         df = df[~df["mods_p2"].str.contains("hyd", na=False)]
         df = df[~df["mods_p1"].str.contains("->", na=False)]
         df = df[~df["mods_p2"].str.contains("->", na=False)]
+        df = df[df["mods_p1"].apply(lambda s: s == "" or all(m in ["cm","ox"] for m in s.split(";"))) & 
+        df["mods_p2"].apply(lambda s: s == "" or all(m in ["cm","ox"] for m in s.split(";")))]
 
         self.results = df
 
