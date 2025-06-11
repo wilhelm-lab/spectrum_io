@@ -41,7 +41,7 @@ class Xisearch(SearchResults):
         """
         if tmt_label != "":
             raise NotImplementedError("TMT is not supported for XIsearch")
-        
+
         logger.info("Reading search results file...")
         # assume xiSEARCH2 style
         try:
@@ -159,35 +159,82 @@ class Xisearch(SearchResults):
             self.results["sequence_p2"] = self.results["sequence_p2"].apply(
                 lambda x: x.replace("Ccm", "cmC").replace("Mox", "oxM") if isinstance(x, str) else x
             )
-            self.results["mods_p1"] = self.results["mods_p1"].apply(lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x)
-            self.results["mods_p2"] = self.results["mods_p2"].apply(lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x)
+            self.results["mods_p1"] = self.results["mods_p1"].apply(
+                lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x
+            )
+            self.results["mods_p2"] = self.results["mods_p2"].apply(
+                lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x
+            )
             self.results[["mods_p1", "mod_pos_p1"]] = self.results.apply(
-                lambda row: pd.Series([
-                    ";".join(filter(None, [
-                        row["mods_p1"] if pd.notna(row["mods_p1"]) else "",
-                        ";".join(["cm"] * row["base_sequence_p1"].count("C")) if pd.notna(row["base_sequence_p1"]) else ""
-                    ])),
-                    ";".join(filter(None, [
-                        row["mod_pos_p1"] if pd.notna(row["mod_pos_p1"]) else "",
-                        ";".join([str(i + 1) for i, aa in enumerate(row["base_sequence_p1"]) if aa == "C"]) if pd.notna(row["base_sequence_p1"]) else ""
-                    ]))
-                ]),
-                axis=1
+                lambda row: pd.Series(
+                    [
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mods_p1"] if pd.notna(row["mods_p1"]) else "",
+                                    (
+                                        ";".join(["cm"] * row["base_sequence_p1"].count("C"))
+                                        if pd.notna(row["base_sequence_p1"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mod_pos_p1"] if pd.notna(row["mod_pos_p1"]) else "",
+                                    (
+                                        ";".join(
+                                            [str(i + 1) for i, aa in enumerate(row["base_sequence_p1"]) if aa == "C"]
+                                        )
+                                        if pd.notna(row["base_sequence_p1"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+                axis=1,
             )
             self.results[["mods_p2", "mod_pos_p2"]] = self.results.apply(
-                lambda row: pd.Series([
-                    ";".join(filter(None, [
-                        row["mods_p2"] if pd.notna(row["mods_p2"]) else "",
-                        ";".join(["cm"] * row["base_sequence_p2"].count("C")) if pd.notna(row["base_sequence_p2"]) else ""
-                    ])),
-                    ";".join(filter(None, [
-                        row["mod_pos_p2"] if pd.notna(row["mod_pos_p2"]) else "",
-                        ";".join([str(i + 1) for i, aa in enumerate(row["base_sequence_p2"]) if aa == "C"]) if pd.notna(row["base_sequence_p2"]) else ""
-                    ]))
-                ]),
-                axis=1
+                lambda row: pd.Series(
+                    [
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mods_p2"] if pd.notna(row["mods_p2"]) else "",
+                                    (
+                                        ";".join(["cm"] * row["base_sequence_p2"].count("C"))
+                                        if pd.notna(row["base_sequence_p2"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mod_pos_p2"] if pd.notna(row["mod_pos_p2"]) else "",
+                                    (
+                                        ";".join(
+                                            [str(i + 1) for i, aa in enumerate(row["base_sequence_p2"]) if aa == "C"]
+                                        )
+                                        if pd.notna(row["base_sequence_p2"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+                axis=1,
             )
-            
 
         logger.info("Finished reading search results file.")
         # Standardize column names
@@ -293,7 +340,7 @@ class Xisearch(SearchResults):
         df["Modifications_B"] = df["mods_p2"]
         df["CROSSLINKER_POSITION_A"] = df["link_pos_p1"]
         df["CROSSLINKER_POSITION_B"] = df["link_pos_p2"]
-        cols = ['link_pos_p1', 'link_pos_p2', 'CROSSLINKER_POSITION_A', 'CROSSLINKER_POSITION_B']
+        cols = ["link_pos_p1", "link_pos_p2", "CROSSLINKER_POSITION_A", "CROSSLINKER_POSITION_B"]
         df[cols] = df[cols].astype(int)
         df["ModificationPositions1"] = df["mod_pos_p1"]
         df["ModificationPositions2"] = df["mod_pos_p2"]
