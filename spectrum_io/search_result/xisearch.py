@@ -145,7 +145,96 @@ class Xisearch(SearchResults):
                 self.results["protein_p2"].str.contains("REV_") | self.results["protein_p2"].str.contains("RAN_")
             )
             # flag linears
-            self.results["Linear"] = self.results["protein_p2"].isna()
+            self.results["linear"] = self.results["protein_p2"].isna()
+            # Convert modification and sequence style of xi1 to xi2
+            self.results["sequence_p1"] = self.results["sequence_p1"].apply(
+                lambda x: x.split(".")[1] if isinstance(x, str) and len(x.split(".")) == 3 else x
+            )
+            self.results["sequence_p2"] = self.results["sequence_p2"].apply(
+                lambda x: x.split(".")[1] if isinstance(x, str) and len(x.split(".")) == 3 else x
+            )
+            self.results["sequence_p1"] = self.results["sequence_p1"].apply(
+                lambda x: x.replace("Ccm", "cmC").replace("Mox", "oxM") if isinstance(x, str) else x
+            )
+            self.results["sequence_p2"] = self.results["sequence_p2"].apply(
+                lambda x: x.replace("Ccm", "cmC").replace("Mox", "oxM") if isinstance(x, str) else x
+            )
+            self.results["mods_p1"] = self.results["mods_p1"].apply(
+                lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x
+            )
+            self.results["mods_p2"] = self.results["mods_p2"].apply(
+                lambda x: x.replace("Mox", "ox") if isinstance(x, str) else x
+            )
+            self.results[["mods_p1", "mod_pos_p1"]] = self.results.apply(
+                lambda row: pd.Series(
+                    [
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mods_p1"] if pd.notna(row["mods_p1"]) else "",
+                                    (
+                                        ";".join(["cm"] * row["base_sequence_p1"].count("C"))
+                                        if pd.notna(row["base_sequence_p1"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mod_pos_p1"] if pd.notna(row["mod_pos_p1"]) else "",
+                                    (
+                                        ";".join(
+                                            [str(i + 1) for i, aa in enumerate(row["base_sequence_p1"]) if aa == "C"]
+                                        )
+                                        if pd.notna(row["base_sequence_p1"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+                axis=1,
+            )
+            self.results[["mods_p2", "mod_pos_p2"]] = self.results.apply(
+                lambda row: pd.Series(
+                    [
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mods_p2"] if pd.notna(row["mods_p2"]) else "",
+                                    (
+                                        ";".join(["cm"] * row["base_sequence_p2"].count("C"))
+                                        if pd.notna(row["base_sequence_p2"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                        ";".join(
+                            filter(
+                                None,
+                                [
+                                    row["mod_pos_p2"] if pd.notna(row["mod_pos_p2"]) else "",
+                                    (
+                                        ";".join(
+                                            [str(i + 1) for i, aa in enumerate(row["base_sequence_p2"]) if aa == "C"]
+                                        )
+                                        if pd.notna(row["base_sequence_p2"])
+                                        else ""
+                                    ),
+                                ],
+                            )
+                        ),
+                    ]
+                ),
+                axis=1,
+            )
 
         logger.info("Finished reading search results file.")
         # Standardize column names
@@ -154,7 +243,6 @@ class Xisearch(SearchResults):
         self.filter_valid_prosit_sequences()
         # df = Xisearch._filter_duplicates(df)
         self.results = Xisearch._fdr_group(self.results, fdr_group_col=None)
-
         return self.results
 
     def filter_xisearch_result(self):
@@ -165,8 +253,14 @@ class Xisearch(SearchResults):
         df = df[~df["linear"]]
         df = df[df["linked_aa_p1"].notna() & df["linked_aa_p1"].str.contains("K")]
         df = df[df["linked_aa_p2"].notna() & df["linked_aa_p2"].str.contains("K")]
-        df = df[~df["mods_p1"].str.contains("dsso-hyd", na=False)]
-        df = df[~df["mods_p2"].str.contains("dsso-hyd", na=False)]
+        df = df[~df["mods_p1"].str.contains("hyd", na=False)]
+        df = df[~df["mods_p2"].str.contains("hyd", na=False)]
+        df = df[~df["mods_p1"].str.contains("->", na=False)]
+        df = df[~df["mods_p2"].str.contains("->", na=False)]
+        df = df[
+            df["mods_p1"].apply(lambda s: s == "" or all(m in ["cm", "ox"] for m in s.split(";")))
+            & df["mods_p2"].apply(lambda s: s == "" or all(m in ["cm", "ox"] for m in s.split(";")))
+        ]
 
         self.results = df
 
@@ -234,9 +328,9 @@ class Xisearch(SearchResults):
         :param ptm_sites: possible sites that the ptm can exist on
         """
         df = self.results
-        df["crosslinker_name"] = df["crosslinker_name"].replace(to_replace="*", value="DSSO")
+        crosslinker = df.loc[df["crosslinker_name"] != "*", "crosslinker_name"].dropna().iloc[0]
+        df["crosslinker_name"] = crosslinker
         df["decoy"] = df["decoy_p1"] | df["decoy_p2"]
-        df["run_name"] = df["run_name"].str.replace("-", "_")
         df["RAW_FILE"] = df["run_name"]
         df["MASS"] = df["precursor_mass"]
         df["PRECURSOR_CHARGE"] = df["precursor_charge"]
@@ -250,6 +344,8 @@ class Xisearch(SearchResults):
         df["Modifications_B"] = df["mods_p2"]
         df["CROSSLINKER_POSITION_A"] = df["link_pos_p1"]
         df["CROSSLINKER_POSITION_B"] = df["link_pos_p2"]
+        cols = ["link_pos_p1", "link_pos_p2", "CROSSLINKER_POSITION_A", "CROSSLINKER_POSITION_B"]
+        df[cols] = df[cols].astype(int)
         df["ModificationPositions1"] = df["mod_pos_p1"]
         df["ModificationPositions2"] = df["mod_pos_p2"]
         df["PEPTIDE_LENGTH_A"] = df["aa_len_p1"]
