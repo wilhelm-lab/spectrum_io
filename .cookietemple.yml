@@ -15,5 +15,5 @@ full_name: Mario Picciani
 email: mario.picciani@tum.de
 project_name: spectrum_io
 project_short_description: IO related functionalities for oktoberfest.
-version: 0.7.0
+version: 0.8.0
 license: MIT
