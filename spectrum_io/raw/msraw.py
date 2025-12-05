@@ -169,9 +169,19 @@ class MSRaw:
                     if spec.ms_level != 2:
                         continue  # filter out ms1 spectra if there are any
                     key = f"{file_name}_{spec.ID}"
+
                     scan = spec.get_element_by_path(["scanList", "scan"])[0]
                     instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                     activation = spec.get_element_by_path(["precursorList", "precursor", "activation"])[0]
+                    selected_ion = spec.get_element_by_path(["precursorList", "precursor", "selectedIonList"])[0]
+
+                    for cv_param in selected_ion:
+                        name = cv_param.get("name")
+                        if name == "charge state":
+                            charge = int(cv_param.get("value"))
+                        if name == "selected ion m/z":
+                            precursor_mz = float(cv_param.get("value"))
+
                     fragmentation = "unknown"
                     collision_energy = 0.0
                     for cv_param in activation:
@@ -185,6 +195,7 @@ class MSRaw:
                             fragmentation = "CID"
                         else:
                             fragmentation = name
+
                     scan_window = scan.find(f".//{namespace}scanWindow")
                     scan_lower_limit = float(
                         scan_window.find(f'./{namespace}cvParam[@accession="MS:1000501"]').get("value")
@@ -204,6 +215,8 @@ class MSRaw:
                         fragmentation,
                         collision_energy,
                         instrument_name,
+                        charge,
+                        precursor_mz,
                     ]
                 data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)

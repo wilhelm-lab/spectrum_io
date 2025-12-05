@@ -127,6 +127,9 @@ class MSFragger(SearchResults):
             )
             df = df.explode("modified_peptide", ignore_index=True)
 
+        df["peptide"] = df["peptide"].str.replace(r"I(?![^[]*\])", "L", regex=True)
+        df["modified_peptide"] = df["modified_peptide"].str.replace(r"I(?![^[]*\])", "L", regex=True)
+
         df.rename(
             columns={
                 "assumed_charge": "PRECURSOR_CHARGE",

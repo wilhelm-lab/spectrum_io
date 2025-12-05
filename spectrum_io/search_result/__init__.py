@@ -8,3 +8,4 @@ from .openms import OpenMS
 from .sage import Sage
 from .scout import Scout
 from .xisearch import Xisearch
+from .casanovo import Casanovo 
