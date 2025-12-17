@@ -166,20 +166,3 @@ class MSFragger(SearchResults):
                 "PROTEINS",
             ]
         ]
-        """
-        return df[
-            [
-                "RAW_FILE",
-                "SCAN_NUMBER",
-                "MODIFIED_SEQUENCE",
-                "PRECURSOR_CHARGE",
-                "SCAN_EVENT_NUMBER",
-                "MASS",
-                "SCORE",
-                "REVERSE",
-                "SEQUENCE",
-                "PEPTIDE_LENGTH",
-                "PROTEINS",
-            ]
-        ]
-        """
