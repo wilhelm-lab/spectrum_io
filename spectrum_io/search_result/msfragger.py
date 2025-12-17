@@ -138,10 +138,35 @@ class MSFragger(SearchResults):
                 "protein": "PROTEINS",
                 "precursor_neutral_mass": "MASS",
                 "spectrum": "RAW_FILE",
+                "num_matched_ions": "Annotated_Ions_MSF",
+                "tot_num_ions": "Total_Ions_MSF",
+                "massdiff": "MZ_diff_MSF",
+                "nextscore": "NEXT_SCORE",
+                "expect": "EXPECT",
+                             
             },
             inplace=True,
         )
-        self.results = df
+        self.results = df[
+            [
+                "RAW_FILE",
+                "SCAN_NUMBER",
+                "MODIFIED_SEQUENCE",
+                "PRECURSOR_CHARGE",
+                "SCAN_EVENT_NUMBER",
+                "MASS",
+                "SCORE",
+                "Annotated_Ions_MSF",
+                "Total_Ions_MSF",
+                "MZ_diff_MSF",
+                "EXPECT",
+                "NEXT_SCORE",
+                "REVERSE",
+                "SEQUENCE",
+                "PEPTIDE_LENGTH",
+                "PROTEINS",
+            ]
+        ]
         """
         return df[
             [
