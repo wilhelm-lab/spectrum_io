@@ -143,7 +143,6 @@ class MSFragger(SearchResults):
                 "massdiff": "MZ_diff_MSF",
                 "nextscore": "NEXT_SCORE",
                 "expect": "EXPECT",
-                             
             },
             inplace=True,
         )
