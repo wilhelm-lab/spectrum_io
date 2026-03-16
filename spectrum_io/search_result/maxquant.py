@@ -167,7 +167,21 @@ class MaxQuant(SearchResults):
             },
             inplace=True,
         )
-        self.results = df
+        self.results = df[
+            [
+                "RAW_FILE",
+                "SCAN_NUMBER",
+                "MODIFIED_SEQUENCE",
+                "PRECURSOR_CHARGE",
+                "SCAN_EVENT_NUMBER",
+                "MASS",
+                "SCORE",
+                "REVERSE",
+                "SEQUENCE",
+                "PEPTIDE_LENGTH",
+                "PROTEINS",
+            ]
+        ]
 
     def generate_internal_timstof_metadata(self):
         """
