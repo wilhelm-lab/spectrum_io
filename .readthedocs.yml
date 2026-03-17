@@ -19,5 +19,6 @@ formats: all
 # Install the package with Poetry so dynamic version reading works
 python:
     install:
+        - requirements: docs/requirements.txt
         - method: pip
           path: .
