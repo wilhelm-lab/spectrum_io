@@ -2509,23 +2509,6 @@ docs = ["furo (>=2025.9.25)"]
 testing = ["covdefaults (>=2.3)", "coverage (>=7.10.7)", "defusedxml (>=0.7.1)", "diff-cover (>=9.7.1)", "pytest (>=8.4.2)", "pytest-cov (>=7)", "sphobjinv (>=2.3.1.3)", "typing-extensions (>=4.15)"]
 
 [[package]]
-name = "sphinx-click"
-version = "6.0.0"
-description = "Sphinx extension that automatically documents click applications"
-optional = false
-python-versions = ">=3.8"
-groups = ["dev"]
-files = [
-    {file = "sphinx_click-6.0.0-py3-none-any.whl", hash = "sha256:1e0a3c83bcb7c55497751b19d07ebe56b5d7b85eb76dd399cf9061b497adc317"},
-    {file = "sphinx_click-6.0.0.tar.gz", hash = "sha256:f5d664321dc0c6622ff019f1e1c84e58ce0cecfddeb510e004cf60c2a3ab465b"},
-]
-
-[package.dependencies]
-click = ">=8.0"
-docutils = "*"
-sphinx = ">=4.0"
-
-[[package]]
 name = "sphinx-rtd-theme"
 version = "3.0.2"
 description = "Read the Docs theme for Sphinx"
@@ -3066,4 +3049,4 @@ tests-strict = ["pytest (==4.6.0) ; python_version < \"3.10.0\" and python_versi
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.14"
-content-hash = "07935f9fb31026eb5b6017fb6f0afb87cfd35b144b0aad62ac4dce04bbaa2c69"
+content-hash = "8301751f8e39246c5d18adabdb089c888da5be17ae0115dc0c38a521168668cc"
