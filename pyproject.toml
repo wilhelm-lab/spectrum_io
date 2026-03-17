@@ -28,7 +28,7 @@ Documentation = "https://spectrum-io.readthedocs.io"
 
 [tool.poetry]
 name = "spectrum_io"
-version = "0.8.0"
+version = "0.9.0"
 description = "IO related functionalities for oktoberfest."
 packages = [
     { include = "spectrum_io" },
