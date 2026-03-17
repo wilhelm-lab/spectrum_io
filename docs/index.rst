@@ -19,6 +19,7 @@
    usage
    API
    contributing
+   releasing
    reference
 
 .. _github: https://github.com/wilhelm-lab/spectrum_io

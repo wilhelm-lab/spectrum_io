@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional
 
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES

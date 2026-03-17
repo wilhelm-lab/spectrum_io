@@ -4,27 +4,12 @@ import logging
 import re
 from abc import abstractmethod
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 
 from spectrum_io.file import csv
 
 logger = logging.getLogger(__name__)
-
-
-COLUMNS = [
-    "RAW_FILE",
-    "SCAN_NUMBER",
-    "MODIFIED_SEQUENCE",
-    "PRECURSOR_CHARGE",
-    "MASS",
-    "SCORE",
-    "REVERSE",
-    "SEQUENCE",
-    "PEPTIDE_LENGTH",
-    "PROTEINS",
-]
 
 
 def parse_mods(mods: dict[str, int]) -> dict[str, str]:
@@ -57,7 +42,7 @@ def parse_mods(mods: dict[str, int]) -> dict[str, str]:
             raise TypeError(f"UNIMOD id {v} for replacement {k} not understood. UNIMOD IDs must be integers.")
         if not isinstance(k, str):
             raise TypeError(
-                f"Replacement {k} not understood. Replacements must be strings and follow " f"the pattern {key_pattern}"
+                f"Replacement {k} not understood. Replacements must be strings and follow the pattern {key_pattern}"
             )
         if k[0].isalpha():
             unimod_regex_map[re.escape(k)] = f"{k[0].upper()}[UNIMOD:{v}]"
@@ -136,10 +121,8 @@ class SearchResults:
             filtered_df = self.read_result(
                 tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
             )
-            if xl:
-                return filtered_df[:]  # Return all columns
-            else:
-                return filtered_df[COLUMNS]
+            return filtered_df
+
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -150,14 +133,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        if xl:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
-                :
-            ]
-        else:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
-                COLUMNS
-            ]
+        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         csv.write_file(df, out_path)
         return df
 

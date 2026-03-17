@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
 from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 from tqdm import tqdm
 
@@ -112,7 +110,6 @@ class MSFragger(SearchResults):
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
         df["peptide"] = internal_without_mods(df["modified_peptide"])
         if ptm_unimod_id != 0:
-
             # PTM permutation generation
             if ptm_unimod_id == 7:
                 allow_one_less_modification = True
@@ -138,12 +135,15 @@ class MSFragger(SearchResults):
                 "protein": "PROTEINS",
                 "precursor_neutral_mass": "MASS",
                 "spectrum": "RAW_FILE",
+                "num_matched_ions": "Annotated_Ions_MSF",
+                "tot_num_ions": "Total_Ions_MSF",
+                "massdiff": "MZ_diff_MSF",
+                "nextscore": "NEXT_SCORE",
+                "expect": "EXPECT",
             },
             inplace=True,
         )
-        self.results = df
-        """
-        return df[
+        self.results = df[
             [
                 "RAW_FILE",
                 "SCAN_NUMBER",
@@ -152,10 +152,14 @@ class MSFragger(SearchResults):
                 "SCAN_EVENT_NUMBER",
                 "MASS",
                 "SCORE",
+                "Annotated_Ions_MSF",
+                "Total_Ions_MSF",
+                "MZ_diff_MSF",
+                "EXPECT",
+                "NEXT_SCORE",
                 "REVERSE",
                 "SEQUENCE",
                 "PEPTIDE_LENGTH",
                 "PROTEINS",
             ]
         ]
-        """

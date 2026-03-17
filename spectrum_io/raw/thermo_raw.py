@@ -2,14 +2,14 @@ import logging
 import subprocess
 from pathlib import Path
 from sys import platform
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any
 
 from .msraw import MSRaw
 
 logger = logging.getLogger(__name__)
 
 
-def _type_check(var: Any, varname: str, types: Union[type, Tuple[type, ...]]):
+def _type_check(var: Any, varname: str, types: type | tuple[type, ...]):
     if isinstance(var, types):
         return
     if isinstance(types, type):
@@ -21,9 +21,9 @@ def _type_check(var: Any, varname: str, types: Union[type, Tuple[type, ...]]):
 
 
 def _assemble_arg_list(
-    input_path: Path, output_path: Path, ms_level: List[int], gzip: bool, thermo_exe: Path
-) -> List[Union[str, Path]]:
-    exec_arg_list: List[Union[str, Path]] = [
+    input_path: Path, output_path: Path, ms_level: list[int], gzip: bool, thermo_exe: Path
+) -> list[str | Path]:
+    exec_arg_list: list[str | Path] = [
         thermo_exe,
         f"--msLevel={','.join([str(level) for level in ms_level])}",
         "-i",
@@ -44,11 +44,11 @@ class ThermoRaw(MSRaw):
 
     @staticmethod
     def convert_raw_mzml(
-        input_path: Union[Path, str],
+        input_path: Path | str,
         gzip: bool = False,
-        ms_level: Union[int, List[int]] = 2,
-        output_path: Optional[Union[Path, str]] = None,
-        thermo_exe: Union[Path, str] = "ThermoRawFileParser.exe",
+        ms_level: int | list[int] = 2,
+        output_path: Path | str | None = None,
+        thermo_exe: Path | str = "ThermoRawFileParser.exe",
     ) -> Path:
         """Converts a ThermoRaw file to mzML.
 

@@ -1,8 +1,6 @@
 import logging
 import warnings
-from abc import abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
 from xml.etree import ElementTree
 
 import pandas as pd
@@ -13,7 +11,7 @@ from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 logger = logging.getLogger(__name__)
 
 
-def check_analyzer(mass_analyzers: Dict[str, str]) -> Dict[str, str]:
+def check_analyzer(mass_analyzers: dict[str, str]) -> dict[str, str]:
     """
     Convert mass analyzer accession ids to internal format.
 
@@ -34,7 +32,7 @@ def check_analyzer(mass_analyzers: Dict[str, str]) -> Dict[str, str]:
     return mass_analyzers
 
 
-def get_mass_analyzer(file_path: Path) -> Dict[str, str]:
+def get_mass_analyzer(file_path: Path) -> dict[str, str]:
     """
     Retrieve mass analyzer information from mzml file.
 
@@ -97,7 +95,7 @@ def get_mass_analyzer(file_path: Path) -> Dict[str, str]:
 class MSRaw:
     """Main to read mzml file and generate dataframe containing intensities and m/z values."""
 
-    def __init__(self, path: Optional[Union[str, Path]] = None, output_path: Optional[Union[str, Path]] = None):
+    def __init__(self, path: str | Path | None = None, output_path: str | Path | None = None):
         """
         Initialize a MSRaw object.
 
@@ -113,10 +111,10 @@ class MSRaw:
 
     @staticmethod
     def read_mzml(
-        source: Union[str, Path, List[Union[str, Path]]],
+        source: str | Path | list[str | Path],
         ext: str = "mzml",
         package: str = "pyteomics",
-        scanidx: Optional[List] = None,
+        scanidx: list | None = None,
         *args,
         **kwargs,
     ) -> pd.DataFrame:
@@ -145,7 +143,7 @@ class MSRaw:
         return data
 
     @staticmethod
-    def _read_mzml_pymzml(file_list: List[Path], scanidx: Optional[List] = None, *args, **kwargs) -> pd.DataFrame:
+    def _read_mzml_pymzml(file_list: list[Path], scanidx: list | None = None, *args, **kwargs) -> pd.DataFrame:
         data_dict = {}
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=ImportWarning)
@@ -210,7 +208,7 @@ class MSRaw:
         return data
 
     @staticmethod
-    def _read_mzml_pyteomics(file_list: List[Path], *args, **kwargs) -> pd.DataFrame:
+    def _read_mzml_pyteomics(file_list: list[Path], *args, **kwargs) -> pd.DataFrame:
         data_dict = {}
         for file_path in file_list:
             mass_analyzer = get_mass_analyzer(file_path)
@@ -262,7 +260,7 @@ class MSRaw:
         return data
 
     @staticmethod
-    def get_file_list(source: Union[str, Path, List[Union[str, Path]]], ext: str = "mzml") -> List[Path]:
+    def get_file_list(source: str | Path | list[str | Path], ext: str = "mzml") -> list[Path]:
         """
         Get list of files from source.
 

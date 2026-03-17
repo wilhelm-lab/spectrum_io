@@ -4,13 +4,13 @@ from multiprocessing import Queue
 from multiprocessing.managers import ValueProxy
 from pathlib import Path
 from sqlite3 import Connection
-from typing import IO, Dict, Optional, Union
+from typing import IO
 
 import numpy as np
 import pandas as pd
 
 
-def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
+def parse_mods(mods: dict[str, int]) -> dict[str, str]:
     """
     Parse provided mapping of custom modification pattern to ProForma standard.
 
@@ -40,7 +40,7 @@ def parse_mods(mods: Dict[str, int]) -> Dict[str, str]:
             raise TypeError(f"UNIMOD id {v} for replacement {k} not understood. UNIMOD IDs must be integers.")
         if not isinstance(k, str):
             raise TypeError(
-                f"Replacement {k} not understood. Replacements must be strings and follow " f"the pattern {key_pattern}"
+                f"Replacement {k} not understood. Replacements must be strings and follow the pattern {key_pattern}"
             )
         if k[0].isalpha():
             unimod_regex_map[re.escape(f"{k[0]}[UNIMOD:{v}]")] = k
@@ -61,16 +61,16 @@ class SpectralLibrary:
 
     @property
     @abstractmethod
-    def standard_mods(self) -> Dict[str, int]:
+    def standard_mods(self) -> dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         pass
 
     def __init__(
         self,
-        output_path: Union[str, Path],
+        output_path: str | Path,
         mode: str = "w",
         min_intensity_threshold: float = 5e-4,
-        chunksize: Optional[int] = None,
+        chunksize: int | None = None,
     ):
         """
         Initialize a SpectralLibrary obj.
@@ -91,7 +91,7 @@ class SpectralLibrary:
     def load(self):
         """Load predictions from hdf5 file."""
 
-    def write(self, *, custom_mods: Optional[Dict[str, int]] = None, **kwargs):
+    def write(self, *, custom_mods: dict[str, int] | None = None, **kwargs):
         """
         Write content to the output file.
 
@@ -107,7 +107,7 @@ class SpectralLibrary:
     def _get_handle(self):
         return open(self.out_path, self.mode)
 
-    def async_write(self, queue: Queue, progress: ValueProxy, custom_mods: Optional[Dict[str, int]] = None):
+    def async_write(self, queue: Queue, progress: ValueProxy, custom_mods: dict[str, int] | None = None):
         """
         Asynchronously write content to the output file from a queue.
 
@@ -127,9 +127,7 @@ class SpectralLibrary:
                 self._write(out, data=data, metadata=metadata, mods=parsed_mods)
                 progress.value += 1
 
-    def _fragment_filter_passed(
-        self, f_mz: Union[np.ndarray, float], f_int: Union[np.ndarray, float]
-    ) -> Union[np.ndarray, bool]:
+    def _fragment_filter_passed(self, f_mz: np.ndarray | float, f_int: np.ndarray | float) -> np.ndarray | bool:
         """
         Return if a fragment passes a common filter.
 
@@ -147,10 +145,10 @@ class SpectralLibrary:
     @abstractmethod
     def _write(
         self,
-        out: Union[IO, Connection],
-        data: Dict[str, np.ndarray],
+        out: IO | Connection,
+        data: dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        mods: Dict[str, str],
+        mods: dict[str, str],
     ):
         """
         Internal writer function.
@@ -169,5 +167,5 @@ class SpectralLibrary:
         pass
 
     @abstractmethod
-    def _initialize(self, out: Union[IO, Connection]):
+    def _initialize(self, out: IO | Connection):
         pass

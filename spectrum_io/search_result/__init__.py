@@ -8,3 +8,14 @@ from .openms import OpenMS
 from .sage import Sage
 from .scout import Scout
 from .xisearch import Xisearch
+
+__all__ = [
+    "Mascot",
+    "MaxQuant",
+    "MSAmanda",
+    "MSFragger",
+    "OpenMS",
+    "Sage",
+    "Scout",
+    "Xisearch",
+]

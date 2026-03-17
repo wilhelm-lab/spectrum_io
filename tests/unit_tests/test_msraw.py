@@ -2,9 +2,7 @@ import pickle
 import unittest
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 
 import spectrum_io.raw.msraw as msraw
 

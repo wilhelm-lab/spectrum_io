@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -137,7 +136,6 @@ class MaxQuant(SearchResults):
         df["Sequence"] = internal_without_mods(df["Modified sequence"])
         df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
         if ptm_unimod_id != 0:
-
             # PTM permutation generation
             if ptm_unimod_id == 7:
                 allow_one_less_modification = True
@@ -167,7 +165,21 @@ class MaxQuant(SearchResults):
             },
             inplace=True,
         )
-        self.results = df
+        self.results = df[
+            [
+                "RAW_FILE",
+                "SCAN_NUMBER",
+                "MODIFIED_SEQUENCE",
+                "PRECURSOR_CHARGE",
+                "SCAN_EVENT_NUMBER",
+                "MASS",
+                "SCORE",
+                "REVERSE",
+                "SEQUENCE",
+                "PEPTIDE_LENGTH",
+                "PROTEINS",
+            ]
+        ]
 
     def generate_internal_timstof_metadata(self):
         """
