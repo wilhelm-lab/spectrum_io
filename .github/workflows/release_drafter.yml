@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - development
-            - main # also refresh the draft after the version-bump PR merges to main
     pull_request_target:
         branches: [development]
         types: [opened, reopened, synchronize, edited]
