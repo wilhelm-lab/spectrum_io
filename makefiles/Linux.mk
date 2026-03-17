@@ -57,7 +57,7 @@ typecheck: ## run type checking with mypy
 	poetry run mypy spectrum_io
 
 test: ## run tests quickly with the default Python
-	poetry run pytest tests/
+	poetry run pytest
 
 check: format typecheck test ## run all checks (format, typecheck, test) - simulates CI
 	@echo "✓ All checks passed!"
