@@ -1,7 +1,6 @@
 import logging
 import threading
 from pathlib import Path
-from typing import List, Optional, Union
 
 import h5py
 import pandas as pd
@@ -16,7 +15,7 @@ INTENSITY_PRED_KEY = "pred_intensity"
 MZ_RAW_KEY = "raw_mz"
 
 
-def read_file(path: Union[str, Path], key: str) -> pd.DataFrame:
+def read_file(path: str | Path, key: str) -> pd.DataFrame:
     """
     Read hdf5 file and return dataframe with contents.
 
@@ -59,10 +58,10 @@ def thread_this(fn):
 
 @thread_this
 def write_file(
-    data_sets: List[Union[pd.DataFrame, scipy.sparse.spmatrix]],
+    data_sets: list[pd.DataFrame | scipy.sparse.spmatrix],
     path: str,
-    dataset_names: List[str],
-    column_names: Optional[List[Optional[List[str]]]] = None,
+    dataset_names: list[str],
+    column_names: list[list[str] | None] | None = None,
 ):
     """
     Writes several datasets (spectra) to hdf5 file.
@@ -74,7 +73,7 @@ def write_file(
     :raises TypeError: if data_set has an unexpected type
     """
     index = 0
-    for data_set, dataset_name in zip(data_sets, dataset_names):
+    for data_set, dataset_name in zip(data_sets, dataset_names, strict=False):
         if isinstance(data_set, pd.DataFrame):
             write_dataset(data_set, path, dataset_name)
         elif isinstance(data_set, scipy.sparse.spmatrix):
@@ -87,13 +86,13 @@ def write_file(
 
 
 def write_dataset(
-    data: Union[pd.DataFrame, scipy.sparse.spmatrix],
+    data: pd.DataFrame | scipy.sparse.spmatrix,
     path: str,
     dataset_name: str,
     mode: str = "w",
-    compression: Optional[Union[str, bool]] = True,
-    column_names: Optional[List[str]] = None,
-    index: Optional[List[str]] = None,
+    compression: str | bool | None = True,
+    column_names: list[str] | None = None,
+    index: list[str] | None = None,
 ):
     """
     Writes or appends dataset to an hdf5 file.

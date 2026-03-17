@@ -1,5 +1,5 @@
 from sqlite3 import Connection
-from typing import IO, Dict, Union
+from typing import IO
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ class MSP(SpectralLibrary):
     """Main to initialze a MSP obj."""
 
     @property
-    def standard_mods(self) -> Dict[str, int]:
+    def standard_mods(self) -> dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         return {
             "C,Carbamidomethyl": 4,
@@ -31,10 +31,10 @@ class MSP(SpectralLibrary):
 
     def _write(
         self,
-        out: Union[IO, Connection],
-        data: Dict[str, np.ndarray],
+        out: IO | Connection,
+        data: dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        mods: Dict[str, str],
+        mods: dict[str, str],
     ):
         # prepare metadata
         if isinstance(out, Connection):
@@ -56,7 +56,17 @@ class MSP(SpectralLibrary):
         vec_assemble = np.vectorize(MSP._assemble_fragment_string)
 
         for stripped_peptide, p_charge, p_mz, ce, pr_id, mod_fields, irt, f_mzs, f_ints, f_annots in zip(
-            stripped_peptides, p_charges, p_mzs, ces, pr_ids, mod_fieldss, irts, f_mzss, f_intss, f_annotss
+            stripped_peptides,
+            p_charges,
+            p_mzs,
+            ces,
+            pr_ids,
+            mod_fieldss,
+            irts,
+            f_mzss,
+            f_intss,
+            f_annotss,
+            strict=False,
         ):
             lines.append(f"Name: {stripped_peptide}/{p_charge}\nMW: {p_mz}\n")
             lines.append(
@@ -72,5 +82,5 @@ class MSP(SpectralLibrary):
             lines.extend(fragment_list)
         out.writelines(lines)
 
-    def _initialize(self, out: Union[IO, Connection]):
+    def _initialize(self, out: IO | Connection):
         pass
