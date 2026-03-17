@@ -1,10 +1,7 @@
-import io
 import unittest
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import pytest
 
 from spectrum_io.search_result.maxquant import MaxQuant
 
