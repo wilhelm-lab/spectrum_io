@@ -55,7 +55,6 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
     meta_value_keys: list[str] = []
     rows = []
     for peptide_id in pep_ids:
-
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
         # extract scan number
         scan_nr = _extract_scan_number(spectrum_id=spectrum_id)

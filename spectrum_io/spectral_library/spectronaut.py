@@ -1,7 +1,7 @@
 import re
 from itertools import chain, cycle
 from sqlite3 import Connection
-from typing import IO, Dict, Union
+from typing import IO
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ class Spectronaut(SpectralLibrary):
     # Check spectronaut folder for output format.
 
     @property
-    def standard_mods(self) -> Dict[str, int]:
+    def standard_mods(self) -> dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         return {
             "C[Carbamidomethyl (C)]": 4,
@@ -38,10 +38,10 @@ class Spectronaut(SpectralLibrary):
 
     def _write(
         self,
-        out: Union[IO, Connection],
-        data: Dict[str, np.ndarray],
+        out: IO | Connection,
+        data: dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        mods: Dict[str, str],
+        mods: dict[str, str],
     ):
         # prepare metadata
         if isinstance(out, Connection):
@@ -64,14 +64,14 @@ class Spectronaut(SpectralLibrary):
         vec_assemble = np.vectorize(Spectronaut._assemble_fragment_string)
 
         for f_ints, f_mzs, modseq, seq, p_charge, p_mz, irt, ce, pr_id, f_annots in zip(
-            f_intss, f_mzss, modseqs, seqs, p_charges, p_mzs, irts, ces, pr_ids, f_annotss
+            f_intss, f_mzss, modseqs, seqs, p_charges, p_mzs, irts, ces, pr_ids, f_annotss, strict=False
         ):
             cond = self._fragment_filter_passed(f_mzs, f_ints)
             line_start = [f"{modseq},{seq},{seq},{p_charge},{p_mz:.8f},{irt:.2f},{ce},{pr_id},"]
             fragment_list = vec_assemble(f_ints[cond], f_mzs[cond], f_annots[cond])
             out.writelines(chain.from_iterable(zip(cycle(line_start), fragment_list)))
 
-    def _initialize(self, out: Union[IO, Connection]):
+    def _initialize(self, out: IO | Connection):
         if isinstance(out, Connection):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")
         if self.mode == "w":

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.constants import MSFRAGGER_VAR_MODS
 from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
 from tqdm import tqdm
 
@@ -112,7 +110,6 @@ class MSFragger(SearchResults):
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
         df["peptide"] = internal_without_mods(df["modified_peptide"])
         if ptm_unimod_id != 0:
-
             # PTM permutation generation
             if ptm_unimod_id == 7:
                 allow_one_less_modification = True

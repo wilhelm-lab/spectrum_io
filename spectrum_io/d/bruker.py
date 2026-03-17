@@ -1,12 +1,9 @@
 import logging
-import os
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
 
 import alphatims
 import alphatims.bruker
 import alphatims.utils
-import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
@@ -15,7 +12,7 @@ from .masterSpectrum import MasterSpectrum
 logger = logging.getLogger(__name__)
 
 
-def binning(mzs: List[float], intensities: List[int], ignore_charges: bool) -> Tuple[List[float], List[float]]:
+def binning(mzs: list[float], intensities: list[int], ignore_charges: bool) -> tuple[list[float], list[float]]:
     """
     Perform binning on the input MasterSpectrum.
 
@@ -49,7 +46,7 @@ def aggregate_timstof(raw_spectra: pd.DataFrame) -> pd.DataFrame:
     :return: pd.DataFrame containing combined and processed spectra.
     """
     for i, (combined_intensities, combined_mzs) in tqdm(
-        enumerate(zip(raw_spectra["INTENSITIES"], raw_spectra["MZ"])),
+        enumerate(zip(raw_spectra["INTENSITIES"], raw_spectra["MZ"], strict=False)),
         total=len(raw_spectra),
         desc="Aggregating spectra",
     ):
@@ -90,7 +87,7 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
     data = alphatims.bruker.TimsTOF(str(hdf_file), slice_as_dataframe=False)
 
     raw_idx = []
-    for frames, precursors in zip(df_frame_group["FRAME"], df_frame_group["PRECURSOR"]):
+    for frames, precursors in zip(df_frame_group["FRAME"], df_frame_group["PRECURSOR"], strict=False):
         raw_idx.extend(data[frames, :, precursors])
 
     # read spectra
@@ -150,8 +147,8 @@ def read_timstof(hdf_file: Path, scan_to_precursor_map: pd.DataFrame) -> pd.Data
 
 
 def convert_d_hdf(
-    input_path: Union[Path, str],
-    output_path: Union[Path, str],
+    input_path: Path | str,
+    output_path: Path | str,
 ):
     """
     Convert a bruker d folder to hdf format.

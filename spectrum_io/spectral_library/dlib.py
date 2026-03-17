@@ -1,6 +1,6 @@
 import sqlite3
 import zlib
-from typing import IO, Dict, Union
+from typing import IO
 
 import numpy as np
 import pandas as pd
@@ -25,7 +25,7 @@ class DLib(SpectralLibrary):
     """Main to init a DLib obj."""
 
     @property
-    def standard_mods(self) -> Dict[str, int]:
+    def standard_mods(self) -> dict[str, int]:
         """Standard modifications that are always applied if not otherwise specified."""
         return {
             "M[+15.994915]": 35,
@@ -36,7 +36,7 @@ class DLib(SpectralLibrary):
             "K[+229.162932]": 737,
         }
 
-    def _initialize(self, out: Union[IO, sqlite3.Connection]):
+    def _initialize(self, out: IO | sqlite3.Connection):
         if isinstance(out, IO):
             raise TypeError("Not supported. Use msp/spectronaut if you want to write a text file.")
         if self.mode == "w":
@@ -65,7 +65,7 @@ class DLib(SpectralLibrary):
         i_lengths = []
 
         full_mask = self._fragment_filter_passed(fragmentmz, intensities)
-        for mz, i, mask in zip(fragmentmz, intensities, np.array(full_mask)):
+        for mz, i, mask in zip(fragmentmz, intensities, np.array(full_mask), strict=False):
             # mask to only existing peaks
             sort_index = np.argsort(mz[mask])
             masked_mz_ordered = mz[mask][sort_index]
@@ -137,10 +137,10 @@ class DLib(SpectralLibrary):
 
     def _write(
         self,
-        out: Union[IO, sqlite3.Connection],
-        data: Dict[str, np.ndarray],
+        out: IO | sqlite3.Connection,
+        data: dict[str, np.ndarray],
         metadata: pd.DataFrame,
-        mods: Dict[str, str],
+        mods: dict[str, str],
     ):
         if isinstance(out, IO):
             raise TypeError("Not supported. Use msp/spectronaut if you want to write a text file.")
@@ -164,7 +164,7 @@ class DLib(SpectralLibrary):
         masked_values = self._calculate_masked_values(f_mzss, f_intss)
 
         data_list = [*masked_values, p_charges, modseqs, seqs, irts, p_mzs]
-        entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list)))
+        entries = pd.DataFrame(dict(zip(DLIB_COL_NAMES, data_list, strict=False)))
         p2p = pd.DataFrame({"PeptideSeq": seqs, "ProteinAccession": pr_ids})
 
         out.execute("BEGIN")

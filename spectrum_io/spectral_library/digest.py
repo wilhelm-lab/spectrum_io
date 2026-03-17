@@ -4,9 +4,6 @@ import csv
 import itertools
 import logging
 import sys
-from typing import Dict, List
-
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -275,13 +272,13 @@ def read_fasta_maxquant(
     if special_aas is None:
         special_aas = ["K", "R"]
     if db not in ["target", "decoy", "concat"]:
-        sys.exit("unknown db mode: %s" % db)
+        sys.exit(f"unknown db mode: {db}")
 
     hasspecial_aas = len(special_aas) > 0
     with open(file_path) as fp:
         line = next(fp).rstrip()
         name = parse_id(line[1:])
-        sequence_lines: List[str] = []
+        sequence_lines: list[str] = []
         for line in itertools.chain(fp, [">"]):
             line = line.rstrip()
             if line.startswith(">"):
@@ -602,22 +599,12 @@ def has_miscleavage(seq, pre=None, not_post=None):
 
 def get_tsv_reader(filename, delimiter="\t"):
     """Get tsv reader."""
-    # Python 3
-    if sys.version_info[0] >= 3:
-        return csv.reader(open(filename, newline=""), delimiter=delimiter)
-    # Python 2
-    else:
-        return csv.reader(open(filename, "rb"), delimiter=delimiter)
+    return csv.reader(open(filename, newline=""), delimiter=delimiter)
 
 
 def get_tsv_writer(filename, delimiter="\t"):
     """Get tsv writer."""
-    # Python 3
-    if sys.version_info[0] >= 3:
-        return csv.writer(open(filename, "w", newline=""), delimiter=delimiter)
-    # Python 2
-    else:
-        return csv.writer(open(filename, "wb"), delimiter=delimiter)
+    return csv.writer(open(filename, "w", newline=""), delimiter=delimiter)
 
 
 if __name__ == "__main__":

@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import glob
 import logging
-import os
 import re
-from pathlib import Path
-from typing import Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
-import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import xisearch_to_internal
 
 from .search_results import SearchResults
