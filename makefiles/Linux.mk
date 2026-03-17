@@ -47,31 +47,32 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint: ## check style with flake8
-	flake8 spectrum_io tests
+lint: ## check style with ruff
+	poetry run ruff check spectrum_io tests
+
+format: ## auto-format code with ruff
+	poetry run ruff format spectrum_io tests
+
+typecheck: ## run type checking with mypy
+	poetry run mypy spectrum_io
 
 test: ## run tests quickly with the default Python
-	pytest
+	poetry run pytest tests/
 
-test-all: ## run tests on every Python version with tox
-	nox
+check: format typecheck test ## run all checks (format, typecheck, test) - simulates CI
+	@echo "✓ All checks passed!"
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source spectrum_io -m pytest
-	coverage report -m
-	coverage html
+	poetry run coverage run --source spectrum_io -m pytest
+	poetry run coverage report -m
+	poetry run coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/spectrum_io.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ spectrum_io
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
+docs: ## build HTML documentation with sphinx
+	poetry run sphinx-build docs docs/_build/html
 
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+docs-serve: ## build docs and serve locally with live reload
+	poetry run sphinx-autobuild docs docs/_build/html --open-browser
 
 release: dist ## package and upload a release
 	poetry release
@@ -79,5 +80,5 @@ release: dist ## package and upload a release
 dist: clean-build clean-pyc ## builds source and wheel package
 	poetry build
 
-install: clean-build clean-pyc ## install the package to the active Python's site-packages
+install: ## install the package to the active Python's site-packages
 	poetry install
