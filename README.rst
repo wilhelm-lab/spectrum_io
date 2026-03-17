@@ -37,3 +37,15 @@ It provides the following functionalities:
  -   in-silico digestion of a fasta file with various configuration options (protease, missed cleavages, length of peptides, fragmentation, ...) for spectral library generation with oktoberfest
  -   write spectral libraries in dlib, msp, or spectronaut(csv) format
  -   parquet file creation for peptide prediction model development and refinement within DLOmix
+
+Documentation
+==============
+
+The official documentation is available at https://spectrum-io.readthedocs.io/
+
+How to Cite
+===========
+
+Please always cite the main publication:
+
+Oktoberfest: Picciani M, Gabriel W, Giurcoiu VG *et al.* (2023), *Oktoberfest: Open-source spectral library generation and rescoring pipeline based on Prosit*, `Proteomics <https://doi.org/10.1002/pmic.202300112>`_
