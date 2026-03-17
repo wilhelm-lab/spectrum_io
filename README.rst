@@ -27,8 +27,6 @@ Spectrum IO: File / Data Conversion for Mass Spec data within the Oktoberfest ec
 .. |Ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
    :target: https://github.com/astral-sh/ruff
    :alt: Ruff
-   :target: https://github.com/psf/black
-   :alt: Black
 
 spectrum_io is a package primarily developed for usage within the rescoring and spectral library generation pipeline oktoberfest (https://github.com/wilhelm-lab/oktoberfest).
 
