@@ -95,6 +95,7 @@ jobs:
               with:
                   files: coverage.xml
                   fail_ci_if_error: false
+                  token: ${{ secrets.CODECOV_TOKEN }}
 
     # ------------------------------------------------------------------
     # Build — verify the sdist/wheel is valid (ubuntu only, single job)
