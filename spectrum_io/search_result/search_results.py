@@ -13,20 +13,6 @@ from spectrum_io.file import csv
 logger = logging.getLogger(__name__)
 
 
-COLUMNS = [
-    "RAW_FILE",
-    "SCAN_NUMBER",
-    "MODIFIED_SEQUENCE",
-    "PRECURSOR_CHARGE",
-    "MASS",
-    "SCORE",
-    "REVERSE",
-    "SEQUENCE",
-    "PEPTIDE_LENGTH",
-    "PROTEINS",
-]
-
-
 def parse_mods(mods: dict[str, int]) -> dict[str, str]:
     """
     Parse provided mapping of custom modification pattern to ProForma standard.
@@ -134,12 +120,13 @@ class SearchResults:
         if out_path is None:
             # convert and return
             filtered_df = self.read_result(
-                tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
+                tmt_label=tmt_label,
+                custom_mods=custom_mods,
+                ptm_unimod_id=ptm_unimod_id,
+                ptm_sites=ptm_sites,
             )
-            if xl:
-                return filtered_df[:]  # Return all columns
-            else:
-                return filtered_df[COLUMNS]
+
+            return filtered_df
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -150,14 +137,7 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        if xl:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
-                :
-            ]
-        else:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)[
-                COLUMNS
-            ]
+        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         csv.write_file(df, out_path)
         return df
 

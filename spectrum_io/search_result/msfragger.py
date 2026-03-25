@@ -133,7 +133,7 @@ class MSFragger(SearchResults):
         df.rename(
             columns={
                 "assumed_charge": "PRECURSOR_CHARGE",
-                "index": "SCAN_EVENT_NUMBER",
+                # "index": "SCAN_EVENT_NUMBER",
                 "peptide": "SEQUENCE",
                 "start_scan": "SCAN_NUMBER",
                 "hyperscore": "SCORE",
@@ -145,20 +145,3 @@ class MSFragger(SearchResults):
             inplace=True,
         )
         self.results = df
-        """
-        return df[
-            [
-                "RAW_FILE",
-                "SCAN_NUMBER",
-                "MODIFIED_SEQUENCE",
-                "PRECURSOR_CHARGE",
-                "SCAN_EVENT_NUMBER",
-                "MASS",
-                "SCORE",
-                "REVERSE",
-                "SEQUENCE",
-                "PEPTIDE_LENGTH",
-                "PROTEINS",
-            ]
-        ]
-        """

@@ -5,7 +5,6 @@ import re
 
 import pandas as pd
 from pyteomics.mztab import MzTab
-from pyteomics.proforma import ProForma
 from tqdm import tqdm
 
 from .search_results import SearchResults
@@ -83,7 +82,7 @@ class Casanovo(SearchResults):
 
         return pd.concat(casanovo_results, ignore_index=True)
 
-    def convert_to_internal(self, tables):
+    def convert_to_internal(self, tables: MzTab):
         """
         Convert MzTab tables into Casanovo's internal DataFrame format.
         """
@@ -92,22 +91,20 @@ class Casanovo(SearchResults):
 
         # Spectrum match table from pyteomics
         df = tables.spectrum_match_table
-        # df = df[df["search_engine_score[1]"] > 0.0].copy()
         df.loc[df["search_engine_score[1]"] < 0.0, "search_engine_score[1]"] += 1.0
         df["opt_ms_run[1]_aa_scores"] = (
-            df["opt_ms_run[1]_aa_scores"].str.split(",").apply(lambda x: [float(i) for i in x])
+            df["opt_ms_run[1]_aa_scores"].str.split(",").apply(lambda x: "|".join(f"{float(i):.2f}" for i in x))
         )
         spectra_ref_parts = df["spectra_ref"].str.split(":", n=1, expand=True)
         df["RAW_FILE"] = spectra_ref_parts[0].map(table_metadata)
         df["SCAN_NUMBER"] = (
             spectra_ref_parts[1].str.split("scan=").str[-1] if len(spectra_ref_parts.columns) > 1 else ""
         )
-        df["MODIFIED_SEQUENCE"] = df["sequence"].map(self.parse_modifications)
+        df["MODIFIED_SEQUENCE"] = df["opt_ms_run[1]_proforma"].map(self.parse_modifications)
         df.dropna(subset=["MODIFIED_SEQUENCE"], inplace=True)
-        df["SEQUENCE"] = df["sequence"].apply(lambda x: "".join([aa for aa, mods in ProForma.parse(x)]))
+        df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\[[^\]]+\]", "", regex=True)
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
         df = df.query("PEPTIDE_LENGTH > 6 and PEPTIDE_LENGTH < 31").copy()
-
         df["REVERSE"] = False
         df["PROTEINS"] = "UNKNOWN"
 

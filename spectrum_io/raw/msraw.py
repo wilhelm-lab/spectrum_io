@@ -242,6 +242,16 @@ class MSRaw:
                 scan = spec["scanList"]["scan"][0]
                 instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                 activation = spec["precursorList"]["precursor"][0]["activation"]
+                selected_ion = spec["precursorList"]["precursor"][0]["selectedIonList"]["selectedIon"][0]
+
+                for key, value in selected_ion.items():
+                    if key == "charge state":
+                        charge = value
+                    if key == "selected ion m/z":
+                        precursor_mz = value
+                    if key == "peak intensity":
+                        precursor_intensity = value
+
                 fragmentation = "unknown"
                 collision_energy = 0.0
                 for key, value in activation.items():
@@ -269,6 +279,9 @@ class MSRaw:
                     fragmentation,
                     collision_energy,
                     instrument_name,
+                    precursor_mz,
+                    precursor_intensity,
+                    charge,
                 ]
             data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
