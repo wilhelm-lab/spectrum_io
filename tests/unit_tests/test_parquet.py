@@ -2,16 +2,14 @@ import shutil
 import sys
 import tempfile
 import unittest
-from contextlib import nullcontext
 from pathlib import Path
 
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import scipy
 
 if "typeguard" in sys.modules:
-    from typeguard import suppress_type_checks
+    pass
 
 from spectrum_io.file import parquet
 

@@ -5,7 +5,14 @@ from datetime import datetime
 __author__ = """The Oktoberfest development team (Wilhelmlab at Technical University of Munich)"""
 __copyright__ = f"Copyright {datetime.now():%Y}, Wilhelmlab at Technical University of Munich"
 __license__ = "MIT"
-__version__ = "0.8.0"
+
+# Dynamically read version from package metadata at runtime
+try:
+    from importlib.metadata import version as get_version
+
+    __version__ = get_version("spectrum_io")
+except Exception:
+    __version__ = "0.0.0.dev0"
 
 import logging
 import logging.handlers
@@ -15,6 +22,8 @@ from spectrum_io import d, file, raw
 
 # from .search_result import MaxQuant
 # from .spectral_library import DLib, Spectronaut
+
+__all__ = ["__version__", "d", "file", "raw"]
 
 CONSOLE_LOG_LEVEL = logging.INFO
 logger = logging.getLogger(__name__)

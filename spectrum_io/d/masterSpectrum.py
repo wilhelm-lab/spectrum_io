@@ -1,6 +1,5 @@
-import csv
+from collections.abc import Callable
 from math import ceil
-from typing import Callable, List, Optional
 
 from sortedcontainers import SortedDict, SortedList
 
@@ -35,7 +34,7 @@ def _calculate_delta_by_ppm(ppm: int) -> Callable:
     return fix_ppm
 
 
-def _calculate_relative_intensity(a_intensity: List[int]) -> List[float]:
+def _calculate_relative_intensity(a_intensity: list[int]) -> list[float]:
     max_intensity = max(a_intensity)
     return [x / max_intensity for x in a_intensity]
 
@@ -239,7 +238,7 @@ class MasterSpectrum:
             self.add(peak, charge)
 
     def load_from_tims(
-        self, intensities: List[int], mzs: List[float], ignore_charges: bool, delta_func: Optional[Callable] = None
+        self, intensities: list[int], mzs: list[float], ignore_charges: bool, delta_func: Callable | None = None
     ):
         """
         Load data from tims and create master spectrum.
@@ -253,7 +252,7 @@ class MasterSpectrum:
         rel_int = _calculate_relative_intensity(intensities)
         if delta_func is None:
             delta_func = _calculate_delta_by_ppm(40)
-        for m, i in zip(mzs, rel_int):
+        for m, i in zip(mzs, rel_int, strict=False):
             p = Peak(float(m), float(i), delta_func)
             if ignore_charges:
                 self.add(p, 0)

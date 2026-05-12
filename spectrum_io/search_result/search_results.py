@@ -4,7 +4,6 @@ import logging
 import re
 from abc import abstractmethod
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -43,7 +42,7 @@ def parse_mods(mods: dict[str, int]) -> dict[str, str]:
             raise TypeError(f"UNIMOD id {v} for replacement {k} not understood. UNIMOD IDs must be integers.")
         if not isinstance(k, str):
             raise TypeError(
-                f"Replacement {k} not understood. Replacements must be strings and follow " f"the pattern {key_pattern}"
+                f"Replacement {k} not understood. Replacements must be strings and follow the pattern {key_pattern}"
             )
         if k[0].isalpha():
             unimod_regex_map[re.escape(k)] = f"{k[0].upper()}[UNIMOD:{v}]"
@@ -125,8 +124,8 @@ class SearchResults:
                 ptm_unimod_id=ptm_unimod_id,
                 ptm_sites=ptm_sites,
             )
-
             return filtered_df
+
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
