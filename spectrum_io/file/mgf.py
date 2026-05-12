@@ -1,9 +1,11 @@
 import re
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
-
+import os
 import pandas as pd
 import numpy as np
+from concurrent.futures import ProcessPoolExecutor
+from tqdm import tqdm
 from pyteomics import mgf
 
 
@@ -43,10 +45,12 @@ class MGFparser:
         return file_list
 
     @staticmethod
+    def scan(s):
+        return int(s[s.find("scan=") + 5 :].split('"')[0].split()[0]) if "scan=" in s else None
+
+    @staticmethod
     def parse(mgf_file: Path):
         """Read MGF file generated from MSConvert"""
-
-        scan = lambda s: int(s[s.find("scan=") + 5 :].split('"')[0].split()[0]) if "scan=" in s else None
 
         with mgf.read(str(mgf_file)) as reader:
             file_name = mgf_file.name.removesuffix(".mgf")
@@ -54,10 +58,10 @@ class MGFparser:
             for i, spec in enumerate(reader):
                 idx = i
                 title = spec["params"]["title"]
-                scan_number = scan(title)
+                scan_number = MGFparser.scan(title)
 
                 parsed = {
-                    "SCAN_IDX": np.int64(idx),
+                    "SCAN_RAW_IDX": np.int64(idx),
                     "SCAN_NUMBER": np.int64(scan_number) if scan_number is not None else None,
                     "RAW_FILE": str(file_name),
                     "RETENTION_TIME": np.float64(spec["params"]["rtinseconds"]),
@@ -73,7 +77,7 @@ class MGFparser:
         spectra_df = pd.DataFrame(
             spectra,
             columns=[
-                "SCAN_IDX",
+                "SCAN_RAW_IDX",
                 "SCAN_NUMBER",
                 "RAW_FILE",
                 "RETENTION_TIME",
@@ -90,7 +94,18 @@ class MGFparser:
     @staticmethod
     def read_mgf(source: Union[str, Path, List[Union[str, Path]]]) -> pd.DataFrame:
         file_list = MGFparser.get_file_list(source)
-        return pd.concat([MGFparser.parse(file) for file in file_list])
+        n_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", os.cpu_count()))
+
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            result_df = list(
+                tqdm(
+                    executor.map(MGFparser.parse, [f for f in file_list]),
+                    total=len(file_list),
+                    desc=f"Reading MGF files ({n_workers} workers)",
+                )
+            )
+
+        return pd.concat(result_df)
 
     def write_file():
         # mgf.write(spectra=spectra, header=header)

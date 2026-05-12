@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+import os
+from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, Optional
 
 import pandas as pd
@@ -21,7 +23,14 @@ class MSFragger(SearchResults):
     @property
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
-        return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7}
+        return {
+            r"C(?!\[)": 4,
+            "C[160]": 4,
+            "M[147]": 35,
+            "R[157]": 7,
+            "Q[129]": 7,
+            "N[115]": 7,
+        }
 
     def filter_valid_prosit_sequences(self):
         """Filter valid Prosit sequences."""
@@ -35,6 +44,9 @@ class MSFragger(SearchResults):
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
 
         return self.results
+
+    def read_pepxml_file(self, pep_xml_file: str) -> pd.DataFrame:
+        return pepxml.DataFrame(pep_xml_file)
 
     def read_result(
         self,
@@ -67,9 +79,20 @@ class MSFragger(SearchResults):
         else:
             raise FileNotFoundError(f"{self.path} could not be found.")
 
-        ms_frag_results = []
-        for pep_xml_file in tqdm(file_list):
-            ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
+        # ms_frag_results = []
+        # for pep_xml_file in tqdm(file_list):
+        #     ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
+
+        n_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", os.cpu_count()))
+
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            ms_frag_results = list(
+                tqdm(
+                    executor.map(self.read_pepxml_file, [str(f) for f in file_list]),
+                    total=len(file_list),
+                    desc=f"Reading pepXML files ({n_workers} workers)",
+                )
+            )
 
         self.results = pd.concat(ms_frag_results)
 
@@ -109,6 +132,7 @@ class MSFragger(SearchResults):
 
         df["spectrum"] = df["spectrum"].str.split(pat=".", n=1).str[0]
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
+
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
         df["peptide"] = internal_without_mods(df["modified_peptide"])
         if ptm_unimod_id != 0:

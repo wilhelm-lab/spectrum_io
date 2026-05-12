@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import os
 import re
+from concurrent.futures import ProcessPoolExecutor
 
 import pandas as pd
 from pyteomics.mztab import MzTab
@@ -51,6 +53,10 @@ class Casanovo(SearchResults):
         self.filename_mapping = filename_mapping
         return filename_mapping
 
+    def read_mztab(self, mztab_file: str):
+        tables = MzTab(mztab_file)
+        return self.convert_to_internal(tables)
+
     def read_result(
         self,
         tmt_label: str = "",
@@ -70,17 +76,22 @@ class Casanovo(SearchResults):
         else:
             raise FileNotFoundError(f"{self.path} could not be found.")
 
-        casanovo_results = []
-        for mztab_file in tqdm(file_list, desc="Reading Casanovo results"):
-            try:
-                tables = MzTab(str(mztab_file))
-                result_df = self.convert_to_internal(tables)
-                casanovo_results.append(result_df)
-            except Exception as e:
-                logger.error(f"Error processing {mztab_file}: {e}")
-                continue
+        n_workers = int(os.environ.get("SLURM_CPUS_PER_TASK", os.cpu_count()))
 
-        return pd.concat(casanovo_results, ignore_index=True)
+        # for mztab_file in tqdm(file_list, desc="Reading Casanovo results"):
+        #     tables = MzTab(str(mztab_file))
+        #     result_df = self.convert_to_internal(tables)
+
+        with ProcessPoolExecutor(max_workers=n_workers) as executor:
+            result_df = list(
+                tqdm(
+                    executor.map(self.read_mztab, [str(f) for f in file_list]),
+                    total=len(file_list),
+                    desc=f"Reading MzTab files ({n_workers} workers)",
+                )
+            )
+
+        return pd.concat(result_df, ignore_index=True)
 
     def convert_to_internal(self, tables: MzTab):
         """
@@ -88,6 +99,7 @@ class Casanovo(SearchResults):
         """
         # Build mapping from metadata
         table_metadata = self.map_metadata(tables.metadata)
+        version = tables.metadata.get("software[1]")[1]
 
         # Spectrum match table from pyteomics
         df = tables.spectrum_match_table
@@ -96,11 +108,36 @@ class Casanovo(SearchResults):
             df["opt_ms_run[1]_aa_scores"].str.split(",").apply(lambda x: "|".join(f"{float(i):.2f}" for i in x))
         )
         spectra_ref_parts = df["spectra_ref"].str.split(":", n=1, expand=True)
+        ref_part = spectra_ref_parts[1]
+
         df["RAW_FILE"] = spectra_ref_parts[0].map(table_metadata)
-        df["SCAN_NUMBER"] = (
-            spectra_ref_parts[1].str.split("scan=").str[-1] if len(spectra_ref_parts.columns) > 1 else ""
-        )
-        df["MODIFIED_SEQUENCE"] = df["opt_ms_run[1]_proforma"].map(self.parse_modifications)
+
+        mask_scan = ref_part.str.contains("scan=", na=False)
+        mask_index = ref_part.str.contains("index=", na=False)
+
+        # Initialize with nullable integer dtype
+        df["SCAN_RAW_IDX"] = pd.Series(pd.NA, index=df.index, dtype="Int64")
+        df["SCAN_NUMBER"] = pd.Series(pd.NA, index=df.index, dtype="Int64")
+
+        df.loc[mask_scan, "SCAN_RAW_IDX"] = -1
+        df.loc[mask_index, "SCAN_NUMBER"] = -1
+
+        df.loc[mask_scan, "SCAN_NUMBER"] = pd.to_numeric(
+            ref_part.loc[mask_scan].str.split("scan=").str[-1],
+            errors="coerce",
+        ).astype("Int64")
+
+        df.loc[mask_index, "SCAN_RAW_IDX"] = pd.to_numeric(
+            ref_part.loc[mask_index].str.split("index=").str[-1],
+            errors="coerce",
+        ).astype("Int64")
+
+        # TODO: versions >5.0.0 has different output
+        if version == "5.0.0":
+            df["MODIFIED_SEQUENCE"] = df["sequence"].map(self.parse_modifications)
+        else:
+            df["MODIFIED_SEQUENCE"] = df["opt_ms_run[1]_proforma"].map(self.parse_modifications)
+
         df.dropna(subset=["MODIFIED_SEQUENCE"], inplace=True)
         df["SEQUENCE"] = df["MODIFIED_SEQUENCE"].str.replace(r"\[[^\]]+\]", "", regex=True)
         df["PEPTIDE_LENGTH"] = df["SEQUENCE"].str.len()
@@ -132,6 +169,7 @@ class Casanovo(SearchResults):
             "SEQUENCE",
             "PEPTIDE_LENGTH",
             "PROTEINS",
+            "SCAN_RAW_IDX",
         ]
 
         return df[result_columns]
