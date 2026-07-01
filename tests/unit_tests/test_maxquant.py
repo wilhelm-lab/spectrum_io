@@ -43,6 +43,15 @@ class TestMaxQuant(unittest.TestCase):
 
         pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
 
+    def test_read_maxquant_with_decoy_column(self):
+        """Test reading msms.txt where MaxQuant >= 2.8.0.0 renamed 'Reverse' to 'Decoy'."""
+        expected_df_path = Path(__file__).parent / "data" / "msms_internal.csv"
+
+        internal_search_results_df = MaxQuant(Path(__file__).parent / "data" / "msms_decoy").read_result()
+        expected_df = pd.read_csv(expected_df_path)
+
+        pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
+
     def test_read_maxquant_with_custom_mods(self):
         """Test function for reading msfragger results and transforming to Prosit format with custom mods."""
         expected_df_path = Path(__file__).parent / "data" / "msms_internal.csv"

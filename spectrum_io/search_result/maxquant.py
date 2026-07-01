@@ -92,6 +92,9 @@ class MaxQuant(SearchResults):
             parsed_mods["^_"] = f"_{unimod_tag}-"
 
         logger.info("Reading msms.txt file")
+        msms_columns = pd.read_csv(self.path / "msms.txt", sep="\t", nrows=0).columns
+        # MaxQuant 2.8.0.0 renamed the "Reverse" column to "Decoy"
+        decoy_column = "Decoy" if "Decoy" in msms_columns else "Reverse"
         self.results = pd.read_csv(
             self.path / "msms.txt",
             usecols=[
@@ -102,11 +105,12 @@ class MaxQuant(SearchResults):
                 "Scan event number",
                 "Mass",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "Score",
-                "Reverse",
+                decoy_column,
                 "Proteins",
             ],
             sep="\t",
         )
+        self.results.rename(columns={decoy_column: "Reverse"}, inplace=True)
 
         logger.info("Finished reading msms.txt file")
 
