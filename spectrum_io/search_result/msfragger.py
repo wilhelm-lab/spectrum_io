@@ -143,23 +143,4 @@ class MSFragger(SearchResults):
             },
             inplace=True,
         )
-        self.results = df[
-            [
-                "RAW_FILE",
-                "SCAN_NUMBER",
-                "MODIFIED_SEQUENCE",
-                "PRECURSOR_CHARGE",
-                "SCAN_EVENT_NUMBER",
-                "MASS",
-                "SCORE",
-                "Annotated_Ions_MSF",
-                "Total_Ions_MSF",
-                "MZ_diff_MSF",
-                "EXPECT",
-                "NEXT_SCORE",
-                "REVERSE",
-                "SEQUENCE",
-                "PEPTIDE_LENGTH",
-                "PROTEINS",
-            ]
-        ]
+        self.results = df
