@@ -103,7 +103,7 @@ class Casanovo(SearchResults):
 
         # Spectrum match table from pyteomics
         df = tables.spectrum_match_table
-        df.loc[df["search_engine_score[1]"] < 0.0, "search_engine_score[1]"] += 1.0
+        # df.loc[df["search_engine_score[1]"] < 0.0, "search_engine_score[1]"] += 1.0
         df["opt_ms_run[1]_aa_scores"] = (
             df["opt_ms_run[1]_aa_scores"].str.split(",").apply(lambda x: "|".join(f"{float(i):.2f}" for i in x))
         )

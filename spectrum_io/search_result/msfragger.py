@@ -23,7 +23,6 @@ class MSFragger(SearchResults):
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
         return {
-            r"C(?!\[)": 4,
             "C[160]": 4,
             "M[147]": 35,
             "R[157]": 7,
@@ -151,6 +150,7 @@ class MSFragger(SearchResults):
 
         df["peptide"] = df["peptide"].str.replace(r"I(?![^[]*\])", "L", regex=True)
         df["modified_peptide"] = df["modified_peptide"].str.replace(r"I(?![^[]*\])", "L", regex=True)
+        df["modified_peptide"] = df["modified_peptide"].str.replace(r"C(?!\[)", "C[UNIMOD:4]", regex=True)
 
         df.rename(
             columns={

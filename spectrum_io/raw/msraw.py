@@ -213,8 +213,8 @@ class MSRaw:
                         fragmentation,
                         collision_energy,
                         instrument_name,
-                        charge,
                         precursor_mz,
+                        charge,
                     ]
                 data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
@@ -278,7 +278,6 @@ class MSRaw:
                     collision_energy,
                     instrument_name,
                     precursor_mz,
-                    precursor_intensity,
                     charge,
                 ]
             data_iter.close()
