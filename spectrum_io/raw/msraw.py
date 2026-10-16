@@ -1,4 +1,5 @@
 import logging
+import re
 import warnings
 from pathlib import Path
 from xml.etree import ElementTree
@@ -9,6 +10,25 @@ from pyteomics import mzml
 from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
+
+# activation and collision energy in a Thermo filter string, e.g. "FTMS + p NSI d Full ms2 419.3156@hcd32.00 [...]"
+FILTER_STRING_ACTIVATION = re.compile(r"@([a-z]+)(\d+(?:\.\d+)?)", re.IGNORECASE)
+
+
+def _collision_energy_from_filter_string(filter_string) -> float:
+    """
+    Get the collision energy from a Thermo filter string.
+
+    Used as a fallback for mzML files without a "collision energy" cvParam in the activation (e.g. mzML files
+    written by MSFragger).
+
+    :param filter_string: the filter string of the scan
+    :return: the collision energy of the first activation in the filter string, 0.0 if not found
+    """
+    if not isinstance(filter_string, str):
+        return 0.0
+    match = FILTER_STRING_ACTIVATION.search(filter_string)
+    return float(match.group(2)) if match else 0.0
 
 
 def check_analyzer(mass_analyzers: dict[str, str]) -> dict[str, str]:
@@ -183,6 +203,10 @@ class MSRaw:
                             fragmentation = "CID"
                         else:
                             fragmentation = name
+                    if collision_energy == 0.0:
+                        filter_string = scan.find(f'./{namespace}cvParam[@accession="MS:1000512"]')
+                        if filter_string is not None:
+                            collision_energy = _collision_energy_from_filter_string(filter_string.get("value"))
                     scan_window = scan.find(f".//{namespace}scanWindow")
                     scan_lower_limit = float(
                         scan_window.find(f'./{namespace}cvParam[@accession="MS:1000501"]').get("value")
@@ -241,6 +265,8 @@ class MSRaw:
                         fragmentation = "CID"
                     elif fragmentation=='unknown':
                         fragmentation = key
+                if collision_energy == 0.0:
+                    collision_energy = _collision_energy_from_filter_string(scan.get("filter string"))
                 scan_lower_limit = scan["scanWindowList"]["scanWindow"][0]["scan window lower limit"]
                 scan_upper_limit = scan["scanWindowList"]["scanWindow"][0]["scan window upper limit"]
                 mz_range = f"{scan_lower_limit}-{scan_upper_limit}"
