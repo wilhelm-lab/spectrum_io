@@ -4,27 +4,13 @@ import logging
 import re
 from abc import abstractmethod
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 
 from spectrum_io.file import csv
+from spectrum_fundamentals.mod_string import add_permutations
 
 logger = logging.getLogger(__name__)
-
-
-COLUMNS = [
-    "RAW_FILE",
-    "SCAN_NUMBER",
-    "MODIFIED_SEQUENCE",
-    "PRECURSOR_CHARGE",
-    "MASS",
-    "SCORE",
-    "REVERSE",
-    "SEQUENCE",
-    "PEPTIDE_LENGTH",
-    "PROTEINS",
-]
 
 
 def parse_mods(mods: dict[str, int]) -> dict[str, str]:
@@ -57,7 +43,7 @@ def parse_mods(mods: dict[str, int]) -> dict[str, str]:
             raise TypeError(f"UNIMOD id {v} for replacement {k} not understood. UNIMOD IDs must be integers.")
         if not isinstance(k, str):
             raise TypeError(
-                f"Replacement {k} not understood. Replacements must be strings and follow " f"the pattern {key_pattern}"
+                f"Replacement {k} not understood. Replacements must be strings and follow the pattern {key_pattern}"
             )
         if k[0].isalpha():
             unimod_regex_map[re.escape(k)] = f"{k[0].upper()}[UNIMOD:{v}]"
@@ -94,6 +80,59 @@ class SearchResults:
         """Filter valid Prosit sequences."""
         raise NotImplementedError
 
+    @staticmethod
+    def get_ptm_sites(
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0, ptm_sites: list[str] | None = None
+    ) -> dict[int, list[str]]:
+        """
+        Normalize the PTM localization settings to a mapping of unimod id to possible residues.
+
+        :param ptm_unimod_id: unimod id of a single PTM, or a mapping of unimod id to possible residues
+        :param ptm_sites: possible residues if a single unimod id is given
+        :return: mapping of unimod id to possible residues, empty if no localization is requested
+        """
+        if isinstance(ptm_unimod_id, dict):
+            return {int(unimod_id): list(sites) for unimod_id, sites in ptm_unimod_id.items() if sites}
+        if ptm_unimod_id and ptm_sites:
+            return {int(ptm_unimod_id): list(ptm_sites)}
+        return {}
+
+    @staticmethod
+    def add_ptm_permutations(
+        df: pd.DataFrame,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
+        ptm_sites: list[str] | None = None,
+        sequence_column: str = "MODIFIED_SEQUENCE",
+    ) -> pd.DataFrame:
+        """
+        Generate all possible localizations of the given PTM(s) for each PSM.
+
+        Each PSM carrying a PTM is duplicated once per possible combination of modified sites, so that all
+        localization candidates can be scored. PSMs without the PTM(s) are left unchanged. If several PTMs are
+        given, the permutations of all PTMs are combined.
+
+        :param df: search results containing the modified sequences in internal format
+        :param ptm_unimod_id: unimod id of a single PTM, or a mapping of unimod id to possible residues,
+            0 or None to disable
+        :param ptm_sites: amino acids the PTM can be located on, if a single unimod id is given
+        :param sequence_column: name of the column containing the modified sequences
+        :return: search results with one row per possible PTM localization
+        """
+        ptm_site_map = SearchResults.get_ptm_sites(ptm_unimod_id, ptm_sites)
+        if not ptm_site_map:
+            return df
+        df = df.copy()
+        for unimod_id, residues in ptm_site_map.items():
+            # for citrullination / deamidation also consider that the mod mass was mistakenly picked as monoisotopic peak
+            df[sequence_column] = df[sequence_column].apply(
+                add_permutations,
+                unimod_id=unimod_id,
+                residues=residues,
+                allow_one_less_modification=unimod_id == 7,
+            )
+            df = df.explode(sequence_column, ignore_index=True)
+        return df
+
     @abstractmethod
     def read_result(
         self,
@@ -116,7 +155,7 @@ class SearchResults:
         tmt_label: str = "",
         out_path: str | Path | None = None,
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
         ptm_model: bool = False,
         xl: bool = False,
@@ -137,10 +176,8 @@ class SearchResults:
             filtered_df = self.read_result(
                 tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites
             )
-            if xl:
-                return filtered_df[:]  # Return all columns
-            else:
-                return filtered_df[COLUMNS]
+            return filtered_df
+
         if isinstance(out_path, str):
             out_path = Path(out_path)
 
@@ -151,16 +188,9 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-
-        if xl:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model)[
-                :
-            ]
-        else:
-            df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model)[
-                COLUMNS
-            ]
-
+        df = self.read_result(
+            tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model
+        )
         csv.write_file(df, out_path)
         return df
 

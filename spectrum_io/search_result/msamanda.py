@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional
 
 import pandas as pd
 from spectrum_fundamentals.constants import PARTICLE_MASSES
@@ -83,6 +82,7 @@ class MSAmanda(SearchResults):
         self.results = pd.concat(df_list)
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
+        self.results = self.add_ptm_permutations(self.results, ptm_unimod_id, ptm_sites)
         return self.filter_valid_prosit_sequences()
 
     def filter_valid_prosit_sequences(self):

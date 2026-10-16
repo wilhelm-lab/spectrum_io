@@ -1,6 +1,5 @@
 import logging
 import sqlite3
-from typing import Dict, Optional
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -22,10 +21,10 @@ class Mascot(SearchResults):
     def read_result(
         self,
         tmt_label: str = "",
-        custom_mods: Optional[Dict[str, int]] = None,
-        ptm_unimod_id: Optional[int] = 0,
-        ptm_sites: Optional[list[str]] = None,
-        ptm_model: bool = False
+        custom_mods: dict[str, int] | None = None,
+        ptm_unimod_id: int | None = 0,
+        ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a mascot msf file and perform some basic formatting.

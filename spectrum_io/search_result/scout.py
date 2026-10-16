@@ -1,15 +1,10 @@
 from __future__ import annotations
 
-import glob
 import logging
-import os
 import re
-from pathlib import Path
-from typing import Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
-import spectrum_fundamentals.constants as c
 from spectrum_fundamentals.mod_string import xisearch_to_internal
 
 from .search_results import SearchResults
@@ -26,6 +21,7 @@ class Scout(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -34,6 +30,7 @@ class Scout(SearchResults):
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param ptm_model: whether a PTM-aware prediction model is used (unused for scout)
         :raises NotImplementedError: if TMT label is provided
         :return: pd.DataFrame with the formatted data
         """

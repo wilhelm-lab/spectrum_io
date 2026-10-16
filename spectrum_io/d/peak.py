@@ -1,5 +1,6 @@
 import math
-from typing import Any, Callable, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 # import pyximport; pyximport.install()
 # from mgf_filter.cython.mat import ceil
@@ -8,7 +9,7 @@ from typing import Any, Callable, List, Optional
 class Peak:
     """Container class for a single fragment peak."""
 
-    def __init__(self, mz: float, intensity: float, delta_function: Callable, meta: Optional[List[Any]] = None):
+    def __init__(self, mz: float, intensity: float, delta_function: Callable, meta: list[Any] | None = None):
         """
         Contructor for a single fragment peak.
 

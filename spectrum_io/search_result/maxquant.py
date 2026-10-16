@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Dict, Optional, Union
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults, parse_mods
 
@@ -96,6 +95,9 @@ class MaxQuant(SearchResults):
             parsed_mods["^_"] = f"_{unimod_tag}-"
 
         logger.info("Reading msms.txt file")
+        msms_columns = pd.read_csv(self.path / "msms.txt", sep="\t", nrows=0).columns
+        # MaxQuant 2.8.0.0 renamed the "Reverse" column to "Decoy"
+        decoy_column = "Decoy" if "Decoy" in msms_columns else "Reverse"
         self.results = pd.read_csv(
             self.path / "msms.txt",
             usecols=[
@@ -106,11 +108,12 @@ class MaxQuant(SearchResults):
                 "Scan event number",
                 "Mass",  # = Calculated Precursor mass; TODO get column with experimental Precursor mass instead
                 "Score",
-                "Reverse",
+                decoy_column,
                 "Proteins",
             ],
             sep="\t",
         )
+        self.results.rename(columns={decoy_column: "Reverse"}, inplace=True)
 
         logger.info("Finished reading msms.txt file")
 
@@ -139,21 +142,8 @@ class MaxQuant(SearchResults):
 
         df["Sequence"] = internal_without_mods(df["Modified sequence"])
         df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
-        if ptm_unimod_id != 0:
-
-            # PTM permutation generation
-            if ptm_unimod_id == 7:
-                allow_one_less_modification = True
-            else:
-                allow_one_less_modification = False
-
-            df["Modified sequence"] = df["Modified sequence"].apply(
-                add_permutations,
-                unimod_id=ptm_unimod_id,
-                residues=ptm_sites,
-                allow_one_less_modification=allow_one_less_modification,
-            )
-            df = df.explode("Modified sequence", ignore_index=True)
+        # PTM permutation generation (only if localization was requested)
+        df = self.add_ptm_permutations(df, ptm_unimod_id, ptm_sites, sequence_column="Modified sequence")
 
         df.rename(
             columns={
@@ -170,7 +160,21 @@ class MaxQuant(SearchResults):
             },
             inplace=True,
         )
-        self.results = df
+        self.results = df[
+            [
+                "RAW_FILE",
+                "SCAN_NUMBER",
+                "MODIFIED_SEQUENCE",
+                "PRECURSOR_CHARGE",
+                "SCAN_EVENT_NUMBER",
+                "MASS",
+                "SCORE",
+                "REVERSE",
+                "SEQUENCE",
+                "PEPTIDE_LENGTH",
+                "PROTEINS",
+            ]
+        ]
 
     def generate_internal_timstof_metadata(self):
         """

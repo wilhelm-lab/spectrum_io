@@ -1,13 +1,11 @@
 import logging
 from pathlib import Path
-from typing import List, Union
 
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import scipy
 
-Pathlike = Union[Path, str]
+Pathlike = Path | str
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +55,7 @@ def write_file(data: pd.DataFrame, path: Pathlike) -> None:
     data.to_parquet(path)
 
 
-def write_partition(datasets: List[pd.DataFrame], path: Pathlike, dataset_names: List[str]) -> None:
+def write_partition(datasets: list[pd.DataFrame], path: Pathlike, dataset_names: list[str]) -> None:
     """
     Write several datasets to a Parquet dataset as a directory containing subdirectories partitioned by dataset name.
 
@@ -66,7 +64,7 @@ def write_partition(datasets: List[pd.DataFrame], path: Pathlike, dataset_names:
     :param dataset_names: Names to assign to the datasets for retrieval. Careful: If all of these are strings of ints,
         Parquet will convert them to raw integers!
     """
-    df = pd.concat([dataset.assign(dataset=name) for dataset, name in zip(datasets, dataset_names)])
+    df = pd.concat([dataset.assign(dataset=name) for dataset, name in zip(datasets, dataset_names, strict=False)])
     table = pa.Table.from_pandas(df)
 
     if isinstance(path, str):

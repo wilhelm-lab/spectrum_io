@@ -2,16 +2,14 @@ import shutil
 import sys
 import tempfile
 import unittest
-from contextlib import nullcontext
 from pathlib import Path
 
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import scipy
 
 if "typeguard" in sys.modules:
-    from typeguard import suppress_type_checks
+    pass
 
 from spectrum_io.file import parquet
 
@@ -19,9 +17,10 @@ from spectrum_io.file import parquet
 class TestParquet(unittest.TestCase):
     """Test class to check Parquet file I/O."""
 
-    def setUp(self):  # noqa: D102
+    @classmethod
+    def setUpClass(cls):  # noqa: D102
         # Simple toy MS data containing float, list[float], str, int, and list[int]
-        self.raw_data = {
+        cls.raw_data = {
             "scan_number": [1, 234, 5678],
             "intensities": [
                 [4e-5, 0.0, -1.0, 0.0, 0.0, -1.0, 0.03, 0.0, -1.0, 0.4],
@@ -36,10 +35,11 @@ class TestParquet(unittest.TestCase):
             ],
             "collision_energy_normed": [0.250827308624, 0.288798207462, 0.2887064038764],
         }
-        self.temp_dir = Path(tempfile.mkdtemp())
+        cls.temp_dir = Path(tempfile.mkdtemp())
 
-    def tearDown(self):  # noqa: D102
-        shutil.rmtree(self.temp_dir)
+    @classmethod
+    def tearDownClass(cls):  # noqa: D102
+        shutil.rmtree(cls.temp_dir)
 
     def test_read_file(self):
         """Test read operation for a single dataset."""
