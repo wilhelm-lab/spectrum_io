@@ -6,9 +6,9 @@ from abc import abstractmethod
 from pathlib import Path
 
 import pandas as pd
+from spectrum_fundamentals.mod_string import add_permutations
 
 from spectrum_io.file import csv
-from spectrum_fundamentals.mod_string import add_permutations
 
 logger = logging.getLogger(__name__)
 
@@ -116,12 +116,14 @@ class SearchResults:
             0 or None to disable
         :param ptm_sites: amino acids the PTM can be located on, if a single unimod id is given
         :param sequence_column: name of the column containing the modified sequences
-        :return: search results with one row per possible PTM localization
+        :return: search results with one row per possible PTM localization, and the localization of the search engine
+            in the column SEARCH_MODIFIED_SEQUENCE
         """
         ptm_site_map = SearchResults.get_ptm_sites(ptm_unimod_id, ptm_sites)
         if not ptm_site_map:
             return df
         df = df.copy()
+        df["SEARCH_MODIFIED_SEQUENCE"] = df[sequence_column]
         for unimod_id, residues in ptm_site_map.items():
             # for citrullination / deamidation also consider that the mod mass was mistakenly picked as monoisotopic peak
             df[sequence_column] = df[sequence_column].apply(

@@ -73,7 +73,7 @@ class MaxQuant(SearchResults):
         custom_mods: dict[str, int] | None = None,
         ptm_unimod_id: int | None = 0,
         ptm_sites: list[str] | None = None,
-        ptm_model: bool = False
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -174,6 +174,8 @@ class MaxQuant(SearchResults):
                 "PEPTIDE_LENGTH",
                 "PROTEINS",
             ]
+            # localization of the search engine, if PTM site permutations were generated
+            + [column for column in ["SEARCH_MODIFIED_SEQUENCE"] if column in df.columns]
         ]
 
     def generate_internal_timstof_metadata(self):
