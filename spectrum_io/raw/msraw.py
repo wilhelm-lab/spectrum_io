@@ -1,4 +1,5 @@
 import logging
+import re
 import warnings
 from pathlib import Path
 from xml.etree import ElementTree
@@ -9,6 +10,25 @@ from pyteomics import mzml
 from spectrum_fundamentals.constants import MZML_DATA_COLUMNS
 
 logger = logging.getLogger(__name__)
+
+# activation and collision energy in a Thermo filter string, e.g. "FTMS + p NSI d Full ms2 419.3156@hcd32.00 [...]"
+FILTER_STRING_ACTIVATION = re.compile(r"@([a-z]+)(\d+(?:\.\d+)?)", re.IGNORECASE)
+
+
+def _collision_energy_from_filter_string(filter_string) -> float:
+    """
+    Get the collision energy from a Thermo filter string.
+
+    Used as a fallback for mzML files without a "collision energy" cvParam in the activation (e.g. mzML files
+    written by MSFragger).
+
+    :param filter_string: the filter string of the scan
+    :return: the collision energy of the first activation in the filter string, 0.0 if not found
+    """
+    if not isinstance(filter_string, str):
+        return 0.0
+    match = FILTER_STRING_ACTIVATION.search(filter_string)
+    return float(match.group(2)) if match else 0.0
 
 
 def check_analyzer(mass_analyzers: dict[str, str]) -> dict[str, str]:
@@ -21,7 +41,7 @@ def check_analyzer(mass_analyzers: dict[str, str]) -> dict[str, str]:
     """
     for elem in mass_analyzers.keys():
         accession = mass_analyzers[elem]
-        if accession in ["MS:1000079", "MS:1000484"]:  # fourier transform ion cyclotron, orbitrap
+        if accession in ["MS:1000079", "MS:1000484", "MS:1000081"]:  # fourier transform ion cyclotron, orbitrap
             mass_analyzers[elem] = "FTMS"
         elif accession in ["MS:1000082", "MS:1000264", "MS:1000078"]:  # quadrupole ion-trap, ion-trap, linear ion-trap
             mass_analyzers[elem] = "ITMS"
@@ -183,6 +203,10 @@ class MSRaw:
                             fragmentation = "CID"
                         else:
                             fragmentation = name
+                    if collision_energy == 0.0:
+                        filter_string = scan.find(f'./{namespace}cvParam[@accession="MS:1000512"]')
+                        if filter_string is not None:
+                            collision_energy = _collision_energy_from_filter_string(filter_string.get("value"))
                     scan_window = scan.find(f".//{namespace}scanWindow")
                     scan_lower_limit = float(
                         scan_window.find(f'./{namespace}cvParam[@accession="MS:1000501"]').get("value")
@@ -198,7 +222,7 @@ class MSRaw:
                         spec.mz,
                         mz_range,
                         spec.scan_time_in_minutes(),
-                        mass_analyzer.get(instrument_configuration_ref, "unknown"),
+                        mass_analyzer.get(instrument_configuration_ref, "FTMS"),
                         fragmentation,
                         collision_energy,
                         instrument_name,
@@ -215,11 +239,14 @@ class MSRaw:
             logger.info(f"Reading mzML file: {file_path}")
             data_iter = mzml.read(str(file_path), *args, **kwargs)
             file_name = file_path.stem
+
             try:
                 instrument_params = data_iter.get_by_id("commonInstrumentParams")
+                instrument_name = list(instrument_params.keys())[1]
+
             except KeyError:
-                instrument_params = data_iter.get_by_id("CommonInstrumentParams")
-            instrument_name = list(instrument_params.keys())[1]
+                instrument_params = ""
+                instrument_name = "Lumos"
             for spec in data_iter:
                 if spec["ms level"] != 2:
                     continue  # filter out ms1 spectra if there are any
@@ -236,25 +263,30 @@ class MSRaw:
                         fragmentation = "HCD"
                     elif "collision-induced dissociation" in key:
                         fragmentation = "CID"
-                    else:
+                    elif fragmentation == "unknown":
                         fragmentation = key
+                if collision_energy == 0.0:
+                    collision_energy = _collision_energy_from_filter_string(scan.get("filter string"))
                 scan_lower_limit = scan["scanWindowList"]["scanWindow"][0]["scan window lower limit"]
                 scan_upper_limit = scan["scanWindowList"]["scanWindow"][0]["scan window upper limit"]
                 mz_range = f"{scan_lower_limit}-{scan_upper_limit}"
                 rt = spec["scanList"]["scan"][0]["scan start time"]
                 key = f"{file_name}_{spec_id}"
-                data_dict[key] = [
-                    file_name,
-                    spec_id,
-                    spec["intensity array"],
-                    spec["m/z array"],
-                    mz_range,
-                    rt,
-                    mass_analyzer.get(instrument_configuration_ref, "unknown"),
-                    fragmentation,
-                    collision_energy,
-                    instrument_name,
-                ]
+                if "intensity array" in spec.keys():
+                    data_dict[key] = [
+                        file_name,
+                        spec_id,
+                        spec["intensity array"],
+                        spec["m/z array"],
+                        mz_range,
+                        rt,
+                        mass_analyzer.get(instrument_configuration_ref, "FTMS"),
+                        fragmentation,
+                        collision_energy,
+                        instrument_name,
+                    ]
+                else:
+                    continue
             data_iter.close()
         data = pd.DataFrame.from_dict(data_dict, orient="index", columns=MZML_DATA_COLUMNS)
         return data

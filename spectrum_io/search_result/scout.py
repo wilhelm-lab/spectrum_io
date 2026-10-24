@@ -19,8 +19,9 @@ class Scout(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a csv of CSMs and perform some basic formatting.
@@ -29,6 +30,7 @@ class Scout(SearchResults):
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param ptm_model: whether a PTM-aware prediction model is used (unused for scout)
         :raises NotImplementedError: if TMT label is provided
         :return: pd.DataFrame with the formatted data
         """
@@ -121,7 +123,10 @@ class Scout(SearchResults):
         return df
 
     def convert_to_internal(
-        self, mods: dict[str, str], ptm_unimod_id: int | None = None, ptm_sites: list[str] | None = None
+        self,
+        mods: dict[str, str],
+        ptm_unimod_id: int | dict[int, list[str]] | None = None,
+        ptm_sites: list[str] | None = None,
     ):
         """
         Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.

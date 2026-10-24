@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
-from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods
 
 from .search_results import SearchResults, parse_mods
 
@@ -71,8 +71,9 @@ class MaxQuant(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -86,6 +87,8 @@ class MaxQuant(SearchResults):
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+        if ptm_model:
+            parsed_mods = c.MAXQUANT_VAR_MODS
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
             parsed_mods["K"] = f"K{unimod_tag}"
@@ -117,7 +120,9 @@ class MaxQuant(SearchResults):
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return self.filter_valid_prosit_sequences()
 
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the MaxQuant output to the internal format used by Oktoberfest.
 
@@ -139,20 +144,8 @@ class MaxQuant(SearchResults):
 
         df["Sequence"] = internal_without_mods(df["Modified sequence"])
         df["PEPTIDE_LENGTH"] = df["Sequence"].str.len()
-        if ptm_unimod_id != 0:
-            # PTM permutation generation
-            if ptm_unimod_id == 7:
-                allow_one_less_modification = True
-            else:
-                allow_one_less_modification = False
-
-            df["Modified sequence"] = df["Modified sequence"].apply(
-                add_permutations,
-                unimod_id=ptm_unimod_id,
-                residues=ptm_sites,
-                allow_one_less_modification=allow_one_less_modification,
-            )
-            df = df.explode("Modified sequence", ignore_index=True)
+        # PTM permutation generation (only if localization was requested)
+        df = self.add_ptm_permutations(df, ptm_unimod_id, ptm_sites, sequence_column="Modified sequence")
 
         df.rename(
             columns={
@@ -183,6 +176,8 @@ class MaxQuant(SearchResults):
                 "PEPTIDE_LENGTH",
                 "PROTEINS",
             ]
+            # localization of the search engine, if PTM site permutations were generated
+            + [column for column in ["SEARCH_MODIFIED_SEQUENCE"] if column in df.columns]
         ]
 
     def generate_internal_timstof_metadata(self):

@@ -6,6 +6,7 @@ from abc import abstractmethod
 from pathlib import Path
 
 import pandas as pd
+from spectrum_fundamentals.mod_string import add_permutations
 
 from spectrum_io.file import csv
 
@@ -79,13 +80,69 @@ class SearchResults:
         """Filter valid Prosit sequences."""
         raise NotImplementedError
 
+    @staticmethod
+    def get_ptm_sites(
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0, ptm_sites: list[str] | None = None
+    ) -> dict[int, list[str]]:
+        """
+        Normalize the PTM localization settings to a mapping of unimod id to possible residues.
+
+        :param ptm_unimod_id: unimod id of a single PTM, or a mapping of unimod id to possible residues
+        :param ptm_sites: possible residues if a single unimod id is given
+        :return: mapping of unimod id to possible residues, empty if no localization is requested
+        """
+        if isinstance(ptm_unimod_id, dict):
+            return {int(unimod_id): list(sites) for unimod_id, sites in ptm_unimod_id.items() if sites}
+        if ptm_unimod_id and ptm_sites:
+            return {int(ptm_unimod_id): list(ptm_sites)}
+        return {}
+
+    @staticmethod
+    def add_ptm_permutations(
+        df: pd.DataFrame,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
+        ptm_sites: list[str] | None = None,
+        sequence_column: str = "MODIFIED_SEQUENCE",
+    ) -> pd.DataFrame:
+        """
+        Generate all possible localizations of the given PTM(s) for each PSM.
+
+        Each PSM carrying a PTM is duplicated once per possible combination of modified sites, so that all
+        localization candidates can be scored. PSMs without the PTM(s) are left unchanged. If several PTMs are
+        given, the permutations of all PTMs are combined.
+
+        :param df: search results containing the modified sequences in internal format
+        :param ptm_unimod_id: unimod id of a single PTM, or a mapping of unimod id to possible residues,
+            0 or None to disable
+        :param ptm_sites: amino acids the PTM can be located on, if a single unimod id is given
+        :param sequence_column: name of the column containing the modified sequences
+        :return: search results with one row per possible PTM localization, and the localization of the search engine
+            in the column SEARCH_MODIFIED_SEQUENCE
+        """
+        ptm_site_map = SearchResults.get_ptm_sites(ptm_unimod_id, ptm_sites)
+        if not ptm_site_map:
+            return df
+        df = df.copy()
+        df["SEARCH_MODIFIED_SEQUENCE"] = df[sequence_column]
+        for unimod_id, residues in ptm_site_map.items():
+            # for citrullination / deamidation also consider that the mod mass was mistakenly picked as monoisotopic peak
+            df[sequence_column] = df[sequence_column].apply(
+                add_permutations,
+                unimod_id=unimod_id,
+                residues=residues,
+                allow_one_less_modification=unimod_id == 7,
+            )
+            df = df.explode(sequence_column, ignore_index=True)
+        return df
+
     @abstractmethod
     def read_result(
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ):
         """Read result.
 
@@ -93,6 +150,7 @@ class SearchResults:
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param ptm_model: whether a PTM prediction model is used
         """
         raise NotImplementedError
 
@@ -101,8 +159,9 @@ class SearchResults:
         tmt_label: str = "",
         out_path: str | Path | None = None,
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
         xl: bool = False,
     ) -> pd.DataFrame:
         """
@@ -133,7 +192,9 @@ class SearchResults:
             return csv.read_file(out_path)
 
         # convert, save and return
-        df = self.read_result(tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
+        df = self.read_result(
+            tmt_label, custom_mods=custom_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites, ptm_model=ptm_model
+        )
         csv.write_file(df, out_path)
         return df
 
@@ -146,7 +207,9 @@ class SearchResults:
         return csv.read_file(self.path)
 
     @abstractmethod
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 

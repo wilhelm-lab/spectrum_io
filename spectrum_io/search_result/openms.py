@@ -149,8 +149,9 @@ class OpenMS(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -159,6 +160,7 @@ class OpenMS(SearchResults):
         :param custom_mods: dict with custom variable and static identifier and respective internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param ptm_model: whether a PTM-aware prediction model is used (unused for openms)
         :raises FileNotFoundError: in case the given path is neither a file, nor a directory.
         :raises NotImplementedError: in case TMT or ptm_unimod_id/ptm_sites are given.
 
@@ -170,9 +172,6 @@ class OpenMS(SearchResults):
             # unimod_tag = c.TMT_MODS[tmt_label]
             # parsed_mods[r"K\[\+\d+\.\d+\]"] = f"K{unimod_tag}"
             # parsed_mods[r"^\[\+\d+\.\d+\]"] = f"{unimod_tag}"
-
-        if ptm_unimod_id is not None and ptm_unimod_id != 0 or ptm_sites is not None:
-            raise NotImplementedError("ptm_unimod_id and ptm_sties are not supported yet.")
 
         logger.info("Reading OpenMS idXML file(s)...")
 
@@ -193,6 +192,7 @@ class OpenMS(SearchResults):
         logger.info("Finished reading OpenMS idXML file(s).")
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
+        self.results = self.add_ptm_permutations(self.results, ptm_unimod_id, ptm_sites)
 
         return self.filter_valid_prosit_sequences()
 
@@ -209,7 +209,9 @@ class OpenMS(SearchResults):
 
         return self.results
 
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 

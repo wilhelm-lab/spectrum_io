@@ -5,7 +5,7 @@ import logging
 import pandas as pd
 import spectrum_fundamentals.constants as c
 from pyteomics import pepxml
-from spectrum_fundamentals.mod_string import add_permutations, internal_without_mods
+from spectrum_fundamentals.mod_string import internal_without_mods
 from tqdm import tqdm
 
 from .search_results import SearchResults, parse_mods
@@ -19,15 +19,73 @@ class MSFragger(SearchResults):
     @property
     def standard_mods(self):
         """Standard modifications that are always applied if not otherwise specified."""
-        return {"C[160]": 4, "M[147]": 35, "R[157]": 7, "Q[129]": 7, "N[115]": 7}
+        return {
+            "C[160]": 4,
+            "M[147]": 35,
+            "R[157]": 7,
+            "Q[129]": 7,
+            "N[115]": 7,
+        }
+
+    @staticmethod
+    def apply_modifications(peptide: str, modifications: list[str]) -> str:
+        """
+        Applies modifications to a peptide sequence with specific formatting rules:
+        - Masses with whole number 170 always show 2 decimal places
+        - Other masses show decimals only if non-zero
+
+        Args:
+            peptide: Unmodified peptide string (e.g., "KAAGASKR")
+            modifications: List of modification strings in "mass@position" format
+
+        Returns:
+            Modified peptide string with formatted modifications
+        """
+
+        def format_mass(mass_str: str) -> str:
+            """Formats mass strings according to specified rules"""
+            if "." in mass_str:
+                integer_part, decimal_part = mass_str.split(".", 1)
+            else:
+                integer_part = mass_str
+
+            # if integer_part == "170":
+            #    decimal = (decimal_part.ljust(2, "0"))[:2]  # Pad/truncate to 2 decimals
+            #    return f"170.{decimal}"
+            # else:
+            return integer_part
+
+        # Create dictionary of {position: formatted_mass} (0-based)
+        mod_dict = {}
+        for mod in modifications:
+            mass, pos = mod.split("@")
+            mod_dict[int(pos) - 1] = format_mass(mass)  # Convert to 0-based indexing
+
+        # Build modified sequence
+        modified_sequence = []
+        if -1 in mod_dict:
+            modified_sequence.append(f"n[{mod_dict[-1]}]")
+        for idx, aa in enumerate(peptide):
+            if idx in mod_dict:
+                modified_sequence.append(f"{aa}[{mod_dict[idx]}]")
+            else:
+                modified_sequence.append(aa)
+
+        return "".join(modified_sequence)
 
     def filter_valid_prosit_sequences(self):
         """Filter valid Prosit sequences."""
-        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+        # logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
         # retain only peptides that fall within [7, 30] length supported by Prosit
-        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 7)]
+        logger.info(f"#sequences before filtering for valid prosit sequences: {len(self.results.index)}")
+
+        self.results = self.results[(self.results["PEPTIDE_LENGTH"] <= 30) & (self.results["PEPTIDE_LENGTH"] >= 6)]
         # remove unsupported mods to exclude
+        # self.results = self.results[~self.results["MODIFIED_SEQUENCE"].isna()]
+
         self.results = self.results[~self.results["MODIFIED_SEQUENCE"].str.contains(r"\[\d+\]", regex=True)]
+
+        # self.results = self.results[~self.results['MODIFIED_SEQUENCE'].str.contains(r'C(?!\[)', regex=True)]
         # remove precursor charges greater than 6
         self.results = self.results[self.results["PRECURSOR_CHARGE"] <= 6]
         logger.info(f"#sequences after filtering for valid prosit sequences: {len(self.results.index)}")
@@ -38,8 +96,9 @@ class MSFragger(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ) -> pd.DataFrame:
         """
         Function to read a msms txt and perform some basic formatting.
@@ -54,9 +113,14 @@ class MSFragger(SearchResults):
         :return: pd.DataFrame with the formatted data
         """
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
+
+        if ptm_model:
+            parsed_mods = dict(c.MSFRAGGER_VAR_MODS_IO)
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
-            parsed_mods["K"] = f"K{unimod_tag}"
+            # apply_modifications writes the labelled lysine as K[<mass>]; also map a bare K
+            k_tmt_mass = int(c.AA_MASSES["K"] + c.MOD_MASSES[unimod_tag])
+            parsed_mods[rf"K(\[{k_tmt_mass}\])?"] = f"K{unimod_tag}"
             parsed_mods[r"^n\[\d+\]"] = f"{unimod_tag}-"
         if self.path.is_file():
             file_list = [self.path]
@@ -70,6 +134,9 @@ class MSFragger(SearchResults):
             ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
 
         self.results = pd.concat(ms_frag_results)
+        self.results["modified_peptide"] = self.results[["peptide", "modifications"]].apply(
+            lambda x: MSFragger.apply_modifications(x["peptide"], x["modifications"]), axis=1
+        )
 
         self.convert_to_internal(mods=parsed_mods, ptm_unimod_id=ptm_unimod_id, ptm_sites=ptm_sites)
         return self.filter_valid_prosit_sequences()
@@ -92,7 +159,9 @@ class MSFragger(SearchResults):
                 break
         return reverse
 
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
 
@@ -106,23 +175,13 @@ class MSFragger(SearchResults):
         df["REVERSE"] = df["protein"].apply(lambda x: MSFragger.check_decoys(x))
 
         df["spectrum"] = df["spectrum"].str.split(pat=".", n=1).str[0]
+        df = df[~df["modified_peptide"].str.contains(r"U", regex=True)]
         df["PEPTIDE_LENGTH"] = df["peptide"].str.len()
+
         df.replace({"modified_peptide": mods}, regex=True, inplace=True)
         df["peptide"] = internal_without_mods(df["modified_peptide"])
-        if ptm_unimod_id != 0:
-            # PTM permutation generation
-            if ptm_unimod_id == 7:
-                allow_one_less_modification = True
-            else:
-                allow_one_less_modification = False
-
-            df["modified_peptide"] = df["modified_peptide"].apply(
-                add_permutations,
-                unimod_id=ptm_unimod_id,
-                residues=ptm_sites,
-                allow_one_less_modification=allow_one_less_modification,
-            )
-            df = df.explode("modified_peptide", ignore_index=True)
+        # PTM permutation generation (only if localization was requested)
+        df = self.add_ptm_permutations(df, ptm_unimod_id, ptm_sites, sequence_column="modified_peptide")
 
         df.rename(
             columns={
@@ -143,4 +202,25 @@ class MSFragger(SearchResults):
             },
             inplace=True,
         )
-        self.results = df
+        self.results = df[
+            [
+                "RAW_FILE",
+                "SCAN_NUMBER",
+                "MODIFIED_SEQUENCE",
+                "PRECURSOR_CHARGE",
+                "SCAN_EVENT_NUMBER",
+                "MASS",
+                "SCORE",
+                "Annotated_Ions_MSF",
+                "Total_Ions_MSF",
+                "MZ_diff_MSF",
+                "EXPECT",
+                "NEXT_SCORE",
+                "REVERSE",
+                "SEQUENCE",
+                "PEPTIDE_LENGTH",
+                "PROTEINS",
+            ]
+            # localization of the search engine, if PTM site permutations were generated
+            + [column for column in ["SEARCH_MODIFIED_SEQUENCE"] if column in df.columns]
+        ]
