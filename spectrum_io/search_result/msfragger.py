@@ -96,7 +96,7 @@ class MSFragger(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
         ptm_model: bool = False,
     ) -> pd.DataFrame:
@@ -115,10 +115,12 @@ class MSFragger(SearchResults):
         parsed_mods = parse_mods(self.standard_mods | (custom_mods or {}))
 
         if ptm_model:
-            parsed_mods = c.MSFRAGGER_VAR_MODS_IO
+            parsed_mods = dict(c.MSFRAGGER_VAR_MODS_IO)
         if tmt_label:
             unimod_tag = c.TMT_MODS[tmt_label]
-            parsed_mods["K"] = f"K{unimod_tag}"
+            # apply_modifications writes the labelled lysine as K[<mass>]; also map a bare K
+            k_tmt_mass = int(c.AA_MASSES["K"] + c.MOD_MASSES[unimod_tag])
+            parsed_mods[rf"K(\[{k_tmt_mass}\])?"] = f"K{unimod_tag}"
             parsed_mods[r"^n\[\d+\]"] = f"{unimod_tag}-"
         if self.path.is_file():
             file_list = [self.path]
@@ -157,7 +159,9 @@ class MSFragger(SearchResults):
                 break
         return reverse
 
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the MSFragger output to the internal format used by Oktoberfest.
 

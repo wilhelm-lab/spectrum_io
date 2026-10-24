@@ -22,7 +22,7 @@ class MSAmanda(SearchResults):
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
         ptm_model: bool = False,
         suffix: str = "output.csv",
@@ -98,7 +98,9 @@ class MSAmanda(SearchResults):
 
         return self.results
 
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the Sage output to the internal format used by Oktoberfest.
 

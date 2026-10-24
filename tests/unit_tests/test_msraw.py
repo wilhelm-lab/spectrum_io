@@ -40,6 +40,8 @@ class TestCollisionEnergyFromFilterString(unittest.TestCase):
         self.assertEqual(
             _collision_energy_from_filter_string("FTMS + p NSI d Full ms2 419.3156@hcd32.00 [110.0000-849.0000]"), 32.0
         )
-        self.assertEqual(_collision_energy_from_filter_string("ITMS + c NSI d Full ms2 500.20@cid35.00 [50-1000]"), 35.0)
+        self.assertEqual(
+            _collision_energy_from_filter_string("ITMS + c NSI d Full ms2 500.20@cid35.00 [50-1000]"), 35.0
+        )
         self.assertEqual(_collision_energy_from_filter_string("FTMS + p NSI Full ms [350.0000-1400.0000]"), 0.0)
         self.assertEqual(_collision_energy_from_filter_string(None), 0.0)

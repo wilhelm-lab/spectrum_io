@@ -41,7 +41,7 @@ def check_analyzer(mass_analyzers: dict[str, str]) -> dict[str, str]:
     """
     for elem in mass_analyzers.keys():
         accession = mass_analyzers[elem]
-        if accession in ["MS:1000079", "MS:1000484",'MS:1000081']:  # fourier transform ion cyclotron, orbitrap
+        if accession in ["MS:1000079", "MS:1000484", "MS:1000081"]:  # fourier transform ion cyclotron, orbitrap
             mass_analyzers[elem] = "FTMS"
         elif accession in ["MS:1000082", "MS:1000264", "MS:1000078"]:  # quadrupole ion-trap, ion-trap, linear ion-trap
             mass_analyzers[elem] = "ITMS"
@@ -245,8 +245,8 @@ class MSRaw:
                 instrument_name = list(instrument_params.keys())[1]
 
             except KeyError:
-                instrument_params = ''
-                instrument_name = 'Lumos'
+                instrument_params = ""
+                instrument_name = "Lumos"
             for spec in data_iter:
                 if spec["ms level"] != 2:
                     continue  # filter out ms1 spectra if there are any
@@ -263,7 +263,7 @@ class MSRaw:
                         fragmentation = "HCD"
                     elif "collision-induced dissociation" in key:
                         fragmentation = "CID"
-                    elif fragmentation=='unknown':
+                    elif fragmentation == "unknown":
                         fragmentation = key
                 if collision_energy == 0.0:
                     collision_energy = _collision_energy_from_filter_string(scan.get("filter string"))
@@ -272,7 +272,7 @@ class MSRaw:
                 mz_range = f"{scan_lower_limit}-{scan_upper_limit}"
                 rt = spec["scanList"]["scan"][0]["scan start time"]
                 key = f"{file_name}_{spec_id}"
-                if 'intensity array' in spec.keys():
+                if "intensity array" in spec.keys():
                     data_dict[key] = [
                         file_name,
                         spec_id,

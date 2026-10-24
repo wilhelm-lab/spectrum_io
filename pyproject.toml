@@ -44,7 +44,8 @@ pyarrow = ">=16.0.0"
 pymzml = "^2.5.0"
 pyteomics = {version = "^4.3.3", extras = ["xml"]}
 scipy = ">=1.0.0"
-spectrum-fundamentals = ">=0.9.0"
+# PTM pipeline requires the spectrum_fundamentals features/ptm_pipeline branch until it is released
+spectrum-fundamentals = {git = "https://github.com/wilhelm-lab/spectrum_fundamentals.git", branch = "features/ptm_pipeline"}
 alphatims = "^1.0.8"
 sortedcontainers = "^2.4.0"
 pyopenms = ">=3.0.0"

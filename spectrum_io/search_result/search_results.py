@@ -140,8 +140,9 @@ class SearchResults:
         self,
         tmt_label: str = "",
         custom_mods: dict[str, int] | None = None,
-        ptm_unimod_id: int | None = 0,
+        ptm_unimod_id: int | dict[int, list[str]] | None = 0,
         ptm_sites: list[str] | None = None,
+        ptm_model: bool = False,
     ):
         """Read result.
 
@@ -149,6 +150,7 @@ class SearchResults:
         :param custom_mods: dict with custom variable and static identifier and respecitve internal equivalent and mass
         :param ptm_unimod_id: unimod id used for site localization
         :param ptm_sites: possible sites that the ptm can exist on
+        :param ptm_model: whether a PTM prediction model is used
         """
         raise NotImplementedError
 
@@ -205,7 +207,9 @@ class SearchResults:
         return csv.read_file(self.path)
 
     @abstractmethod
-    def convert_to_internal(self, mods: dict[str, str], ptm_unimod_id: int | None, ptm_sites: list[str] | None):
+    def convert_to_internal(
+        self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None
+    ):
         """
         Convert all columns in the search engine-specific output to the internal format used by Oktoberfest.
 
