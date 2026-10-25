@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ProcessPoolExecutor
 
 import pandas as pd
 import spectrum_fundamentals.constants as c
@@ -11,6 +12,11 @@ from tqdm import tqdm
 from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
+
+
+def _read_pepxml(pep_xml_file) -> pd.DataFrame:
+    """Read one pepXML file (module level so that it can run in a worker process)."""
+    return pepxml.DataFrame(str(pep_xml_file))
 
 
 class MSFragger(SearchResults):
@@ -129,9 +135,13 @@ class MSFragger(SearchResults):
         else:
             raise FileNotFoundError(f"{self.path} could not be found.")
 
-        ms_frag_results = []
-        for pep_xml_file in tqdm(file_list):
-            ms_frag_results.append(pepxml.DataFrame(str(pep_xml_file)))
+        # parse the files in parallel (input order kept); every process holds one parsed file at a time
+        num_workers = min(self.num_threads, len(file_list))
+        if num_workers > 1:
+            with ProcessPoolExecutor(max_workers=num_workers) as executor:
+                ms_frag_results = list(tqdm(executor.map(_read_pepxml, file_list), total=len(file_list)))
+        else:
+            ms_frag_results = [_read_pepxml(pep_xml_file) for pep_xml_file in tqdm(file_list)]
 
         self.results = pd.concat(ms_frag_results)
         self.results["modified_peptide"] = self.results[["peptide", "modifications"]].apply(

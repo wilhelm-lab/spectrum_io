@@ -65,15 +65,18 @@ class SearchResults:
     orig_res: pd.DataFrame
     fake_msms: pd.DataFrame
 
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, num_threads: int = 1):
         """
         Init Searchresults object.
 
         :param path: path to file
+        :param num_threads: number of processes for reading several result files (used by search engines with one
+            result file per raw file)
         """
         if isinstance(path, str):
             path = Path(path)
         self.path = path
+        self.num_threads = num_threads
 
     @abstractmethod
     def filter_valid_prosit_sequences(self):

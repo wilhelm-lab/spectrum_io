@@ -15,18 +15,19 @@ logger = logging.getLogger(__name__)
 class MaxQuant(SearchResults):
     """Handle search results from MaxQuant."""
 
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, num_threads: int = 1):
         """
         Init Searchresults object.
 
         :param path: path to file
+        :param num_threads: number of processes for reading several result files (not used for MaxQuant)
         """
         if isinstance(path, str):
             path = Path(path)
 
         if path.is_file() and path.name == "msms.txt":
             path = path.parent
-        self.path = path
+        super().__init__(path, num_threads)
 
     @property
     def standard_mods(self):
