@@ -45,3 +45,33 @@ class TestCollisionEnergyFromFilterString(unittest.TestCase):
         )
         self.assertEqual(_collision_energy_from_filter_string("FTMS + p NSI Full ms [350.0000-1400.0000]"), 0.0)
         self.assertEqual(_collision_energy_from_filter_string(None), 0.0)
+
+
+class TestFragmentationFromActivation(unittest.TestCase):
+    """Class to test the fragmentation method read from the activation cvParams."""
+
+    def test_fragmentation_from_activation(self):
+        """Test single and supplemental activations, in any order of the cvParams."""
+        cases = {
+            ("collision energy", "beam-type collision-induced dissociation"): "HCD",
+            ("collision-induced dissociation", "collision energy"): "CID",
+            ("collision energy", "electron transfer dissociation"): "ETD",
+            (
+                "collision energy",
+                "electron transfer dissociation",
+                "supplemental collision energy",
+                "supplemental collision-induced dissociation",
+            ): "ETCID",
+            (
+                "supplemental beam-type collision-induced dissociation",
+                "electron transfer dissociation",
+                "supplemental collision energy",
+            ): "ETHCD",
+            ("electron capture dissociation",): "ECD",
+            ("ultraviolet photodissociation",): "UVPD",
+            ("photodissociation",): "photodissociation",
+            ("collision energy",): "unknown",
+        }
+        for names, expected in cases.items():
+            with self.subTest(names=names):
+                self.assertEqual(msraw._fragmentation_from_activation(list(names)), expected)
