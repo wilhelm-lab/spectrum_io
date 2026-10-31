@@ -15,6 +15,39 @@ logger = logging.getLogger(__name__)
 FILTER_STRING_ACTIVATION = re.compile(r"@([a-z]+)(\d+(?:\.\d+)?)", re.IGNORECASE)
 
 
+def _fragmentation_from_activation(names: list[str]) -> str:
+    """
+    Get the fragmentation method from the names of the activation cvParams of a spectrum.
+
+    Electron transfer dissociation with supplemental activation is reported as ETCID (supplemental collision-induced
+    dissociation) or ETHCD (supplemental beam-type collision-induced dissociation). Methods that the raw file stores as
+    HCD (e.g. EID or UVPD on some instruments) cannot be told apart and are read as HCD.
+
+    :param names: names of the activation cvParams
+    :return: the fragmentation method, e.g. HCD, CID, ETD, ETCID, ETHCD, ECD or UVPD, the first name if it is not
+        known, or "unknown" if there is none
+    """
+    names = [name for name in names if name and "energy" not in name]
+    supplemental = [name for name in names if name.startswith("supplemental")]
+    main = [name for name in names if not name.startswith("supplemental")]
+    if "electron transfer dissociation" in main:
+        if any("beam-type" in name for name in supplemental):
+            return "ETHCD"
+        if any("collision-induced dissociation" in name for name in supplemental):
+            return "ETCID"
+        return "ETD"
+    for name in main:
+        if "beam-type" in name:
+            return "HCD"
+        if "collision-induced dissociation" in name:
+            return "CID"
+        if name == "electron capture dissociation":
+            return "ECD"
+        if "ultraviolet photodissociation" in name:
+            return "UVPD"
+    return main[0] if main else "unknown"
+
+
 def _collision_energy_from_filter_string(filter_string) -> float:
     """
     Get the collision energy from a Thermo filter string.
@@ -190,19 +223,11 @@ class MSRaw:
                     scan = spec.get_element_by_path(["scanList", "scan"])[0]
                     instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                     activation = spec.get_element_by_path(["precursorList", "precursor", "activation"])[0]
-                    fragmentation = "unknown"
                     collision_energy = 0.0
                     for cv_param in activation:
-                        name = cv_param.get("name")
-                        if name == "collision energy":
+                        if cv_param.get("name") == "collision energy":
                             collision_energy = float(cv_param.get("value"))
-                            continue
-                        if "beam-type" in name:
-                            fragmentation = "HCD"
-                        elif "collision-induced dissociation" in name:
-                            fragmentation = "CID"
-                        else:
-                            fragmentation = name
+                    fragmentation = _fragmentation_from_activation([cv_param.get("name") for cv_param in activation])
                     if collision_energy == 0.0:
                         filter_string = scan.find(f'./{namespace}cvParam[@accession="MS:1000512"]')
                         if filter_string is not None:
@@ -254,17 +279,8 @@ class MSRaw:
                 scan = spec["scanList"]["scan"][0]
                 instrument_configuration_ref = scan.get("instrumentConfigurationRef", "")
                 activation = spec["precursorList"]["precursor"][0]["activation"]
-                fragmentation = "unknown"
-                collision_energy = 0.0
-                for key, value in activation.items():
-                    if key == "collision energy":
-                        collision_energy = value
-                    elif "beam-type" in key:
-                        fragmentation = "HCD"
-                    elif "collision-induced dissociation" in key:
-                        fragmentation = "CID"
-                    elif fragmentation == "unknown":
-                        fragmentation = key
+                collision_energy = activation.get("collision energy", 0.0)
+                fragmentation = _fragmentation_from_activation(list(activation.keys()))
                 if collision_energy == 0.0:
                     collision_energy = _collision_energy_from_filter_string(scan.get("filter string"))
                 scan_lower_limit = scan["scanWindowList"]["scanWindow"][0]["scan window lower limit"]

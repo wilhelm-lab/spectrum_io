@@ -157,17 +157,11 @@ class MSFragger(SearchResults):
         Check if all protein names in a given string correspond to decoy proteins.
 
         :param protein_names: A string containing one or more protein names separated by semicolons (';').
-                            Each protein name is checked for the presence of the substring 'rev'.
-        :return: `True` if all proteins are decoy proteins (i.e., if all protein names contain 'rev'),
+                            Each protein name is checked for the decoy prefix 'rev' (e.g. rev_sp|P12345|...).
+        :return: `True` if all proteins are decoy proteins (i.e., if all protein names start with 'rev'),
                 otherwise `False`.
         """
-        all_proteins = protein_names.split(";")
-        reverse = True
-        for protein in all_proteins:
-            if "rev" not in protein:
-                reverse = False
-                break
-        return reverse
+        return all(protein.strip().startswith("rev") for protein in protein_names.split(";"))
 
     def convert_to_internal(
         self, mods: dict[str, str], ptm_unimod_id: int | dict[int, list[str]] | None, ptm_sites: list[str] | None

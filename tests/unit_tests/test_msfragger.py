@@ -23,6 +23,14 @@ COLUMNS = [
 class TestMSFragger(unittest.TestCase):
     """Class to test MSFragger."""
 
+    def test_check_decoys(self):
+        """Test only proteins with the decoy prefix rev are decoys, not proteins with rev elsewhere in the name."""
+        self.assertTrue(MSFragger.check_decoys("rev_sp|P12345|A_HUMAN"))
+        self.assertTrue(MSFragger.check_decoys("rev_sp|P12345|A_HUMAN;rev_sp|P67890|B_HUMAN"))
+        self.assertFalse(MSFragger.check_decoys("rev_sp|P12345|A_HUMAN;sp|P67890|B_HUMAN"))
+        self.assertFalse(MSFragger.check_decoys("sp|Q9BREV|PREV_HUMAN"))
+        self.assertFalse(MSFragger.check_decoys("sp|P12345|SREV1_HUMAN Protein sorev"))
+
     def test_read_result(self):
         """Test read_result for MSFragger."""
         msfragger = MSFragger(Path(__file__).parent / "data/psm.pepXML")
