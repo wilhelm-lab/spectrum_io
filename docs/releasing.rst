@@ -115,7 +115,7 @@ Continuous Integration
 
 The following workflows run automatically:
 
-- **run_tests.yml**: Tests on every push to ``development``, ``main``, and ``release/*`` branches (runs on Python 3.10, 3.11, 3.12 on Ubuntu)
+- **run_tests.yml**: Tests on every push to ``development``, ``main``, and ``release/*`` branches (runs on Python 3.11, 3.12, 3.13, 3.14 on Ubuntu)
 - **build_package.yml**: Validates package building on every push and pull request
 - **publish_docs.yml**: Builds and deploys docs to GitHub Pages on pushes to ``main`` and ``master`` branches
 - **publish_package.yml**: Uploads to PyPI on release publication (uses OIDC for authentication - no token needed!)

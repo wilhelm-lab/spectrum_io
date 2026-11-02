@@ -30,4 +30,6 @@ class TestXisearch(unittest.TestCase):
         }
 
         expected_df = pd.read_csv(expected_xisearch_internal_path, sep="\t", converters=converters)
+        # pandas 3 reads empty strings from converters as NaN
+        expected_df[list(converters)] = expected_df[list(converters)].fillna("")
         pd.testing.assert_frame_equal(internal_search_results_df, expected_df)

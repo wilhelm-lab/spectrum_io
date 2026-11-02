@@ -111,8 +111,8 @@ class Scout(SearchResults):
     def _self_or_between_mp(df: pd.DataFrame) -> pd.DataFrame:
         df["tmp_id"] = df.index
         df_expl = df.copy()
-        df_expl.loc[:, "AlphaMappings"] = df_expl["AlphaMappings"].str.split(";")
-        df_expl.loc[:, "BetaMappings"] = df_expl["BetaMappings"].str.split(";")
+        df_expl["AlphaMappings"] = df_expl["AlphaMappings"].str.split(";")
+        df_expl["BetaMappings"] = df_expl["BetaMappings"].str.split(";")
         df_expl = df_expl.explode("AlphaMappings")
         df_expl = df_expl.explode("BetaMappings")
         df_expl.loc[:, "self"] = False

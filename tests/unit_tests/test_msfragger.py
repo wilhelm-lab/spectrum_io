@@ -57,6 +57,7 @@ class TestMSFragger(unittest.TestCase):
         )
         expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
 
+        internal_search_results_df["RAW_FILE"] = internal_search_results_df["RAW_FILE"].astype(str)
         pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
 
     def test_read_msfragger_with_custom_mods(self):
@@ -72,6 +73,7 @@ class TestMSFragger(unittest.TestCase):
         )
         expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
 
+        internal_search_results_df["RAW_FILE"] = internal_search_results_df["RAW_FILE"].astype(str)
         pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
 
     def test_read_msfragger_with_custom_mods_with_tmt(self):
@@ -84,4 +86,5 @@ class TestMSFragger(unittest.TestCase):
         )
         expected_df = pd.read_csv(expected_msfragger_internal_path, index_col=0)
 
+        internal_search_results_df["RAW_FILE"] = internal_search_results_df["RAW_FILE"].astype(str)
         pd.testing.assert_frame_equal(internal_search_results_df[COLUMNS], expected_df[COLUMNS])
