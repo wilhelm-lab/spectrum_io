@@ -16,16 +16,18 @@ class TestXisearch(unittest.TestCase):
             Scout(path=Path(__file__).parent / "data" / "scout_output.csv").read_result().reset_index(drop=True)
         )
         internal_search_results_df["linear"] = internal_search_results_df.linear.astype(bool)
+        str_columns = [
+            "Modifications_A",
+            "Modifications_B",
+            "mods_p1",
+            "mods_p2",
+            "ModificationPositions1",
+            "ModificationPositions2",
+        ]
         expected_df = pd.read_csv(
             expected_scout_internal_path,
-            converters={
-                "linear": bool,
-                "Modifications_A": str,
-                "Modifications_B": str,
-                "mods_p1": str,
-                "mods_p2": str,
-                "ModificationPositions1": str,
-                "ModificationPositions2": str,
-            },
+            converters={"linear": bool, **dict.fromkeys(str_columns, str)},
         )
+        # pandas 3 reads empty strings from converters as NaN
+        expected_df[str_columns] = expected_df[str_columns].fillna("")
         pd.testing.assert_frame_equal(internal_search_results_df, expected_df)

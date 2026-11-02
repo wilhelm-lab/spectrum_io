@@ -4,13 +4,18 @@ import logging
 from pathlib import Path
 
 import pandas as pd
-from pyopenms import IdXMLFile, PeptideIdentification, ProteinIdentification
+from pyopenms import IdXMLFile, PeptideIdentificationList, ProteinIdentification
 from spectrum_fundamentals.mod_string import internal_without_mods
 from tqdm import tqdm
 
 from .search_results import SearchResults, parse_mods
 
 logger = logging.getLogger(__name__)
+
+
+def _to_str(value: bytes | str) -> str:
+    """Decode a pyOpenMS string value, which is bytes before pyOpenMS 3.6 and str from then on."""
+    return value.decode("utf-8") if isinstance(value, bytes) else value
 
 
 def _extract_scan_number(spectrum_id: int | float | bytes | str | list[int] | list[float] | list[bytes]) -> int:
@@ -30,12 +35,12 @@ def _get_raw_file_name(prot_ids: list[ProteinIdentification]) -> str:
         spectra_data = prot_id.getMetaValue("spectra_data")
         if isinstance(spectra_data, list) and spectra_data:
             first_element = spectra_data[0]
-            if isinstance(first_element, bytes):
-                return first_element.decode("utf-8").split("/")[-1].split(".")[0]
+            if isinstance(first_element, bytes | str):
+                return _to_str(first_element).split("/")[-1].split(".")[0]
             else:
-                raise TypeError(f"Expected bytes in the list, but got {type(first_element)}")
+                raise TypeError(f"Expected bytes or str in the list, but got {type(first_element)}")
         else:
-            raise TypeError("spectra_data must be a non-empty list of bytes")
+            raise TypeError("spectra_data must be a non-empty list of bytes or str")
     raise ValueError("Raw file name could not be extracted from protein identifications.")
 
 
@@ -48,13 +53,13 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
     :return: DataFrame containing identification information.
     """
     prot_ids: list[ProteinIdentification] = []
-    pep_ids: list[PeptideIdentification] = []
+    pep_ids = PeptideIdentificationList()
     IdXMLFile().load(str(input_file), prot_ids, pep_ids)
 
     meta_value_keys_bytes: list[bytes] = []
     meta_value_keys: list[str] = []
     rows = []
-    for peptide_id in pep_ids:
+    for peptide_id in pep_ids:  # type: ignore[attr-defined]  # wrong __iter__ stub in pyOpenMS 3.5
         spectrum_id = peptide_id.getMetaValue("spectrum_reference")
         # extract scan number
         scan_nr = _extract_scan_number(spectrum_id=spectrum_id)
@@ -76,7 +81,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
 
             if len(meta_value_keys_bytes) == 0:  # fill meta value keys on first run
                 h.getKeys(meta_value_keys_bytes)
-                meta_value_keys = [x.decode() for x in meta_value_keys_bytes]
+                meta_value_keys = [_to_str(x) for x in meta_value_keys_bytes]
 
                 all_columns = [
                     "SpecId",
@@ -92,7 +97,7 @@ def _read_and_process_id_xml(input_file: Path, top: int = 0) -> pd.DataFrame:
                 ] + meta_value_keys
 
             # static part
-            accessions = ";".join(sorted([s.decode() for s in h.extractProteinAccessionsSet()]))
+            accessions = ";".join(sorted([_to_str(s) for s in h.extractProteinAccessionsSet()]))
 
             row = [
                 spectrum_id,

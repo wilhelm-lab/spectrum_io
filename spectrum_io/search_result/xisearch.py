@@ -235,6 +235,9 @@ class Xisearch(SearchResults):
             )
 
         logger.info("Finished reading search results file.")
+        # pandas 3 reads empty strings from converters as NaN
+        mod_columns = ["mods_p1", "mods_p2", "mod_pos_p1", "mod_pos_p2"]
+        self.results[mod_columns] = self.results[mod_columns].fillna("")
         # Standardize column names
         self.filter_xisearch_result()
         self.convert_to_internal(mods={})

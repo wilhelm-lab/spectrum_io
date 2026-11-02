@@ -15,7 +15,11 @@ def _test_read_mzml(package: str):
     # pickle.dump(df, open(Path(__file__).parent / "data/testdf.pkl", "wb"))
 
     target_df = pickle.load(open(Path(__file__).parent / "data/testdf.pkl", "rb"))
-    pd.testing.assert_frame_equal(df, target_df)
+    # the pickled strings have object dtype, pandas 3 infers str
+    str_columns = ["RAW_FILE", "MZ_RANGE", "MASS_ANALYZER", "FRAGMENTATION", "INSTRUMENT_TYPES"]
+    df[str_columns] = df[str_columns].astype(str)
+    target_df[str_columns] = target_df[str_columns].astype(str)
+    pd.testing.assert_frame_equal(df, target_df, check_index_type=False, check_column_type=False)
 
 
 class TestMsraw(unittest.TestCase):
