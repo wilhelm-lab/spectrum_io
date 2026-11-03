@@ -139,9 +139,9 @@ def data():
     }
 
 
-@pytest.fixture
-def metadata():
-    """Creates metadata df."""
+@pytest.fixture(params=["object", "category"])
+def metadata(request):
+    """Creates metadata df, with string columns as object or as categorical (as in anndata obs) dtype."""
     return pd.DataFrame(
         {
             "SEQUENCE": ["AAACCCCKR", "AAACILKKR"],
@@ -151,4 +151,4 @@ def metadata():
             "COLLISION_ENERGY": [10.0, 20.0],
             "PROTEINS": ["ProteinA", "ProteinB"],
         }
-    )
+    ).astype({"SEQUENCE": request.param, "MODIFIED_SEQUENCE": request.param, "PROTEINS": request.param})
