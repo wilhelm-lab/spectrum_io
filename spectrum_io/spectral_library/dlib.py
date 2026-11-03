@@ -145,7 +145,7 @@ class DLib(SpectralLibrary):
         if isinstance(out, IO):
             raise TypeError("Not supported. Use msp/spectronaut if you want to write a text file.")
         seqs = metadata["SEQUENCE"]
-        modseqs = metadata["MODIFIED_SEQUENCE"].replace(mods, regex=True)
+        modseqs = metadata["MODIFIED_SEQUENCE"].astype(str).replace(mods, regex=True)
         # mass_mod_sequences = internal_to_mod_mass(modseqs)#, custom_mods)
         # print(mass_mod_sequences, "masmodseq")
 

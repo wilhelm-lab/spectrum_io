@@ -48,7 +48,7 @@ class Spectronaut(SpectralLibrary):
             raise TypeError("Not supported. Use DLib if you want to write a database file.")
         seqs = metadata["SEQUENCE"]
 
-        modseqs = metadata["MODIFIED_SEQUENCE"].replace(mods, regex=True).apply(lambda x: "_" + x + "_")
+        modseqs = metadata["MODIFIED_SEQUENCE"].astype(str).replace(mods, regex=True).apply(lambda x: "_" + x + "_")
         # modseqs = internal_to_spectronaut(metadata["MODIFIED_SEQUENCE"].apply(lambda x: "_" + x + "_"))
         p_charges = metadata["PRECURSOR_CHARGE"]
         p_mzs = (metadata["MASS"] + (p_charges * PARTICLE_MASSES["PROTON"])) / p_charges
